@@ -1,0 +1,39 @@
+<div class="page-header bg-parchment">
+  <div class="page-header-content">
+    <div class="section-tag">Eco Shop</div>
+    <h1 class="page-h1">Verified <em>sustainable</em> products</h1>
+  </div>
+</div>
+<section id="shop">
+  <div class="shop-header">
+    <div>
+    </div>
+    <div class="shop-filters">
+      <button class="filter-pill" [class.active]="currentCategory === 'all'" (click)="filterProducts('all')">All</button>
+      <button class="filter-pill" [class.active]="currentCategory === 'home'" (click)="filterProducts('home')">Home</button>
+      <button class="filter-pill" [class.active]="currentCategory === 'beauty'" (click)="filterProducts('beauty')">Beauty</button>
+      <button class="filter-pill" [class.active]="currentCategory === 'food'" (click)="filterProducts('food')">Food</button>
+      <button class="filter-pill" [class.active]="currentCategory === 'fashion'" (click)="filterProducts('fashion')">Fashion</button>
+    </div>
+  </div>
+  <div class="product-grid" id="product-grid">
+    @for (product of filteredProducts; track product.name) {
+    <div class="product-card fade-in">
+      <div class="product-img" [style.background]="product.bg">{{ product.emoji }}
+        <div class="product-badge">{{ product.badge }}</div>
+      </div>
+      <div class="product-body">
+        <div class="product-brand">{{ product.brand }}</div>
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-impact" [innerHTML]="product.impact"></div>
+        <div class="product-footer">
+          <div class="product-price">{{ product.price }}</div>
+          <button class="btn-add" [ngStyle]="{'background': product.added ? 'var(--sage)' : 'var(--forest)'}" (click)="addToCart(product)">
+            {{ product.added ? '✓' : '+' }}
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</section>

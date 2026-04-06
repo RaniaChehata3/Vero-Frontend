@@ -1,0 +1,24 @@
+.page-header { padding: calc(var(--nav-h) + 60px) 80px 40px; background: var(--parchment); overflow: hidden; }
+.page-header-content { max-width: 1400px; margin: 0 auto; }
+.page-h1 { font-family: 'Playfair Display', serif; font-size: clamp(48px, 6vw, 72px); font-weight: 700; color: var(--forest); line-height: 1.1; margin-bottom: 0; letter-spacing: -1px; }
+.page-h1 em { font-style: italic; color: var(--fern); }
+
+#shop { background: var(--parchment); padding-top: 0px; min-height: calc(100vh - var(--nav-h)); }
+.shop-header { display: flex; justify-content: flex-end; align-items: flex-end; margin-bottom: 48px; flex-wrap: wrap; gap: 24px; }
+.shop-filters{display:flex;gap:10px;flex-wrap:wrap}
+.filter-pill{padding:8px 18px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid rgba(26,46,26,.15);color:var(--smoke);background:transparent;transition:all .2s}
+.filter-pill:hover,.filter-pill.active{background:var(--forest);color:var(--cream);border-color:var(--forest)}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px}
+.product-card{background:var(--white);border-radius:20px;overflow:hidden;transition:transform .2s,box-shadow .2s;cursor:pointer;position:relative}
+.product-card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(26,46,26,.12)}
+.product-img{height:200px;display:flex;align-items:center;justify-content:center;font-size:64px;position:relative;overflow:hidden}
+.product-badge{position:absolute;top:12px;left:12px;background:var(--forest);color:var(--cream);font-size:10px;font-weight:600;letter-spacing:.08em;padding:5px 12px;border-radius:100px;text-transform:uppercase;z-index:1}
+.product-body{padding:20px 24px 24px}
+.product-brand{font-size:11px;color:var(--sage);font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.product-name{font-size:16px;font-weight:500;color:var(--charcoal);margin-bottom:8px}
+.product-impact{font-size:12px;color:var(--smoke);margin-bottom:16px}
+.product-impact span{color:var(--sage);font-weight:500; /* adding this back since it's global inside product-impact */}
+.product-footer{display:flex;justify-content:space-between;align-items:center}
+.product-price{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--forest)}
+.btn-add{width:40px;height:40px;border-radius:50%;background:var(--forest);color:var(--cream);border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .15s}
+.btn-add:hover{background:var(--fern);transform:scale(1.1)}

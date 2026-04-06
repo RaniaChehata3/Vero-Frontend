@@ -1,0 +1,86 @@
+<div class="page-header bg-cream">
+  <div class="page-header-content">
+    <div class="section-tag">Traceable Donations</div>
+    <h1 class="page-h1">Every euro,<br><em>traced</em> to impact</h1>
+  </div>
+</div>
+<section id="donate">
+  <p class="section-sub">All donations flow through verified smart contracts. Watch your money grow forests, clean oceans, and power communities.</p>
+  <div class="donate-layout">
+    <div class="donate-projects">
+      <div class="project-card fade-in">
+        <div class="project-top">
+          <div class="project-emoji">🌳</div>
+          <div class="project-info">
+            <div class="project-region">Congo Basin, Africa</div>
+            <div class="project-name">Restore 10,000 Hectares of Rainforest</div>
+            <div class="project-desc">Working with local communities to replant and protect one of Earth's most biodiverse ecosystems.</div>
+          </div>
+        </div>
+        <div class="project-progress-wrap">
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:73%"></div></div>
+          <div class="progress-meta"><span class="progress-raised">€365,000 raised</span><span class="progress-goal">Goal: €500,000</span></div>
+        </div>
+      </div>
+      <div class="project-card fade-in" style="transition-delay:.1s">
+        <div class="project-top">
+          <div class="project-emoji">🌊</div>
+          <div class="project-info">
+            <div class="project-region">Pacific Ocean</div>
+            <div class="project-name">Ocean Plastic Extraction Initiative</div>
+            <div class="project-desc">Funding autonomous vessels that collect and recycle ocean plastic 24/7, tracked via satellite.</div>
+          </div>
+        </div>
+        <div class="project-progress-wrap">
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:58%"></div></div>
+          <div class="progress-meta"><span class="progress-raised">€290,000 raised</span><span class="progress-goal">Goal: €500,000</span></div>
+        </div>
+      </div>
+      <div class="project-card fade-in" style="transition-delay:.2s">
+        <div class="project-top">
+          <div class="project-emoji">☀️</div>
+          <div class="project-info">
+            <div class="project-region">Sub-Saharan Africa</div>
+            <div class="project-name">Solar Microgrids for 200 Villages</div>
+            <div class="project-desc">Bringing clean electricity to off-grid communities while cutting diesel dependence by 90%.</div>
+          </div>
+        </div>
+        <div class="project-progress-wrap">
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:89%"></div></div>
+          <div class="progress-meta"><span class="progress-raised">€445,000 raised</span><span class="progress-goal">Goal: €500,000</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="donate-form-wrap">
+      <div class="donate-form-card">
+        <div class="form-title">Make a donation</div>
+        <div class="form-sub">100% goes to projects. Fully traceable on blockchain.</div>
+        <div class="amount-grid">
+          <button class="amount-btn" [class.active]="selectedAmount === 5" (click)="selectAmount(5)">€5</button>
+          <button class="amount-btn" [class.active]="selectedAmount === 20" (click)="selectAmount(20)">€20</button>
+          <button class="amount-btn" [class.active]="selectedAmount === 50" (click)="selectAmount(50)">€50</button>
+          <button class="amount-btn" [class.active]="selectedAmount === 100" (click)="selectAmount(100)">€100</button>
+        </div>
+        <label class="form-label">Or enter custom amount</label>
+        <input type="number" class="form-input" placeholder="€ Amount" id="custom-amount" [(ngModel)]="customAmount" (input)="selectedAmount = null">
+        <label class="form-label">Full name</label>
+        <input type="text" class="form-input" placeholder="Your name">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" placeholder="you@email.com">
+        <div class="blockchain-note">
+          <div class="blockchain-note-icon">🔗</div>
+          <div class="blockchain-note-text">Your donation is recorded on the Ethereum blockchain. You'll receive a verifiable receipt and real-time impact updates as your funds reach the project.</div>
+        </div>
+        <button class="btn-donate" (click)="handleDonate()" [style.background]="donateBtnBg">
+          @if (donateState === 'idle') {
+            <span>Donate Securely</span><span>→</span>
+          } @else if (donateState === 'processing') {
+            <span>Processing...</span>
+          } @else {
+            <span>🌱 Transaction confirmed!</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

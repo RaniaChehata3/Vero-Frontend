@@ -1,0 +1,57 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+  --forest: #1a2e1a;
+  --moss: #2d4a2d;
+  --sage: #4a7a4a;
+  --fern: #6aaa6a;
+  --mist: #c8dfc8;
+  --cream: #f5f0e8;
+  --parchment: #ede6d6;
+  --earth: #8b6f47;
+  --clay: #c4956a;
+  --gold: #d4a843;
+  --charcoal: #2c2c28;
+  --smoke: #6b6b65;
+  --white: #fdfdf8;
+  --nav-h: 72px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--charcoal);
+  overflow-x: hidden;
+}
+
+section { padding: 100px 80px; }
+.section-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--sage); margin-bottom: 20px;
+}
+.section-tag::after { content: ''; width: 24px; height: 1px; background: var(--fern); }
+
+.section-h2 {
+  font-family: 'Playfair Display', serif; font-size: clamp(36px, 4vw, 54px);
+  font-weight: 700; line-height: 1.12; color: var(--forest);
+  letter-spacing: -1px; margin-bottom: 16px;
+}
+.section-h2 em { font-style: italic; color: var(--fern); }
+
+.section-sub {
+  font-size: 16px; color: var(--smoke); font-weight: 300;
+  line-height: 1.7; max-width: 500px;
+}
+
+.fade-in {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+@media(max-width: 900px) {
+  section { padding: 60px 24px; }
+}
