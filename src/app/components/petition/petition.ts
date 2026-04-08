@@ -22,8 +22,7 @@ export class PetitionComponent implements OnInit {
   myLoading = false;
   adminLoading = false;
 
-  activeTab: 'browse' | 'create' | 'my' | 'admin' = 'browse';
-  activeFilter = 'all';
+activeTab: 'browse' | 'create' | 'my' | 'admin' | 'edit' = 'browse';  activeFilter = 'all';
   adminFilter = 'all';
 
   categories = [
@@ -204,7 +203,9 @@ editPetition(p: Petition) {
     targetSignatures: p.targetSignatures
   };
   this.deadlineDate = p.deadline ? p.deadline.split('T')[0] : '';
-  this.activeTab = 'create';
+  this.errorMessage = '';
+  this.successMessage = '';
+  this.activeTab = 'edit';
 }
  deletingId: number | null = null;
 
@@ -273,5 +274,10 @@ deletePetition(p: Petition) {
     if (diff <= 7) return `${diff}d left`;
     return new Date(deadline).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
   }
-  
+ cancelEdit() {
+  this.editingPetition = null;
+  this.resetForm();
+  this.activeTab = 'my';
+  this.loadMyPetitions();
+}
 }
