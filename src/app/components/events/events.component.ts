@@ -19,9 +19,19 @@ export class EventsComponent implements OnInit, OnDestroy {
   editMode   = false;
   selectedId?: number;
   successMsg = '';
+  errorMsg   = '';
   form: Event = this.resetForm();
 
-  // Track current role reactively so the view updates when role is fetched async
+  showConfirmModal = false;
+  confirmMessage   = '';
+  confirmAction: (() => void) | null = null;
+
+  // ── Join Event Modal ─────────────────────────────────────────────────────
+  showJoinModal    = false;
+  joinTargetEvent: Event | null = null;
+  joinLoading      = false;
+  joinedEventIds   = new Set<number>();
+
   currentRole: string | null = null;
   private roleSub!: Subscription;
 
@@ -33,23 +43,18 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.load();
-
-    // Subscribe to the reactive role stream so that when the role arrives
-    // (async from /api/users), Angular re-checks the view bindings.
     this.roleSub = this.auth.roleStream$.subscribe(role => {
       this.currentRole = role;
       this.cdr.markForCheck();
     });
   }
 
-  ngOnDestroy(): void {
-    this.roleSub?.unsubscribe();
-  }
+  ngOnDestroy(): void { this.roleSub?.unsubscribe(); }
 
   load(): void {
     this.api.getAll().subscribe({
       next:  res => this.events = res,
-      error: err => console.error('Erreur chargement événements', err)
+      error: ()  => this.showError('Erreur chargement événements')
     });
   }
 
@@ -57,75 +62,169 @@ export class EventsComponent implements OnInit, OnDestroy {
     return { title: '', description: '', location: '', capacity: 0, startDate: '', endDate: '' };
   }
 
-  // --- RÔLES ---
+  // ── Rôles ─────────────────────────────────────────────────────────────────
   isAdmin():   boolean { return this.auth.isAdmin; }
   isPartner(): boolean { return this.auth.isPartner; }
   isUser():    boolean { return !this.auth.isAdmin && !this.auth.isPartner; }
   canManage(): boolean { return this.auth.canManageEvents; }
 
-  // --- MODAL CRÉATION ---
+  // ── Modals CRUD ───────────────────────────────────────────────────────────
   openCreate(): void {
-    this.editMode  = false;
-    this.selectedId = undefined;
-    this.form = this.resetForm();
-    this.showModal = true;
+    this.editMode = false; this.selectedId = undefined;
+    this.form = this.resetForm(); this.errorMsg = ''; this.showModal = true;
   }
 
-  // --- MODAL ÉDITION ---
   openEdit(ev: Event): void {
-    this.editMode  = true;
-    this.selectedId = ev.id;
+    this.editMode = true; this.selectedId = ev.id;
     this.form = { ...ev };
     this.form.startDate = this.toDatetimeLocal(ev.startDate);
     this.form.endDate   = this.toDatetimeLocal(ev.endDate);
-    this.showModal = true;
+    this.errorMsg = ''; this.showModal = true;
   }
 
-  private toDatetimeLocal(dateStr: string): string {
-    if (!dateStr) return '';
-    return dateStr.length > 16 ? dateStr.substring(0, 16) : dateStr;
+  private toDatetimeLocal(d: string): string {
+    if (!d) return '';
+    return d.length > 16 ? d.substring(0, 16) : d;
   }
 
-  // --- SUBMIT (CREATE ou UPDATE) ---
   submitForm(): void {
-    if (!this.form.title?.trim()) {
-      alert('Le titre est obligatoire.');
-      return;
+    if (!this.form.title?.trim()) { this.showError('Le titre est obligatoire.'); return; }
+
+    if (this.editMode && this.selectedId) {
+      // ── OPTIMISTIC UPDATE : applique immédiatement, rollback si erreur ──
+      const idToUpdate = this.selectedId;
+      const optimistic = { ...this.form, id: idToUpdate };
+      const backup = [...this.events];
+
+      const idx = this.events.findIndex(e => e.id === idToUpdate);
+      if (idx !== -1) {
+        this.events[idx] = optimistic;
+        this.events = [...this.events];
+      }
+      this.showModal = false;
+
+      this.api.update(idToUpdate, this.form).subscribe({
+        next: (serverResp) => {
+          // Sync avec la réponse serveur si valide
+          if (serverResp && serverResp.id) {
+            const i = this.events.findIndex(e => e.id === idToUpdate);
+            if (i !== -1) { this.events[i] = serverResp; this.events = [...this.events]; }
+          }
+          this.showSuccess('Événement mis à jour !');
+        },
+        error: err => {
+          this.events = backup; // rollback
+          this.showModal = true; // rouvre le modal
+          this.showError(err.error?.message || 'Vérifiez vos permissions');
+        }
+      });
+
+    } else {
+      // ── OPTIMISTIC CREATE : affiche un placeholder immédiatement ──
+      const tempId = -Date.now(); // id temporaire négatif unique
+      const optimistic: Event = { ...this.form, id: tempId, status: 'UPCOMING' };
+      this.events = [optimistic, ...this.events];
+      this.showModal = false;
+
+      this.api.create(this.form).subscribe({
+        next: (created) => {
+          // Remplace le placeholder par le vrai objet serveur
+          const i = this.events.findIndex(e => e.id === tempId);
+          if (i !== -1) { this.events[i] = created; this.events = [...this.events]; }
+          this.showSuccess('Événement créé !');
+        },
+        error: err => {
+          this.events = this.events.filter(e => e.id !== tempId); // retire le placeholder
+          this.showModal = true; // rouvre le modal
+          this.showError(err.error?.message || 'Vérifiez vos permissions');
+        }
+      });
     }
-
-    const action = (this.editMode && this.selectedId)
-      ? this.api.update(this.selectedId, this.form)
-      : this.api.create(this.form);
-
-    action.subscribe({
-      next: () => {
-        this.showModal = false;
-        this.load();
-        this.showSuccess(this.editMode ? 'Événement mis à jour !' : 'Événement créé !');
-      },
-      error: err => alert('Erreur : ' + (err.error?.message || 'Vérifiez vos permissions'))
-    });
   }
 
-  // --- SUPPRESSION ---
+  // ── FIX 2 : Suppression optimiste — retire immédiatement du tableau ──────
   deleteEvent(id: number): void {
-    if (!confirm('Supprimer définitivement cet événement ?')) return;
-    this.api.delete(id).subscribe({
-      next:  () => { this.load(); this.showSuccess('Événement supprimé !'); },
-      error: err => alert('Impossible : ' + (err.error?.message || 'Erreur serveur'))
+    this.openConfirm('Supprimer définitivement cet événement ?', () => {
+      // Suppression visuelle instantanée
+      const backup = [...this.events];
+      this.events = this.events.filter(e => e.id !== id);
+
+      this.api.delete(id).subscribe({
+        next:  () => this.showSuccess('Événement supprimé !'),
+        error: err => {
+          // Rollback si le serveur refuse
+          this.events = backup;
+          this.showError(err.error?.message || 'Erreur serveur');
+        }
+      });
     });
   }
 
-  // --- RÉSERVATION ---
-  joinEvent(id: number): void {
+  // ── Réservation ───────────────────────────────────────────────────────────
+  openJoinModal(ev: Event): void {
+    this.joinTargetEvent = ev;
+    this.showJoinModal = true;
+  }
+
+  closeJoinModal(): void {
+    this.showJoinModal = false;
+    this.joinTargetEvent = null;
+    this.joinLoading = false;
+  }
+
+  confirmJoin(): void {
+    if (!this.joinTargetEvent?.id || this.joinLoading) return;
+    this.joinLoading = true;
+    const id = this.joinTargetEvent.id;
+
     this.api.reserve(id).subscribe({
-      next:  () => this.showSuccess('Demande de réservation envoyée !'),
-      error: err => alert(err.error?.message || 'Erreur lors de la réservation')
+      next: () => {
+        this.joinedEventIds.add(id);
+        this.closeJoinModal();
+        this.showSuccess('🎉 Demande envoyée — en attente de confirmation !');
+      },
+      error: err => {
+        this.joinLoading = false;
+        const msg = err.error?.message || 'Erreur lors de la réservation';
+        // Check if already registered
+        if (err.status === 409 || msg.toLowerCase().includes('already') || msg.toLowerCase().includes('déjà')) {
+          this.joinedEventIds.add(id);
+          this.closeJoinModal();
+          this.showSuccess('Vous participez déjà à cet événement !');
+        } else {
+          this.showError(msg);
+        }
+      }
     });
   }
 
+  hasJoined(id: number): boolean {
+    return this.joinedEventIds.has(id);
+  }
+
+  // ── Modal Confirm interne ─────────────────────────────────────────────────
+  openConfirm(message: string, action: () => void): void {
+    this.confirmMessage = message;
+    this.confirmAction  = action;
+    this.showConfirmModal = true;
+  }
+  confirmYes(): void {
+    this.confirmAction?.();
+    this.showConfirmModal = false;
+    this.confirmAction = null;
+  }
+  confirmNo(): void {
+    this.showConfirmModal = false;
+    this.confirmAction = null;
+  }
+
+  // ── Notifications ─────────────────────────────────────────────────────────
   showSuccess(msg: string): void {
-    this.successMsg = msg;
-    setTimeout(() => this.successMsg = '', 3000);
+    this.successMsg = msg; this.errorMsg = '';
+    setTimeout(() => this.successMsg = '', 3500);
+  }
+  showError(msg: string): void {
+    this.errorMsg = msg; this.successMsg = '';
+    setTimeout(() => this.errorMsg = '', 4500);
   }
 }

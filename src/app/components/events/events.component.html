@@ -1,28 +1,32 @@
 <div class="events-page">
 
-  <div class="toast-notif" *ngIf="successMsg">✨ {{ successMsg }}</div>
+  <!-- Notifications -->
+  <div class="toast-notif success" *ngIf="successMsg">✨ {{ successMsg }}</div>
+  <div class="toast-notif error"   *ngIf="errorMsg">⚠️ {{ errorMsg }}</div>
 
+  <!-- Hero -->
   <header class="hero-container">
     <span class="tagline">Green Community —</span>
     <h1 class="hero-title">Manage your<br><span class="italic-green">impact</span></h1>
   </header>
 
-  <!-- FAB button for Admin/Partner -->
+  <!-- FAB (Admin/Partner) -->
   <button class="fab-add" *ngIf="canManage()" (click)="openCreate()" title="Créer un événement">+</button>
 
+  <!-- Cards Grid -->
   <div class="grid-container">
     <article class="event-card" *ngFor="let ev of events">
-
       <div class="card-media">
         <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800" alt="Nature">
         <div class="date-overlay">
           <span class="day">{{ ev.startDate | date:'dd' }}</span>
           <span class="month">{{ ev.startDate | date:'MMM' }}</span>
         </div>
+        <div class="status-badge" [ngClass]="'s-' + ev.status">{{ ev.status }}</div>
       </div>
 
       <div class="card-body">
-        <span class="category-tag">● {{ ev.status }}</span>
+        <span class="category-tag">● {{ ev.location }}</span>
         <h3 class="event-title">{{ ev.title }}</h3>
         <p class="event-desc">{{ ev.description }}</p>
 
@@ -33,29 +37,39 @@
 
         <footer class="card-footer">
           <!-- Join button for regular users -->
-          <button class="btn-join" *ngIf="isUser()" (click)="joinEvent(ev.id!)">
-            Join Now
-          </button>
-
-          <!-- Edit / Delete for Admin and Partner -->
+          <ng-container *ngIf="isUser()">
+            <button
+              class="btn-join"
+              *ngIf="!hasJoined(ev.id!)"
+              [disabled]="ev.status === 'CANCELLED' || ev.status === 'COMPLETED'"
+              (click)="openJoinModal(ev)"
+              [title]="ev.status === 'CANCELLED' ? 'Événement annulé' : ev.status === 'COMPLETED' ? 'Événement terminé' : 'Participer'"
+            >
+              Join Now
+            </button>
+            <span class="btn-joined" *ngIf="hasJoined(ev.id!)">
+              ✓ Inscrit
+            </span>
+          </ng-container>
           <div class="admin-quick-actions" *ngIf="canManage()">
             <button class="btn-icon-alt" (click)="openEdit(ev)" title="Modifier">✏️</button>
             <button class="btn-icon-alt delete" (click)="deleteEvent(ev.id!)" title="Supprimer">🗑️</button>
           </div>
         </footer>
       </div>
-
     </article>
   </div>
 
-  <!-- MODAL ADD / EDIT -->
-  <div class="modal-backdrop" *ngIf="showModal">
-    <div class="modal-window">
+  <!-- ── Modal CRUD ────────────────────────────────────────────────────────── -->
+  <div class="modal-backdrop" *ngIf="showModal" (click)="showModal=false">
+    <div class="modal-window" (click)="$event.stopPropagation()">
 
-      <h2 style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+      <h2 class="modal-head">
         {{ editMode ? 'Modifier l\'événement' : 'Nouvel événement' }}
         <button class="btn-link" (click)="showModal = false">✕</button>
       </h2>
+
+      <div class="modal-error" *ngIf="errorMsg">{{ errorMsg }}</div>
 
       <div class="modal-form">
         <label>Titre *</label>
@@ -93,7 +107,61 @@
           {{ editMode ? 'Mettre à jour' : 'Créer' }}
         </button>
       </div>
+    </div>
+  </div>
 
+  <!-- ── Modal : Rejoindre un événement ──────────────────────────────────── -->
+  <div class="modal-backdrop" *ngIf="showJoinModal" (click)="closeJoinModal()">
+    <div class="modal-join" (click)="$event.stopPropagation()">
+
+      <div class="join-icon">🌿</div>
+
+      <h3 class="join-title">Rejoindre l'événement</h3>
+      <p class="join-event-name">{{ joinTargetEvent?.title }}</p>
+
+      <div class="join-details">
+        <div class="join-detail-item">
+          <span class="detail-label">📍 Lieu</span>
+          <span class="detail-value">{{ joinTargetEvent?.location }}</span>
+        </div>
+        <div class="join-detail-item">
+          <span class="detail-label">📅 Date</span>
+          <span class="detail-value">{{ joinTargetEvent?.startDate | date:'dd MMM yyyy, HH:mm' }}</span>
+        </div>
+        <div class="join-detail-item">
+          <span class="detail-label">👥 Capacité</span>
+          <span class="detail-value">{{ joinTargetEvent?.capacity }} places</span>
+        </div>
+      </div>
+
+      <p class="join-disclaimer">
+        Votre demande sera transmise pour validation.
+        Vous serez notifié(e) de la confirmation.
+      </p>
+
+      <div class="join-actions">
+        <button class="btn-join-cancel" (click)="closeJoinModal()" [disabled]="joinLoading">
+          Annuler
+        </button>
+        <button class="btn-join-confirm" (click)="confirmJoin()" [disabled]="joinLoading">
+          <span *ngIf="!joinLoading">✅ Confirmer</span>
+          <span *ngIf="joinLoading" class="spinner"></span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Modal Confirmation (remplace window.confirm) ──────────────────────── -->
+  <div class="modal-backdrop" *ngIf="showConfirmModal" (click)="confirmNo()">
+    <div class="modal-confirm" (click)="$event.stopPropagation()">
+      <div class="confirm-icon">🗑️</div>
+      <h3 class="confirm-title">Confirmer la suppression</h3>
+      <p class="confirm-message">{{ confirmMessage }}</p>
+      <div class="confirm-actions">
+        <button class="btn-confirm-no"  (click)="confirmNo()">Annuler</button>
+        <button class="btn-confirm-yes" (click)="confirmYes()">Supprimer</button>
+      </div>
     </div>
   </div>
 
