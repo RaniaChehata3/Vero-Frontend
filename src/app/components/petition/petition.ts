@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PetitionService, Petition, PetitionStats } from '../../services/petition.service';
 import { AuthService } from '../../services/auth.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-petition',
@@ -22,8 +23,12 @@ export class PetitionComponent implements OnInit {
   myLoading = false;
   adminLoading = false;
 
-activeTab: 'browse' | 'create' | 'my' | 'admin' | 'edit' = 'browse';  activeFilter = 'all';
+  activeTab: 'browse' | 'create' | 'my' | 'admin' | 'edit' = 'browse';
+  activeFilter = 'all';
   adminFilter = 'all';
+
+  // Track if my petitions have been loaded at least once (cache)
+  private myPetitionsLoaded = false;
 
   categories = [
     { key: 'TRANSPORT', label: 'Transport', emoji: '🚲' },
@@ -78,24 +83,49 @@ activeTab: 'browse' | 'create' | 'my' | 'admin' | 'edit' = 'browse';  activeFilt
       error: () => { this.browseLoading = false; }
     });
   }
-loadMyPetitions() {
-  this.myPetitions = [];
-  this.myLoading = true;
-  this.petitionService.getMy().subscribe({
-    next: (data) => {
-      this.myPetitions = [...data];
-      this.myLoading = false;
-    },
-    error: () => {
-      this.myPetitions = [];
-      this.myLoading = false;
+
+  loadMyPetitions(forceReload = false) {
+    // If already loaded and not forcing, show cached data immediately
+    if (this.myPetitionsLoaded && !forceReload && this.myPetitions.length > 0) {
+      // Still refresh in background silently
+      this.petitionService.getMy().subscribe({
+        next: (data) => { this.myPetitions = [...data]; }
+      });
+      return;
     }
-  });
-}
+
+    // Don't clear existing data — keep showing old data while loading
+    this.myLoading = this.myPetitions.length === 0;
+    this.petitionService.getMy().subscribe({
+      next: (data) => {
+        this.myPetitions = [...data];
+        this.myLoading = false;
+        this.myPetitionsLoaded = true;
+      },
+      error: () => {
+        this.myPetitions = [];
+        this.myLoading = false;
+      }
+    });
+  }
 
   loadStats() {
     this.petitionService.getStats().subscribe({
       next: (data) => this.stats = data
+    });
+  }
+
+  /** Reload browse + stats in parallel (background) */
+  private refreshAll() {
+    forkJoin([
+      this.petitionService.getActive(),
+      this.petitionService.getStats()
+    ]).subscribe({
+      next: ([petitions, stats]) => {
+        this.petitions = petitions;
+        this.applyFilter();
+        this.stats = stats;
+      }
     });
   }
 
@@ -156,13 +186,15 @@ loadMyPetitions() {
       next: () => {
         this.createState = 'confirmed';
         this.successMessage = 'Petition created! Awaiting admin validation.';
+        // Navigate quickly — no long delay
         setTimeout(() => {
           this.createState = 'idle';
           this.successMessage = '';
           this.resetForm();
-          this.loadPetitions();
-          this.loadStats();
-        }, 3000);
+          // Refresh data in background
+          this.refreshAll();
+          this.myPetitionsLoaded = false;
+        }, 800);
       },
       error: (err) => {
         this.createState = 'idle';
@@ -192,39 +224,46 @@ loadMyPetitions() {
   }
 
   selectPetition(p: Petition) { console.log('View petition', p.id); }
-editPetition(p: Petition) {
-  this.editingPetition = { ...p };
-  this.newPetition = {
-    title: p.title,
-    description: p.description,
-    category: p.category,
-    city: p.city || '',
-    region: p.region || '',
-    targetSignatures: p.targetSignatures
-  };
-  this.deadlineDate = p.deadline ? p.deadline.split('T')[0] : '';
-  this.errorMessage = '';
-  this.successMessage = '';
-  this.activeTab = 'edit';
-}
- deletingId: number | null = null;
 
-deletePetition(p: Petition) {
-  if (!p.id || this.deletingId === p.id) return;
-  if (!confirm('Delete this petition?')) return;
-  
-  this.deletingId = p.id;
-  this.petitionService.delete(p.id).subscribe({
-    next: () => {
-      this.deletingId = null;
-      this.loadMyPetitions();
-      this.loadStats();
-    },
-    error: () => {
-      this.deletingId = null;
-    }
-  });
-}
+  editPetition(p: Petition) {
+    this.editingPetition = { ...p };
+    this.newPetition = {
+      title: p.title,
+      description: p.description,
+      category: p.category,
+      city: p.city || '',
+      region: p.region || '',
+      targetSignatures: p.targetSignatures
+    };
+    this.deadlineDate = p.deadline ? p.deadline.split('T')[0] : '';
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.activeTab = 'edit';
+  }
+
+  deletingId: number | null = null;
+
+  deletePetition(p: Petition) {
+    if (!p.id || this.deletingId === p.id) return;
+    if (!confirm('Delete this petition?')) return;
+
+    this.deletingId = p.id;
+    // Optimistic: remove from UI immediately
+    this.myPetitions = this.myPetitions.filter(pet => pet.id !== p.id);
+    this.petitionService.delete(p.id).subscribe({
+      next: () => {
+        this.deletingId = null;
+        // Refresh in background
+        this.loadMyPetitions(true);
+        this.loadStats();
+      },
+      error: () => {
+        this.deletingId = null;
+        // Restore on error
+        this.loadMyPetitions(true);
+      }
+    });
+  }
 
   validatePetition(p: Petition) {
     if (!p.id) return;
@@ -274,10 +313,69 @@ deletePetition(p: Petition) {
     if (diff <= 7) return `${diff}d left`;
     return new Date(deadline).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
   }
- cancelEdit() {
-  this.editingPetition = null;
-  this.resetForm();
-  this.activeTab = 'my';
-  this.loadMyPetitions();
-}
+
+  cancelEdit() {
+    this.editingPetition = null;
+    this.resetForm();
+    this.activeTab = 'my';
+    this.loadMyPetitions();
+  }
+
+  updateExistingPetition() {
+    if (this.createState !== 'idle' || !this.editingPetition?.id) return;
+
+    if (!this.newPetition.title.trim() || this.newPetition.title.trim().length < 10) {
+      this.errorMessage = 'Title must be at least 10 characters'; return;
+    }
+    if (!this.newPetition.description.trim() || this.newPetition.description.trim().length < 30) {
+      this.errorMessage = 'Description must be at least 30 characters'; return;
+    }
+    if (!this.newPetition.category) {
+      this.errorMessage = 'Please select a category'; return;
+    }
+
+    this.errorMessage = '';
+    this.createState = 'processing';
+
+    const petition: Petition = {
+      ...this.newPetition,
+      deadline: this.deadlineDate ? this.deadlineDate + 'T00:00:00' : undefined
+    };
+
+    this.petitionService.update(this.editingPetition.id, petition).subscribe({
+      next: () => {
+        this.createState = 'confirmed';
+        this.successMessage = 'Petition updated!';
+
+        // Optimistic: update the petition in myPetitions immediately
+        const idx = this.myPetitions.findIndex(p => p.id === this.editingPetition!.id);
+        if (idx !== -1) {
+          this.myPetitions[idx] = {
+            ...this.myPetitions[idx],
+            ...this.newPetition,
+            deadline: this.deadlineDate ? this.deadlineDate + 'T00:00:00' : this.myPetitions[idx].deadline
+          };
+        }
+
+        // Navigate back quickly — no artificial delay
+        setTimeout(() => {
+          this.createState = 'idle';
+          this.successMessage = '';
+          this.editingPetition = null;
+          this.resetForm();
+          this.activeTab = 'my';
+          // Refresh data silently in background
+          this.refreshAll();
+          this.loadMyPetitions(true);
+        }, 500);
+      },
+      error: (err) => {
+        this.createState = 'idle';
+        const raw = err.error?.message || err.message || 'Update failed';
+        this.errorMessage = raw.includes('RuntimeException')
+          ? raw.split('RuntimeException:').pop()?.trim() || raw
+          : raw;
+      }
+    });
+  }
 }
