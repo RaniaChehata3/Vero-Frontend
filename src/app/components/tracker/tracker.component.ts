@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, NgZone, ElementRef, QueryList, ViewChildren, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,7 @@ import {
   CarbonActivity, CarbonGoal, ActivityType,
   ACTIVITY_ICONS, ACTIVITY_LABELS, ACTIVITY_COLORS
 } from '../../services/carbon.models';
+import { EcosystemScene } from './scene-manager';
 
 @Component({
   selector: 'app-tracker',
@@ -21,13 +22,13 @@ import {
   templateUrl: './tracker.component.html',
   styleUrl: './tracker.component.css'
 })
-export class TrackerComponent implements OnInit {
-  // ─── Auth ───
-  isLoggedIn = false;
-  loginEmail = '';
-  loginPassword = '';
-  loginError = '';
-  loginLoading = false;
+export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('ecoCanvas', { static: false }) ecoCanvas!: ElementRef<HTMLDivElement>;
+  private ecoScene!: EcosystemScene;
+  
+  ecoHealth = 0;
+  ecoLabel = '';
+  ecoLoading = true;
 
   // ─── Data ───
   carbonByType: Record<string, number> = {};
@@ -43,15 +44,25 @@ export class TrackerComponent implements OnInit {
   // ─── Computed ───
   categoryRows: { type: ActivityType; icon: string; label: string; value: number; pct: number; color: string }[] = [];
   ringOffset = 816.81;
+  displayCarbon = 0;   // animated counter value
+  heroReady = false;   // controls CSS class for hero entrance
 
   // ─── Forms ───
   showAddForm = false;
+  showGoalForm = false;
   submitting = false;
   newActivity: Partial<CarbonActivity> = {
     activityType: 'TRANSPORT',
     description: '',
     carbonKg: 0,
     source: 'MANUAL'
+  };
+
+  newGoal: Partial<CarbonGoal> = {
+    activityType: 'TRANSPORT',
+    targetCarbonKg: 0,
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0]
   };
 
   aiText = '';
@@ -80,42 +91,49 @@ export class TrackerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isLoggedIn = this.authService.isLoggedIn;
-    if (this.isLoggedIn) {
+    if (this.authService.isLoggedIn) {
       this.loadData();
     } else {
       this.router.navigate(['/login']);
     }
   }
 
-  login(): void {
-    if (!this.loginEmail || !this.loginPassword) return;
-    this.loginError = '';
-    this.loginLoading = true;
-    this.authService.login(this.loginEmail, this.loginPassword).subscribe({
-      next: () => {
-        this.isLoggedIn = true;
-        this.loginLoading = false;
-        this.loadData();
-      },
-      error: (err) => {
-        this.loginLoading = false;
-        this.loginError = err?.status === 401
-          ? 'Invalid credentials. Please check your email and password.'
-          : 'Connection failed. Is the backend running?';
-      }
+  ngAfterViewInit(): void {
+    if (this.ecoCanvas) {
+      this.ngZone.runOutsideAngular(() => {
+        this.ecoScene = new EcosystemScene(this.ecoCanvas.nativeElement);
+      });
+    }
+
+    // Trigger hero entrance animation slightly after paint
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        this.ngZone.run(() => {
+          this.heroReady = true;
+          this.cdr.markForCheck();
+        });
+      }, 80);
     });
+
+    // Intersection Observer for scroll-reveal on body cards
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      },
+      { threshold: 0.08 }
+    );
+    // Observe after data renders — slight delay
+    setTimeout(() => {
+      document.querySelectorAll('.vt-observe').forEach(el => observer.observe(el));
+    }, 500);
   }
 
-  logout(): void {
-    this.authService.logout();
-    this.isLoggedIn = false;
-    this.activities = [];
-    this.tips = [];
-    this.activeGoals = [];
-    this.totalCarbon = 0;
-    this.categoryRows = [];
-    this.ringOffset = 816.81;
+  ngOnDestroy(): void {
+    if (this.ecoScene) this.ecoScene.dispose();
   }
 
   loadData(): void {
@@ -126,28 +144,32 @@ export class TrackerComponent implements OnInit {
     const startDate = `${year}-01-01`;
     const endDate   = `${year}-12-31`;
 
+    // 1. Instantly load the fast database queries
     forkJoin({
       activities: this.activityService.getAll().pipe(catchError(() => of([] as CarbonActivity[]))),
       total:      this.activityService.getTotal(startDate, endDate).pipe(catchError(() => of(0))),
       byType:     this.activityService.getCarbonByType().pipe(catchError(() => of({} as Record<string, number>))),
-      goals:      this.goalService.getActive().pipe(catchError(() => of([] as CarbonGoal[]))),
-      tips:       this.tipService.getRecommended().pipe(catchError(() => of([] as string[]))),
+      goals:      this.goalService.getAll().pipe(catchError(() => of([] as CarbonGoal[])))
     }).pipe(
       finalize(() => {
         this.loading = false;
         this.cdr.markForCheck();
       })
     ).subscribe({
-      next: ({ activities, total, byType, goals, tips }) => {
+      next: ({ activities, total, byType, goals }) => {
         this.ngZone.run(() => {
           this.activities   = activities ?? [];
           this.totalCarbon  = typeof total === 'number' && isFinite(total)
             ? Math.round(total * 100) / 100 : 0;
           this.carbonByType = byType ?? {};
-          this.activeGoals  = goals ?? [];
-          this.tips         = tips ?? [];
+          // Display all goals belonging to the user, ensure progress is capped at 100% visually
+          this.activeGoals  = (goals ?? []).map(g => ({
+            ...g,
+            progressPct: Math.min(g.progressPct || 0, 100)
+          }));
           this.computeCategories();
           this.computeRing();
+          this.computeEcoHealth();
           this.cdr.markForCheck();
         });
       },
@@ -157,6 +179,14 @@ export class TrackerComponent implements OnInit {
           this.cdr.markForCheck();
         });
       }
+    });
+
+    // 2. Load the slow AI personalized tips asynchronously in the background
+    this.tipService.getRecommended().pipe(catchError(() => of([] as string[]))).subscribe(tips => {
+      this.ngZone.run(() => {
+        this.tips = tips ?? [];
+        this.cdr.markForCheck();
+      });
     });
   }
 
@@ -177,9 +207,83 @@ export class TrackerComponent implements OnInit {
     const CIRC = 816.81;
     const pct  = Math.min((this.totalCarbon || 0) / 10000, 1);
     this.ringOffset = CIRC * (1 - pct);
+
+    // Animated counter: count up from 0 to totalCarbon
+    const target   = this.totalCarbon;
+    const duration = 1800;
+    const start    = performance.now();
+    const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
+
+    const tick = (now: number) => {
+      const elapsed  = Math.min(now - start, duration);
+      const progress = easeOutQuart(elapsed / duration);
+      this.ngZone.run(() => {
+        this.displayCarbon = Math.round(progress * target * 10) / 10;
+        this.cdr.markForCheck();
+      });
+      if (elapsed < duration) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  // ─── Eco Health ───
+  computeEcoHealth(): void {
+    if (this.activeGoals.length === 0) {
+      const ratio = Math.min(this.totalCarbon / 5000, 1);
+      this.ecoHealth = Math.round((1 - ratio) * 100);
+    } else {
+      let totalScore = 0;
+      let counted = 0;
+      for (const goal of this.activeGoals) {
+        const pct = goal.progressPct || 0;
+        totalScore += Math.max(0, 100 - pct);
+        counted++;
+      }
+      this.ecoHealth = counted > 0 ? Math.round(totalScore / counted) : 70;
+    }
+
+    if (this.ecoHealth >= 80)      this.ecoLabel = 'Thriving';
+    else if (this.ecoHealth >= 60) this.ecoLabel = 'Stable';
+    else if (this.ecoHealth >= 35) this.ecoLabel = 'Stressed';
+    else                           this.ecoLabel = 'Declining';
+
+    if (this.ecoScene) {
+      this.ecoScene.setHealth(this.ecoHealth);
+    }
   }
 
   // ─── CRUD ───
+  submitGoal(): void {
+    if (!this.newGoal.targetCarbonKg || !this.newGoal.startDate || !this.newGoal.endDate) return;
+    this.submitting = true;
+    
+    const payload: Partial<CarbonGoal> = { ...this.newGoal };
+
+    this.goalService.create(payload)
+      .pipe(finalize(() => { this.submitting = false; this.cdr.markForCheck(); }))
+      .subscribe({
+        next: (created) => {
+          this.activeGoals.push({ ...created, progressPct: 0 });
+          this.showGoalForm = false;
+          // Reset form
+          this.newGoal = { 
+            activityType: 'TRANSPORT', 
+            targetCarbonKg: 0,
+            startDate: new Date().toISOString().split('T')[0],
+            endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0]
+          };
+        },
+        error: (err) => console.error('Goal submission failed', err)
+      });
+  }
+
+  deleteGoal(id: number): void {
+    this.activeGoals = this.activeGoals.filter(g => g.id !== id);
+    this.goalService.delete(id).subscribe({
+      error: () => this.loadData() // Revert on failure
+    });
+  }
+
   submitActivity(): void {
     if (!this.newActivity.description?.trim() || !this.newActivity.carbonKg) return;
     this.submitting = true;

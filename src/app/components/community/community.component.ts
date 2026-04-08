@@ -97,12 +97,9 @@ export class CommunityComponent implements OnInit {
     this.forumService.getAllPosts().subscribe({
       next: (data) => {
         this.ngZone.run(() => {
-          console.log('Posts retrieved:', data);
-          console.log('Current user email inside component:', this.currentUserEmail);
-          if (data && data.length > 0) {
-             console.log('First post user email:', data[0].user?.email);
-          }
-          this.posts = data.sort((a,b) => new Date(b.createdAt||'').getTime() - new Date(a.createdAt||'').getTime());
+          this.posts = (data || []).sort((a,b) => 
+            new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+          );
           this.loading = false;
           this.cdr.markForCheck();
         });
