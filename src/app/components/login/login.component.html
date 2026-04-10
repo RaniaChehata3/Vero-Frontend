@@ -1,0 +1,38 @@
+<div class="login-layout">
+  <div class="login-left">
+    <div class="back-nav" (click)="goBack()">⟵ Back</div>
+    <h1 class="login-brand">Vero <em>Intelligence</em></h1>
+    <div class="login-metric">
+      <span class="login-zero">0.0</span>
+      <span class="login-unit">kg CO₂</span>
+    </div>
+    <p class="login-manifesto">
+      Your environmental footprint is not a sin—it's a dataset. Unlock the intelligence.
+    </p>
+  </div>
+  
+  <div class="login-right">
+    <div class="login-form-card">
+      <h2 class="login-form-title">Enter the grid</h2>
+      @if (loginError) { <div class="login-error">{{ loginError }}</div> }
+      
+      <div class="input-group">
+        <label>IDENTITY (EMAIL)</label>
+        <input type="email" [(ngModel)]="loginEmail" placeholder="name@domain.com" class="login-input" />
+      </div>
+
+      <div class="input-group">
+        <label>CIPHER (PASSWORD)</label>
+        <input type="password" [(ngModel)]="loginPassword" placeholder="••••••••" class="login-input" (keyup.enter)="login()" />
+      </div>
+
+      <button class="login-btn" (click)="login()" [disabled]="loginLoading">
+        {{ loginLoading ? 'Authenticating...' : 'Authenticate' }}
+      </button>
+
+      <div class="login-footer">
+        Default Identity: admin@root.com | Cipher: 1234
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,98 @@
+<div class="formations-container">
+  <h1>📚 Formations & Sessions</h1>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Chargement des formations...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+  </div>
+
+  <div *ngIf="!loading && !error" class="formations-grid">
+    <div *ngFor="let formation of formations" class="formation-card">
+      <div class="formation-header">
+        <h2>{{ formation.title }}</h2>
+        <span class="status-badge" [class]="formation.status.toLowerCase()">
+          {{ getStatusLabel(formation.status) }}
+        </span>
+      </div>
+      
+      <p class="description">{{ formation.description }}</p>
+      
+      <div class="formation-details">
+        <div class="detail">
+          <span class="icon">⏱️</span>
+          <span class="label">Durée:</span>
+          <span class="value">{{ formation.duration }}h</span>
+        </div>
+        <div class="detail">
+          <span class="icon">👥</span>
+          <span class="label">Places:</span>
+          <span class="value">{{ getAvailableSpots(formation) }} / {{ formation.maxCapacity }}</span>
+        </div>
+        <div class="detail">
+          <span class="icon">📝</span>
+          <span class="label">Inscrits:</span>
+          <span class="value">{{ formation.participantIds?.length || 0 }}</span>
+        </div>
+      </div>
+
+      <div class="formation-actions">
+        <button 
+          class="btn-register" 
+          (click)="register(formation.id!)"
+          [disabled]="getAvailableSpots(formation) === 0">
+          {{ getAvailableSpots(formation) === 0 ? '❌ Complet' : '✅ S\'inscrire' }}
+        </button>
+        
+        <button 
+          class="btn-sessions" 
+          (click)="toggleSessions(formation.id!)">
+          {{ isSessionsExpanded(formation.id!) ? '🔼 Masquer les sessions' : '🔽 Voir les sessions' }}
+        </button>
+      </div>
+
+      <!-- Sessions Section -->
+      <div *ngIf="isSessionsExpanded(formation.id!)" class="sessions-section">
+        <h3>📅 Sessions programmées</h3>
+        
+        <div *ngIf="getSessionsForFormation(formation.id!).length === 0" class="no-sessions">
+          <p>Aucune session programmée pour cette formation.</p>
+        </div>
+
+        <div *ngFor="let session of getSessionsForFormation(formation.id!)" class="session-card">
+          <div class="session-header">
+            <h4>{{ session.title }}</h4>
+            <span class="session-status" [class]="session.status.toLowerCase()">
+              {{ getStatusLabel(session.status) }}
+            </span>
+          </div>
+          
+          <div class="session-details">
+            <div class="session-info">
+              <span class="icon">📅</span>
+              <span class="label">Début:</span>
+              <span class="value">{{ formatDate(session.startDate) }}</span>
+            </div>
+            <div class="session-info">
+              <span class="icon">🏁</span>
+              <span class="label">Fin:</span>
+              <span class="value">{{ formatDate(session.endDate) }}</span>
+            </div>
+            <div class="session-info" *ngIf="session.meetLink">
+              <span class="icon">🔗</span>
+              <span class="label">Lien:</span>
+              <a [href]="session.meetLink" target="_blank" class="meet-link">Rejoindre la session</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && formations.length === 0" class="no-formations">
+    <p>Aucune formation disponible pour le moment.</p>
+  </div>
+</div>

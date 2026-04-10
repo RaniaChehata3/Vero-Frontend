@@ -1,0 +1,40 @@
+.page-header { padding: calc(var(--nav-h) + 60px) 80px 40px; background: var(--cream); overflow: hidden; }
+.page-header-content { max-width: 1400px; margin: 0 auto; }
+.page-h1 { font-family: 'Playfair Display', serif; font-size: clamp(48px, 6vw, 72px); font-weight: 700; color: var(--forest); line-height: 1.1; margin-bottom: 0; letter-spacing: -1px; }
+.page-h1 em { font-style: italic; color: var(--fern); }
+
+#donate { background: var(--cream); padding-top: 0px; min-height: calc(100vh - var(--nav-h)); }
+.donate-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; margin-top: 40px; }
+.donate-projects{display:flex;flex-direction:column;gap:20px}
+.project-card{background:var(--white);border-radius:20px;overflow:hidden;border:1px solid rgba(26,46,26,.07);cursor:pointer;transition:transform .2s,box-shadow .2s}
+.project-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(26,46,26,.10)}
+.project-top{display:flex;gap:20px;padding:24px;align-items:flex-start}
+.project-emoji{font-size:36px;flex-shrink:0}
+.project-info{flex:1}
+.project-region{font-size:11px;color:var(--sage);font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.project-name{font-size:17px;font-weight:600;color:var(--charcoal);margin-bottom:6px}
+.project-desc{font-size:13px;color:var(--smoke);line-height:1.5}
+.project-progress-wrap{padding:0 24px 20px}
+.progress-bar-bg{height:6px;background:var(--mist);border-radius:100px;overflow:hidden;margin-bottom:8px}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--fern),var(--sage));border-radius:100px}
+.progress-meta{display:flex;justify-content:space-between;font-size:12px}
+.progress-raised{font-weight:500;color:var(--forest)}
+.progress-goal{color:var(--smoke)}
+.donate-form-wrap{position:sticky;top:96px}
+.donate-form-card{background:var(--white);border-radius:24px;padding:40px;border:1px solid rgba(26,46,26,.08);box-shadow:0 8px 40px rgba(26,46,26,.06)}
+.form-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--forest);margin-bottom:8px}
+.form-sub{font-size:14px;color:var(--smoke);margin-bottom:32px}
+.amount-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.amount-btn{padding:12px 8px;border-radius:12px;border:1.5px solid rgba(26,46,26,.15);background:transparent;font-size:16px;font-weight:600;color:var(--charcoal);cursor:pointer;transition:all .2s;font-family:'Playfair Display',serif}
+.amount-btn:hover,.amount-btn.active{background:var(--forest);color:var(--cream);border-color:var(--forest)}
+.form-label{font-size:12px;font-weight:500;color:var(--smoke);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;display:block}
+.form-input{width:100%;padding:14px 18px;border-radius:12px;border:1.5px solid rgba(26,46,26,.15);font-size:15px;font-family:'DM Sans',sans-serif;color:var(--charcoal);background:var(--cream);outline:none;transition:border-color .2s;margin-bottom:16px}
+.form-input:focus{border-color:var(--sage)}
+.blockchain-note{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:rgba(106,170,106,.08);border-radius:12px;margin-bottom:24px;border:1px solid rgba(106,170,106,.15)}
+.blockchain-note-icon{font-size:18px;flex-shrink:0}
+.blockchain-note-text{font-size:12px;color:var(--sage);line-height:1.5}
+.btn-donate{width:100%;padding:18px;border-radius:14px;background:var(--forest);color:var(--cream);font-size:16px;font-weight:600;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s,transform .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-donate:hover{background:var(--moss);transform:translateY(-1px)}
+@media(max-width:900px){
+  .donate-layout{grid-template-columns:1fr}
+}

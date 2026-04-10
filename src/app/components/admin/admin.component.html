@@ -1,0 +1,605 @@
+<div class="admin-container">
+  <aside class="admin-sidebar">
+    <div class="admin-logo">
+      <h2>Admin Panel</h2>
+      <p class="admin-user">{{ currentUser?.email }}</p>
+    </div>
+
+    <nav class="admin-nav">
+      <button 
+        class="nav-item" 
+        [class.active]="activeTab === 'overview'"
+        (click)="setActiveTab('overview')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <span>Overview</span>
+      </button>
+
+      <button 
+        class="nav-item" 
+        [class.active]="activeTab === 'users'"
+        (click)="setActiveTab('users')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <span>Users</span>
+      </button>
+
+      <button 
+        class="nav-item" 
+        [class.active]="activeTab === 'products'"
+        (click)="setActiveTab('products')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        </svg>
+        <span>Products</span>
+      </button>
+
+      <button 
+        class="nav-item" 
+        [class.active]="activeTab === 'orders'"
+        (click)="setActiveTab('orders')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span>Orders</span>
+      </button>
+
+      <button 
+        class="nav-item" 
+        [class.active]="activeTab === 'events'"
+        (click)="setActiveTab('events')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span>Events</span>
+      </button>
+
+      <button 
+        class="nav-item" 
+        [class.active]="activeTab === 'formations'"
+        (click)="setActiveTab('formations')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        <span>Formations</span>
+      </button>
+
+      <button 
+        class="nav-item" 
+        [class.active]="activeTab === 'community'"
+        (click)="setActiveTab('community')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span>Community</span>
+      </button>
+    </nav>
+
+    <div class="admin-footer">
+      <button class="btn-back" routerLink="/">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Site
+      </button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    @if (loading) {
+      <div class="loading">Loading...</div>
+    } @else {
+      @if (activeTab === 'overview') {
+        <div class="admin-content">
+          <h1>Dashboard Overview</h1>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon users">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <p class="stat-label">Total Users</p>
+                <p class="stat-value">{{ stats.totalUsers }}</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon orders">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <p class="stat-label">Total Orders</p>
+                <p class="stat-value">{{ stats.totalOrders }}</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon products">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <p class="stat-label">Total Products</p>
+                <p class="stat-value">{{ stats.totalProducts }}</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon revenue">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <p class="stat-label">Total Revenue</p>
+                <p class="stat-value">€{{ stats.totalRevenue.toFixed(2) }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-actions">
+            <h2>Quick Actions</h2>
+            <div class="actions-grid">
+              <button class="action-btn" (click)="setActiveTab('users')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="8.5" cy="7" r="4"></circle>
+                  <line x1="20" y1="8" x2="20" y2="14"></line>
+                  <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+                <span>Add User</span>
+              </button>
+              <button class="action-btn" (click)="setActiveTab('products')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Add Product</span>
+              </button>
+              <button class="action-btn" (click)="setActiveTab('events')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span>Create Event</span>
+              </button>
+              <button class="action-btn" (click)="setActiveTab('formations')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+                <span>Add Formation</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (activeTab === 'users') {
+        <div class="admin-content">
+          <h1>User Management</h1>
+          <p class="placeholder">User management interface coming soon...</p>
+        </div>
+      }
+
+      @if (activeTab === 'products') {
+        <div class="admin-content">
+          <div class="content-header">
+            <h1>Product Management</h1>
+            <button class="btn-primary" (click)="openProductModal()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Add Product
+            </button>
+          </div>
+
+          @if (productsLoading) {
+            <div class="loading">Loading products...</div>
+          } @else {
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (product of products; track product.id) {
+                    <tr>
+                      <td>{{ product.id }}</td>
+                      <td>
+                        @if (product.image && product.image.startsWith('data:image')) {
+                          <img [src]="product.image" alt="{{ product.name }}" class="product-thumb-uploaded">
+                        } @else {
+                          <div class="product-img-admin" [style.background]="getProductColor(product.category)">
+                            {{ getProductEmoji(product.category) }}
+                          </div>
+                        }
+                      </td>
+                      <td>{{ product.name }}</td>
+                      <td><span class="badge">{{ product.category }}</span></td>
+                      <td>€{{ product.price.toFixed(2) }}</td>
+                      <td>
+                        <span [class.low-stock]="product.stock < 10">{{ product.stock }}</span>
+                      </td>
+                      <td>
+                        <div class="action-buttons">
+                          <button class="btn-icon btn-edit" (click)="openProductModal(product)" title="Edit">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                          </button>
+                          <button class="btn-icon btn-delete" (click)="deleteProduct(product.id)" title="Delete">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                  @if (products.length === 0) {
+                    <tr>
+                      <td colspan="7" class="empty-state">No products found. Add your first product!</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      }
+
+      @if (activeTab === 'orders') {
+        <div class="admin-content">
+          <h1>Order Management</h1>
+
+          @if (ordersLoading) {
+            <div class="loading">Loading orders...</div>
+          } @else {
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Products</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (order of orders; track order.id) {
+                    <tr>
+                      <td>#{{ order.id }}</td>
+                      <td>{{ order.createdAt | date:'short' }}</td>
+                      <td>
+                        <div class="customer-info">
+                          <div class="customer-name">{{ order.customerName }}</div>
+                          <div class="customer-email">{{ order.customerEmail }}</div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="product-list-preview">
+                          {{ getProductNames(order) }}
+                        </div>
+                      </td>
+                      <td>€{{ order.totalAmount.toFixed(2) }}</td>
+                      <td>
+                        <span class="status-badge" [ngClass]="getStatusClass(order.status)">
+                          {{ order.status }}
+                        </span>
+                      </td>
+                      <td>
+                        <button class="btn-icon btn-view" (click)="viewOrderDetails(order)" title="View Details">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                  @if (orders.length === 0) {
+                    <tr>
+                      <td colspan="7" class="empty-state">No orders found.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      }
+
+      @if (activeTab === 'events') {
+        <div class="admin-content">
+          <h1>Event Management</h1>
+          <p class="placeholder">Event management interface coming soon...</p>
+        </div>
+      }
+
+      @if (activeTab === 'formations') {
+        <div class="admin-content">
+          <h1>Formation Management</h1>
+          <p class="placeholder">Formation management interface coming soon...</p>
+        </div>
+      }
+
+      @if (activeTab === 'community') {
+        <div class="admin-content">
+          <h1>Community Management</h1>
+          <p class="placeholder">Community moderation interface coming soon...</p>
+        </div>
+      }
+    }
+  </main>
+</div>
+
+<!-- Product Modal -->
+@if (showProductModal) {
+  <div class="modal-overlay" (click)="closeProductModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editingProduct ? 'Edit Product' : 'Add New Product' }}</h2>
+        <button class="modal-close" (click)="closeProductModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="productName">Product Name <span class="required">*</span></label>
+          <input 
+            type="text" 
+            id="productName" 
+            [(ngModel)]="productForm.name" 
+            placeholder="Enter product name"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="productDescription">Description <span class="required">*</span></label>
+          <textarea 
+            id="productDescription" 
+            [(ngModel)]="productForm.description" 
+            placeholder="Enter product description"
+            rows="3"
+            required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productPrice">Price (€) <span class="required">*</span></label>
+            <input 
+              type="number" 
+              id="productPrice" 
+              [(ngModel)]="productForm.price" 
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="productStock">Stock <span class="required">*</span></label>
+            <input 
+              type="number" 
+              id="productStock" 
+              [(ngModel)]="productForm.stock" 
+              placeholder="0"
+              min="0"
+              required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="productCategory">Category <span class="required">*</span></label>
+          <select id="productCategory" [(ngModel)]="productForm.category" required>
+            @for (cat of categories; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Product Image <span class="required">*</span></label>
+          <div class="image-upload-container">
+            @if (imagePreview) {
+              <div class="image-preview-wrapper">
+                <img [src]="imagePreview" alt="Product preview" class="image-preview">
+                <button type="button" class="btn-remove-image" (click)="removeImage()" title="Remove image">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            } @else {
+              <div class="image-upload-placeholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <p>No image selected</p>
+              </div>
+            }
+            <input 
+              type="file" 
+              id="imageUpload" 
+              accept="image/*"
+              (change)="onImageSelected($event)"
+              style="display: none;">
+            <button type="button" class="btn-upload-image" (click)="triggerFileInput()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              Browse & Upload Image
+            </button>
+            <p class="upload-hint">Max size: 5MB. Formats: JPG, PNG, GIF, WebP</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="productOrigin">Origin Country <span class="required">*</span></label>
+          <select id="productOrigin" [(ngModel)]="productForm.origin" class="country-select" required>
+            <option value="">Select a country</option>
+            @for (country of countries; track country.name) {
+              <option [value]="country.name">{{ country.flag }} {{ country.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="productForm.isEcological">
+            Ecological Product
+          </label>
+        </div>
+
+        <p class="form-note"><span class="required">*</span> Required fields</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeProductModal()">Cancel</button>
+        <button class="btn-primary" (click)="saveProduct()">
+          {{ editingProduct ? 'Update' : 'Create' }} Product
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Order Details Modal -->
+@if (selectedOrder) {
+  <div class="modal-overlay" (click)="closeOrderDetails()">
+    <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Order #{{ selectedOrder.id }} Details</h2>
+        <button class="modal-close" (click)="closeOrderDetails()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="order-info-grid">
+          <div class="info-item">
+            <label>Order Date</label>
+            <p>{{ selectedOrder.createdAt | date:'medium' }}</p>
+          </div>
+          <div class="info-item">
+            <label>Customer</label>
+            <p>{{ selectedOrder.customerName }}</p>
+            <p class="customer-email-detail">{{ selectedOrder.customerEmail }}</p>
+          </div>
+          <div class="info-item">
+            <label>Status</label>
+            <p>
+              <span class="status-badge" [ngClass]="getStatusClass(selectedOrder.status)">
+                {{ selectedOrder.status }}
+              </span>
+            </p>
+          </div>
+          <div class="info-item">
+            <label>Total Amount</label>
+            <p class="amount">€{{ selectedOrder.totalAmount.toFixed(2) }}</p>
+          </div>
+        </div>
+
+        <div class="order-section">
+          <h3>Delivery Address</h3>
+          <p>{{ selectedOrder.deliveryAddress }}</p>
+        </div>
+
+        @if (selectedOrder.notes) {
+          <div class="order-section">
+            <h3>Order Notes</h3>
+            <p>{{ selectedOrder.notes }}</p>
+          </div>
+        }
+
+        <div class="order-section">
+          <h3>Order Items</h3>
+          <div class="order-items-list">
+            @for (item of selectedOrder.produits; track item.id) {
+              <div class="order-item-row">
+                <div class="item-info">
+                  <span class="item-name">{{ item.name }}</span>
+                  <span class="item-qty">x1</span>
+                </div>
+                <span class="item-price">€{{ item.price.toFixed(2) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="order-total">
+          <span>Total:</span>
+          <span class="total-amount">€{{ selectedOrder.totalAmount.toFixed(2) }}</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        @if (selectedOrder.status === 'PENDING') {
+          <button class="btn-success" (click)="updateOrderStatus(selectedOrder.id, 'ACCEPTED')">
+            Accept Order
+          </button>
+          <button class="btn-danger" (click)="updateOrderStatus(selectedOrder.id, 'REJECTED')">
+            Reject Order
+          </button>
+        }
+        <button class="btn-secondary" (click)="closeOrderDetails()">Close</button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,167 @@
+<!-- ═══ MAXIMALIST LIGHT EXPERIMENTAL ═══ -->
+<div class="vero-tracker-max">
+  @if (isLoggedIn) {
+
+  <!-- ═══ DASHBOARD ═══ -->
+  <div class="max-dash" style="animation: revealDash 1.2s cubic-bezier(0.19, 1, 0.22, 1)">
+    
+    <!-- TOP NAV BAR -->
+    <header class="max-nav">
+      <div class="nav-brand">Platform <span>— Track</span></div>
+      <div class="nav-actions">
+        <button class="icon-toggle" (click)="showAddForm = !showAddForm" [class.is-active]="showAddForm">
+          <span class="toggle-lines"></span>
+        </button>
+      </div>
+    </header>
+
+    @if (showAddForm) {
+      <!-- FULL-BLEED MANUAL OVERLAY -->
+      <div class="manual-overlay" style="animation: slideDown .6s cubic-bezier(0.19, 1, 0.22, 1) forwards">
+        <div class="manual-grid">
+          <div class="manual-col">
+            <label class="max-label">01 / CATEGORY</label>
+            <div class="max-pills">
+              @for (t of activityTypes; track t) {
+                <button class="v-pill" [class.v-active]="newActivity.activityType === t" (click)="newActivity.activityType = $any(t)">
+                  {{ labels[t] }}
+                </button>
+              }
+            </div>
+          </div>
+          <div class="manual-col">
+            <label class="max-label">02 / IMPACT (KG)</label>
+            <input type="number" [(ngModel)]="newActivity.carbonKg" class="max-input huge-num" placeholder="00" />
+          </div>
+          <div class="manual-col span-full">
+            <label class="max-label">03 / MANIFEST</label>
+            <input type="text" [(ngModel)]="newActivity.description" class="max-input huge-text" placeholder="Type activity description..." />
+          </div>
+          <div class="manual-col span-full text-right">
+            <button class="max-btn invert" (click)="submitActivity()">Commit Record ↗</button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- MASSIVE HERO SECTION -->
+    <div class="max-hero">
+      <div class="hero-metric-wrap">
+        <label class="metric-label">YTD AGGREGATE</label>
+        <div class="hero-metric">
+          <span class="metric-val">{{ totalCarbon >= 1000 ? (totalCarbon / 1000 | number:'1.2-2') : (totalCarbon | number:'1.0-0') }}</span>
+          <span class="metric-unit">{{ totalCarbon >= 1000 ? 'TONNES' : 'KG' }}</span>
+        </div>
+      </div>
+      
+      <!-- THE AI CONSOLE (Hyper-minimalist) -->
+      <div class="ai-console">
+        <span class="ai-blinker"></span>
+        <input type="text" [(ngModel)]="aiText" class="ai-mass-input"
+               placeholder="Tell the AI what you did today..." 
+               (keyup.enter)="analyzeWithAI()" />
+        <button class="ai-trigger" (click)="analyzeWithAI()" [disabled]="aiLoading">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+        </button>
+      </div>
+
+      @if (aiResult) {
+      <div class="ai-feedback" style="animation: fadeUp .6s cubic-bezier(0.19, 1, 0.22, 1)">
+        <span class="f-type">{{ labels[aiResult.activityType] }}</span>
+        <span class="f-desc">{{ aiResult.description }}</span>
+        <span class="f-val">+{{ formatKg(aiResult.carbonKg) }}</span>
+      </div>
+      }
+    </div>
+
+    <!-- MAIN GRID SYSTEM -->
+    <div class="max-core-grid">
+      
+      <!-- LEFT: Technical Category Breakdown -->
+      <div class="grid-panel panel-left">
+        <h3 class="panel-h">Footprint Vector</h3>
+        <div class="vector-list">
+          @for (row of categoryRows; track row.type; let i = $index) {
+          <div class="vector-item" [style.animation-delay]="(i * 0.1) + 's'">
+            <div class="v-meta">
+              <span class="v-name">{{ row.label }}</span>
+              <span class="v-val">{{ formatKg(row.value) }}</span>
+            </div>
+            <div class="v-track">
+              <!-- Using high-contrast block widths -->
+              <div class="v-fill" [style.width.%]="row.pct" [style.background]="row.color === '#6aaa6a' ? 'var(--forest)' : row.color"></div>
+            </div>
+          </div>
+          }
+        </div>
+
+        <div class="spacer"></div>
+        <h3 class="panel-h">System Recommendations</h3>
+        <div class="rec-list">
+          @for (tip of tips; track tip; let i = $index) {
+            <div class="rec-card" [style.animation-delay]="(i * 0.15) + 's'">
+              <div class="rec-dot"></div>
+              <p>{{ tip }}</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- RIGHT: The "Receipt" Log -->
+      <div class="grid-panel panel-right">
+        <div class="receipt">
+          <div class="receipt-header">
+            <span>TX_LOG</span>
+            <span>2026.SYS</span>
+          </div>
+          <div class="receipt-body">
+            @for (a of activities.slice(0, 10); track a.id; let i = $index) {
+              <div class="r-row" [style.animation-delay]="(i * 0.05) + 's'" [class.editing]="editingActivityId === a.id">
+                <div class="r-cat">{{ a.activityType | slice:0:1 }}</div>
+                
+                <div class="r-main">
+                  @if (editingActivityId === a.id) {
+                    <div class="r-edit-form">
+                      <input type="text" [(ngModel)]="editActivityData.description" class="r-edit-input" />
+                      <div class="r-edit-meta">
+                        <input type="number" [(ngModel)]="editActivityData.carbonKg" class="r-edit-num" /> kg
+                        <div class="r-edit-btns">
+                          <button class="r-save" (click)="saveEditActivity()">Save</button>
+                          <button class="r-cancel" (click)="cancelEditActivity()">Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  } @else {
+                    <div class="r-desc">{{ a.description }}</div>
+                    <div class="r-date">{{ a.date }} — {{ a.source }}</div>
+                  }
+                </div>
+
+                @if (editingActivityId !== a.id) {
+                  <div class="r-kg">{{ formatKg(a.carbonKg) }}</div>
+                  <div class="r-actions">
+                    <button class="r-edit" (click)="startEditActivity(a)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button class="r-del" (click)="deleteActivity(a.id!)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+            @if(activities.length === 0) {
+              <div class="r-empty">NO TRANSACTIONS PRESENT EN T Y R SYSTEM</div>
+            }
+          </div>
+          <div class="receipt-footer">
+            <span>END OF LOG</span>
+            <span>+++</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  }
+</div>
