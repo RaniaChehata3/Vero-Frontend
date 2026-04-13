@@ -5,13 +5,12 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ForumService } from '../../../services/forum.service';
 import { Post, Comment } from '../../../services/forum.models';
-import { FadeInDirective } from '../../../fade-in.directive';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-thread',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, FadeInDirective],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './thread.component.html',
   styleUrl: './thread.component.css'
 })

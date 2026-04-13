@@ -4,13 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ForumService } from '../../services/forum.service';
 import { Post } from '../../services/forum.models';
-import { FadeInDirective } from '../../fade-in.directive';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-community',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, FadeInDirective],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './community.component.html',
   styleUrl: './community.component.css'
 })

@@ -15,6 +15,16 @@ import { AuthService } from '../../services/auth.service';
 })
 export class DonateComponent implements OnInit, OnDestroy {
 
+  // ── Hero animated text ────────────────────────────────────────────────────
+  heroTexts = [
+    'Save Our Environment.',
+    'Take Action.',
+    'Make a Difference.'
+  ];
+  heroTextIndex = 0;
+  heroTextExit = -1;
+  private heroInterval: any;
+
   events: Event[] = [];
   selectedEventIndex = -1;
   eventsLoading = true;
@@ -54,6 +64,12 @@ export class DonateComponent implements OnInit, OnDestroy {
 
   activeTab: 'donate' | 'history' = 'donate';
 
+  // UX Refactor States
+  currentStep = 1;
+  showConfirmModal = false;
+  showSuccessModal = false;
+  pendingDonation: Donation | null = null;
+
   donationSteps = [
     { title: 'You donate', desc: 'Choose an event, select an amount or volunteer your time.' },
     { title: 'We record it', desc: 'Your transaction is permanently recorded and traceable.' },
@@ -74,10 +90,19 @@ export class DonateComponent implements OnInit, OnDestroy {
       this.currentRole = role;
       this.cdr.markForCheck();
     });
+    this.startHeroAnimation();
     this.loadEvents();
+
+    // Also re-fetch if login state changes (e.g. user logs in/out)
+    this.roleSub.add(
+      this.authService.isLoggedIn$.subscribe(loggedIn => {
+        if (loggedIn) this.loadEvents();
+      })
+    );
   }
 
   ngOnDestroy(): void {
+    clearInterval(this.heroInterval);
     this.roleSub?.unsubscribe();
   }
 
@@ -107,9 +132,6 @@ export class DonateComponent implements OnInit, OnDestroy {
       next: (data) => {
         this.events = data;
         this.eventsLoading = false;
-        if (data.length > 0) {
-          this.selectEvent(0);
-        }
       },
       error: () => { this.eventsLoading = false; }
     });
@@ -117,6 +139,8 @@ export class DonateComponent implements OnInit, OnDestroy {
 
   selectEvent(index: number): void {
     this.selectedEventIndex = index;
+    this.currentStep = 2; // Move to Step 2 when event is selected
+    this.activeTab = 'donate'; // Ensure form tab is active
     this.loadDonationsForEvent();
   }
 
@@ -175,6 +199,7 @@ export class DonateComponent implements OnInit, OnDestroy {
       this.autoClearError();
       return;
     }
+     if (!this.isAnonymous) {
     if (!this.fullName.trim()) {
       this.errorMessage = 'Please enter your name';
       this.autoClearError();
@@ -185,36 +210,81 @@ export class DonateComponent implements OnInit, OnDestroy {
       this.autoClearError();
       return;
     }
+  }
 
     this.errorMessage = '';
-    this.donateState = 'processing';
+    this.errorMessage = '';
 
-    const donation: Donation = {
-      amount: this.donationType === 'MONEY' ? amount : (this.donationType === 'TIME' ? this.volunteerHours || 0 : 0),
+    // Create pending donation object and show confirmation modal
+    this.pendingDonation = {
+      amount: amount,
       type: this.donationType,
-      quantity: this.donationType === 'MATERIAL' ? this.materialQuantity : undefined,
-      message: this.message || `Don de ${this.fullName} — ${ev.title}`,
+      message: this.isAnonymous
+        ? `Anonymous donation`
+        : `Don de ${this.fullName}`,
       anonymous: this.isAnonymous,
       transactionId: `TXN-${Date.now()}`
     };
+    
+    this.showConfirmModal = true;
+  }
 
-    this.donationService.createDonationForEvent(donation, ev.id).subscribe({
+  cancelDonation(): void {
+    this.showConfirmModal = false;
+    this.pendingDonation = null;
+  }
+
+  confirmDonation(): void {
+    const ev = this.selectedEvent;
+    if (!ev?.id || !this.pendingDonation) return;
+
+    // Optimistic UI Update: close modal immediately to avoid waiting for backend API
+    this.showConfirmModal = false;
+    this.donateState = 'confirmed';
+    this.showSuccessModal = true;
+    this.currentStep = 3; // Step 3: Confirmation
+
+    // Full Optimistic Data Insertion
+    const optimisticDonation: Donation = {
+      ...this.pendingDonation,
+      id: Date.now(), // temporary pseudo-ID
+      status: 'PENDING',
+      donationDate: new Date().toISOString(),
+      userName: this.isAnonymous ? 'Anonymous' : (this.fullName || 'User')
+    };
+    this.donations = [optimisticDonation, ...this.donations];
+    
+    if (this.pendingDonation.type === 'MONEY') {
+      this.totalDonated += this.pendingDonation.amount;
+    }
+
+    this.donationService.createDonationForEvent(this.pendingDonation, ev.id).subscribe({
       next: () => {
-        this.donateState = 'confirmed';
-        this.successMessage = 'Donation successful!';
         this.loadDonationsForEvent();
         setTimeout(() => {
           this.donateState = 'idle';
-          this.successMessage = '';
           this.resetForm();
-        }, 3000);
+        }, 500);
       },
       error: (err: any) => {
+        // Rollback optimistic update on error
+        this.donations = this.donations.filter(d => d.id !== optimisticDonation.id);
+        if (this.pendingDonation && this.pendingDonation.type === 'MONEY') {
+          this.totalDonated -= this.pendingDonation.amount;
+        }
+
+        this.showSuccessModal = false;
         this.donateState = 'error';
         this.errorMessage = err.error?.message || 'Donation failed. Please try again.';
         setTimeout(() => { this.donateState = 'idle'; }, 3000);
       }
     });
+  }
+
+  viewMyDonations(): void {
+    this.showSuccessModal = false;
+    this.currentStep = 1;
+    this.activeTab = 'history';
   }
 
   openEdit(donation: Donation): void {
@@ -369,4 +439,21 @@ export class DonateComponent implements OnInit, OnDestroy {
       default: return '';
     }
   }
+  startHeroAnimation(): void {
+  this.heroInterval = setInterval(() => {
+    this.heroTextExit = this.heroTextIndex;
+    setTimeout(() => {
+      this.heroTextExit = -1;
+      this.heroTextIndex =
+        (this.heroTextIndex + 1) % this.heroTexts.length;
+    }, 600);
+  }, 4500);
+}
+
+scrollToForm(): void {
+  document.getElementById('donate-form')?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+}
 }

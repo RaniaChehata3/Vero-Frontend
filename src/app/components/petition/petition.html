@@ -62,10 +62,11 @@
     </button>
   </div>
 
-  <!-- ════════════════════════════════════════════════════════════════════════
+  <!-- ════════════════════════════════════════════════════════════════
        TAB 1 : BROWSE
-       ════════════════════════════════════════════════════════════════════════ -->
-  <div class="tab-content" *ngIf="activeTab === 'browse'">
+       [hidden] = DOM reste en mémoire, pas de re-render au clic
+       ════════════════════════════════════════════════════════════════ -->
+  <div class="tab-content" [hidden]="activeTab !== 'browse'">
 
     <div class="filter-row">
       <button class="cat-pill"
@@ -79,7 +80,7 @@
       </button>
     </div>
 
-    <div class="petition-grid" *ngIf="!browseLoading">
+    <div class="petition-grid" *ngIf="filteredPetitions.length > 0">
       <div class="p-card"
            *ngFor="let p of filteredPetitions; let i = index"
            [style.animation-delay]="i * 0.07 + 's'"
@@ -94,7 +95,7 @@
           <h3 class="p-card-title">{{ p.title }}</h3>
           <p class="p-card-desc">
             {{ p.description | slice:0:100 }}
-            {{ (p.description?.length || 0) > 100 ? '…' : '' }}
+            {{ (p.description.length || 0) > 100 ? '…' : '' }}
           </p>
         </div>
 
@@ -105,8 +106,7 @@
 
         <div class="p-card-progress">
           <div class="p-progress-track">
-            <div class="p-progress-fill"
-                 [style.width.%]="getProgress(p)"></div>
+            <div class="p-progress-fill" [style.width.%]="getProgress(p)"></div>
           </div>
           <div class="p-progress-nums">
             <span class="p-sigs">{{ p.currentSignatures || 0 }}</span>
@@ -115,211 +115,57 @@
         </div>
 
         <div class="p-card-foot">
-          <span class="p-deadline" *ngIf="p.deadline">
-            {{ formatDeadline(p.deadline) }}
-          </span>
+          <span class="p-deadline" *ngIf="p.deadline">{{ formatDeadline(p.deadline) }}</span>
           <span class="p-deadline" *ngIf="!p.deadline"></span>
-
-          <button class="btn-sign"
-                  *ngIf="!isAdmin"
-                  (click)="quickSign(p, $event)">
-            Sign ✍️
-          </button>
-
-          <span class="admin-view-badge" *ngIf="isAdmin">
-            👁 Read only
-          </span>
+          <button class="btn-sign" *ngIf="!isAdmin" (click)="quickSign(p, $event)">Sign ✍️</button>
+          <span class="admin-view-badge" *ngIf="isAdmin">👁 Read only</span>
         </div>
       </div>
     </div>
 
-    <div class="loading-wrap" *ngIf="browseLoading">
+    <div class="loading-wrap" *ngIf="browseLoading && filteredPetitions.length === 0">
       <div class="loader-ring"></div>
       <p>Loading petitions...</p>
     </div>
 
-    <div class="empty-wrap"
-         *ngIf="!browseLoading && filteredPetitions.length === 0">
+    <div class="empty-wrap" *ngIf="!browseLoading && filteredPetitions.length === 0">
       <div class="empty-leaf">🍃</div>
       <h3>No petitions found</h3>
       <p>Be the first to start an ecological initiative!</p>
-      <button class="btn-start"
-              *ngIf="!isAdmin"
-              (click)="activeTab = 'create'">
+      <button class="btn-start" *ngIf="!isAdmin" (click)="activeTab = 'create'">
         Start a petition →
       </button>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════════════════════════════════════
-     TAB 2 : CREATE / EDIT
-     ════════════════════════════════════════════════════════════════════════ -->
-<!-- TAB 2 : CREATE -->
-<div class="tab-content" *ngIf="activeTab === 'create' && !isAdmin">
-  <div class="create-layout">
-    <div class="create-left">
-      <div class="create-card">
-        <div class="create-header">
-          <div class="create-emoji">📝</div>
-          <div>
-            <h2 class="create-title">Start a petition</h2>
-            <p class="create-sub">Bring your ecological cause to the community.</p>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Title</label>
-          <input class="field-input" type="text" placeholder="Ex: More bike lanes in Tunis" [(ngModel)]="newPetition.title" maxlength="200">
-          <div class="field-hint">{{ newPetition.title.length }}/200 — minimum 10 characters</div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Description</label>
-          <textarea class="field-textarea" rows="5" placeholder="Describe your initiative…" [(ngModel)]="newPetition.description"></textarea>
-          <div class="field-hint">minimum 30 characters</div>
-        </div>
-
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">Category</label>
-            <select class="field-select" [(ngModel)]="newPetition.category">
-              <option value="">Choose…</option>
-              <option *ngFor="let cat of categories" [value]="cat.key">{{ cat.emoji }} {{ cat.label }}</option>
-            </select>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Signature goal</label>
-            <div class="goal-pills">
-              <button class="goal-pill" *ngFor="let g of [100, 500, 1000, 5000]" [class.active]="newPetition.targetSignatures === g" (click)="newPetition.targetSignatures = g">
-                {{ g >= 1000 ? (g / 1000) + 'k' : g }}
-              </button>
+  <!-- ════════════════════════════════════════════════════════════════
+       TAB 2 : CREATE
+       [hidden] = formulaire conservé en mémoire
+       ════════════════════════════════════════════════════════════════ -->
+  <div class="tab-content" [hidden]="activeTab !== 'create' || isAdmin">
+    <div class="create-layout">
+      <div class="create-left">
+        <div class="create-card">
+          <div class="create-header">
+            <div class="create-emoji">📝</div>
+            <div>
+              <h2 class="create-title">Start a petition</h2>
+              <p class="create-sub">Bring your ecological cause to the community.</p>
             </div>
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">City</label>
-            <input class="field-input" type="text" placeholder="Tunis" [(ngModel)]="newPetition.city">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Region</label>
-            <input class="field-input" type="text" placeholder="Tunis" [(ngModel)]="newPetition.region">
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Deadline</label>
-          <input class="field-input" type="date" [(ngModel)]="deadlineDate">
-        </div>
-
-        <div class="msg msg-error" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
-        <div class="msg msg-success" *ngIf="successMessage">🌱 {{ successMessage }}</div>
-
-        <div class="eco-banner">
-          <span class="eco-banner-icon">🌿</span>
-          <span>Your petition will be checked by our ecological filter, then reviewed by an admin before publishing.</span>
-        </div>
-
-        <button class="btn-publish" (click)="submitPetition()" [disabled]="createState === 'processing'">
-          <ng-container [ngSwitch]="createState">
-            <span *ngSwitchCase="'idle'">Publish petition →</span>
-            <span *ngSwitchCase="'processing'">Submitting…</span>
-            <span *ngSwitchDefault>🌱 Petition created!</span>
-          </ng-container>
-        </button>
-      </div>
-    </div>
-
-    <div class="create-right">
-      <div class="preview-label">Live preview</div>
-      <div class="p-card preview-card">
-        <div class="p-card-badge badge-pending">
-          {{ getCategoryEmoji(newPetition.category) }}
-          {{ newPetition.category ? formatCategory(newPetition.category) : 'Category' }}
-        </div>
-        <div class="p-card-body">
-          <h3 class="p-card-title">{{ newPetition.title || 'Your petition title…' }}</h3>
-          <p class="p-card-desc">{{ (newPetition.description || 'Your description will appear here…') | slice:0:120 }}</p>
-        </div>
-        <div class="p-card-location" *ngIf="newPetition.city">
-          📍 {{ newPetition.city }}<span *ngIf="newPetition.region">, {{ newPetition.region }}</span>
-        </div>
-        <div class="p-card-progress">
-          <div class="p-progress-track"><div class="p-progress-fill" style="width: 0%"></div></div>
-          <div class="p-progress-nums"><span class="p-sigs">0</span><span class="p-goal">/ {{ newPetition.targetSignatures }}</span></div>
-        </div>
-        <div class="p-card-foot">
-          <span class="p-deadline">{{ deadlineDate ? '⏳ ' + deadlineDate : '' }}</span>
-          <button class="btn-sign" disabled>Sign ✍️</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-       <!-- TAB 5 : EDIT -->
-<div class="tab-content" *ngIf="activeTab === 'edit' && editingPetition">
-  <div class="edit-page-wrapper">
-
-    <!-- ── Edit Header ─────────────────────────────────────── -->
-    <div class="edit-page-header">
-      <div class="edit-header-left">
-        <div class="edit-header-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-          </svg>
-        </div>
-        <div>
-          <h2 class="edit-page-title">Edit petition</h2>
-          <p class="edit-page-subtitle">Modify details for <strong>{{ editingPetition.title }}</strong></p>
-        </div>
-      </div>
-      <div class="edit-header-meta">
-        <span class="edit-meta-badge"
-              [class]="'edit-meta-badge badge-' + (editingPetition.status || 'pending').toLowerCase()">
-          {{ editingPetition.status }}
-        </span>
-        <span class="edit-meta-id">#{{ editingPetition.id }}</span>
-      </div>
-    </div>
-
-    <!-- ── Two-column Layout ───────────────────────────────── -->
-    <div class="edit-layout">
-
-      <!-- LEFT: Form -->
-      <div class="edit-form-column">
-
-        <!-- Section: Core Info -->
-        <div class="edit-section">
-          <div class="edit-section-label">
-            <span class="edit-section-dot"></span>
-            Core information
           </div>
 
           <div class="field-group">
             <label class="field-label">Title</label>
-            <input class="field-input" type="text" placeholder="Petition title…" [(ngModel)]="newPetition.title" maxlength="200">
-            <div class="field-hint">
-              <span>{{ newPetition.title.length }}/200</span>
-              <span *ngIf="newPetition.title.length < 10" class="field-hint-warn">minimum 10 characters</span>
-            </div>
+            <input class="field-input" type="text" placeholder="Ex: More bike lanes in Tunis"
+                   [(ngModel)]="newPetition.title" maxlength="200">
+            <div class="field-hint">{{ newPetition.title.length }}/200 — minimum 10 characters</div>
           </div>
 
           <div class="field-group">
             <label class="field-label">Description</label>
-            <textarea class="field-textarea" rows="5" placeholder="Describe your cause in detail…" [(ngModel)]="newPetition.description"></textarea>
-            <div class="field-hint">
-              <span *ngIf="newPetition.description.length < 30" class="field-hint-warn">minimum 30 characters</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section: Category & Goal -->
-        <div class="edit-section">
-          <div class="edit-section-label">
-            <span class="edit-section-dot"></span>
-            Category & objective
+            <textarea class="field-textarea" rows="5" placeholder="Describe your initiative…"
+                      [(ngModel)]="newPetition.description"></textarea>
+            <div class="field-hint">minimum 30 characters</div>
           </div>
 
           <div class="field-row">
@@ -333,29 +179,23 @@
             <div class="field-group">
               <label class="field-label">Signature goal</label>
               <div class="goal-pills">
-                <button class="goal-pill" *ngFor="let g of [100, 500, 1000, 5000]" [class.active]="newPetition.targetSignatures === g" (click)="newPetition.targetSignatures = g">
+                <button class="goal-pill" *ngFor="let g of [100, 500, 1000, 5000]"
+                        [class.active]="newPetition.targetSignatures === g"
+                        (click)="newPetition.targetSignatures = g">
                   {{ g >= 1000 ? (g / 1000) + 'k' : g }}
                 </button>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Section: Location & Deadline -->
-        <div class="edit-section">
-          <div class="edit-section-label">
-            <span class="edit-section-dot"></span>
-            Location & deadline
-          </div>
 
           <div class="field-row">
             <div class="field-group">
               <label class="field-label">City</label>
-              <input class="field-input" type="text" placeholder="e.g. Tunis" [(ngModel)]="newPetition.city">
+              <input class="field-input" type="text" placeholder="Tunis" [(ngModel)]="newPetition.city">
             </div>
             <div class="field-group">
               <label class="field-label">Region</label>
-              <input class="field-input" type="text" placeholder="e.g. Grand Tunis" [(ngModel)]="newPetition.region">
+              <input class="field-input" type="text" placeholder="Tunis" [(ngModel)]="newPetition.region">
             </div>
           </div>
 
@@ -363,133 +203,72 @@
             <label class="field-label">Deadline</label>
             <input class="field-input" type="date" [(ngModel)]="deadlineDate">
           </div>
-        </div>
 
-        <!-- Messages -->
-        <div class="msg msg-error" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
-        <div class="msg msg-success" *ngIf="successMessage">✅ {{ successMessage }}</div>
+          <div class="msg msg-error" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
+          <div class="msg msg-success" *ngIf="successMessage">🌱 {{ successMessage }}</div>
 
-        <!-- Info Banner -->
-        <div class="edit-info-banner">
-          <div class="edit-info-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="16" x2="12" y2="12"/>
-              <line x1="12" y1="8" x2="12.01" y2="8"/>
-            </svg>
+          <div class="eco-banner">
+            <span class="eco-banner-icon">🌿</span>
+            <span>Your petition will be checked by our ecological filter, then reviewed by an admin before publishing.</span>
           </div>
-          <span>Changes are saved on submit. The petition status will remain <strong>{{ editingPetition.status }}</strong>.</span>
-        </div>
 
-        <!-- Action Buttons -->
-        <div class="edit-actions">
-          <button class="btn-edit-save" (click)="updateExistingPetition()" [disabled]="createState === 'processing'">
+          <button class="btn-publish" (click)="submitPetition()" [disabled]="createState === 'processing'">
             <ng-container [ngSwitch]="createState">
-              <span *ngSwitchCase="'idle'">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:6px;">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                Save changes
-              </span>
-              <span *ngSwitchCase="'processing'" class="edit-saving">
-                <span class="edit-spinner"></span>
-                Saving…
-              </span>
-              <span *ngSwitchDefault>✅ Updated!</span>
+              <span *ngSwitchCase="'idle'">Publish petition →</span>
+              <span *ngSwitchCase="'processing'">Submitting…</span>
+              <span *ngSwitchDefault>🌱 Petition created!</span>
             </ng-container>
           </button>
-
-          <button class="btn-edit-cancel" (click)="cancelEdit()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:4px;">
-              <line x1="19" y1="12" x2="5" y2="12"/>
-              <polyline points="12 19 5 12 12 5"/>
-            </svg>
-            Cancel
-          </button>
-        </div>
-
-      </div>
-
-      <!-- RIGHT: Live Preview -->
-      <div class="edit-preview-column">
-        <div class="edit-preview-sticky">
-          <div class="edit-preview-header">
-            <span class="edit-preview-dot"></span>
-            Live preview
-          </div>
-          <div class="p-card edit-preview-card">
-            <div class="edit-preview-badge-overlay">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-              </svg>
-              Editing
-            </div>
-            <div class="p-card-badge" [class]="'badge-' + (editingPetition.status || 'pending').toLowerCase()">
-              {{ getCategoryEmoji(newPetition.category) }}
-              {{ newPetition.category ? formatCategory(newPetition.category) : 'Category' }}
-            </div>
-            <div class="p-card-body">
-              <h3 class="p-card-title">{{ newPetition.title || 'Title…' }}</h3>
-              <p class="p-card-desc">{{ (newPetition.description || 'Description…') | slice:0:120 }}</p>
-            </div>
-            <div class="p-card-location" *ngIf="newPetition.city">
-              📍 {{ newPetition.city }}<span *ngIf="newPetition.region">, {{ newPetition.region }}</span>
-            </div>
-            <div class="p-card-progress">
-              <div class="p-progress-track"><div class="p-progress-fill" [style.width.%]="getProgress(editingPetition)"></div></div>
-              <div class="p-progress-nums">
-                <span class="p-sigs">{{ editingPetition.currentSignatures || 0 }}</span>
-                <span class="p-goal">/ {{ newPetition.targetSignatures }}</span>
-              </div>
-            </div>
-            <div class="p-card-foot">
-              <span class="p-deadline">{{ deadlineDate ? '⏳ ' + deadlineDate : '' }}</span>
-              <button class="btn-sign" disabled>Sign ✍️</button>
-            </div>
-          </div>
-
-          <!-- Quick Stats -->
-          <div class="edit-preview-stats">
-            <div class="edit-stat">
-              <span class="edit-stat-num">{{ editingPetition.currentSignatures || 0 }}</span>
-              <span class="edit-stat-label">Signatures</span>
-            </div>
-            <div class="edit-stat-divider"></div>
-            <div class="edit-stat">
-              <span class="edit-stat-num">{{ newPetition.targetSignatures }}</span>
-              <span class="edit-stat-label">Goal</span>
-            </div>
-            <div class="edit-stat-divider"></div>
-            <div class="edit-stat">
-              <span class="edit-stat-num">{{ getProgress(editingPetition) | number:'1.0-0' }}%</span>
-              <span class="edit-stat-label">Progress</span>
-            </div>
-          </div>
         </div>
       </div>
 
+      <div class="create-right">
+        <div class="preview-label">Live preview</div>
+        <div class="p-card preview-card">
+          <div class="p-card-badge badge-pending">
+            {{ getCategoryEmoji(newPetition.category) }}
+            {{ newPetition.category ? formatCategory(newPetition.category) : 'Category' }}
+          </div>
+          <div class="p-card-body">
+            <h3 class="p-card-title">{{ newPetition.title || 'Your petition title…' }}</h3>
+            <p class="p-card-desc">{{ (newPetition.description || 'Your description will appear here…') | slice:0:120 }}</p>
+          </div>
+          <div class="p-card-location" *ngIf="newPetition.city">
+            📍 {{ newPetition.city }}<span *ngIf="newPetition.region">, {{ newPetition.region }}</span>
+          </div>
+          <div class="p-card-progress">
+            <div class="p-progress-track"><div class="p-progress-fill" style="width: 0%"></div></div>
+            <div class="p-progress-nums">
+              <span class="p-sigs">0</span>
+              <span class="p-goal">/ {{ newPetition.targetSignatures }}</span>
+            </div>
+          </div>
+          <div class="p-card-foot">
+            <span class="p-deadline">{{ deadlineDate ? '⏳ ' + deadlineDate : '' }}</span>
+            <button class="btn-sign" disabled>Sign ✍️</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-  <!-- ════════════════════════════════════════════════════════════════════════
+  <!-- ════════════════════════════════════════════════════════════════
        TAB 3 : MY PETITIONS
-       ════════════════════════════════════════════════════════════════════════ -->
-  <div class="tab-content" *ngIf="activeTab === 'my' && !isAdmin">
+       [hidden] = cartes conservées en mémoire
+       ════════════════════════════════════════════════════════════════ -->
+  <div class="tab-content" [hidden]="activeTab !== 'my' || isAdmin">
 
-    <div class="loading-wrap" *ngIf="myLoading">
+    <div class="loading-wrap" *ngIf="myLoading && myPetitions.length === 0">
       <div class="loader-ring"></div>
       <p>Loading your petitions...</p>
     </div>
 
-    <div class="petition-grid" *ngIf="!myLoading && myPetitions.length > 0">
+    <div class="petition-grid" *ngIf="myPetitions.length > 0">
       <div class="p-card"
            *ngFor="let p of myPetitions; let i = index"
            [style.animation-delay]="i * 0.07 + 's'">
 
-        <div class="p-card-badge"
-             [class]="'badge-' + (p.status || 'ACTIVE').toLowerCase()">
+        <div class="p-card-badge" [class]="'badge-' + (p.status || 'ACTIVE').toLowerCase()">
           {{ p.status }}
         </div>
 
@@ -505,8 +284,7 @@
 
         <div class="p-card-progress">
           <div class="p-progress-track">
-            <div class="p-progress-fill"
-                 [style.width.%]="getProgress(p)"></div>
+            <div class="p-progress-fill" [style.width.%]="getProgress(p)"></div>
           </div>
           <div class="p-progress-nums">
             <span class="p-sigs">{{ p.currentSignatures || 0 }}</span>
@@ -521,46 +299,36 @@
       </div>
     </div>
 
-    <div class="empty-wrap"
-         *ngIf="!myLoading && myPetitions.length === 0">
+    <div class="empty-wrap" *ngIf="!myLoading && myPetitions.length === 0">
       <div class="empty-leaf">📋</div>
       <h3>No petitions yet</h3>
       <p>You haven't created any petitions.</p>
-      <button class="btn-start" (click)="activeTab = 'create'">
-        Create your first →
-      </button>
+      <button class="btn-start" (click)="activeTab = 'create'">Create your first →</button>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════════════════════════════════════
+  <!-- ════════════════════════════════════════════════════════════════
        TAB 4 : ADMIN
-       ════════════════════════════════════════════════════════════════════════ -->
-  <div class="tab-content" *ngIf="activeTab === 'admin' && isAdmin">
+       [hidden] = données conservées
+       ════════════════════════════════════════════════════════════════ -->
+  <div class="tab-content" [hidden]="activeTab !== 'admin' || !isAdmin">
 
-    <div class="loading-wrap" *ngIf="adminLoading">
+    <div class="loading-wrap" *ngIf="adminLoading && allPetitions.length === 0">
       <div class="loader-ring"></div>
       <p>Loading admin data...</p>
     </div>
 
-    <div *ngIf="!adminLoading">
-
-      <!-- Pending -->
-      <h2 class="admin-title">
-        Pending validation ({{ pendingPetitions.length }})
-      </h2>
+    <div *ngIf="!adminLoading || allPetitions.length > 0">
+      <h2 class="admin-title">Pending validation ({{ pendingPetitions.length }})</h2>
 
       <div class="petition-grid" *ngIf="pendingPetitions.length > 0">
         <div class="p-card" *ngFor="let p of pendingPetitions">
-          <div class="p-card-badge badge-pending">
-            ⏳ {{ formatCategory(p.category) }}
-          </div>
+          <div class="p-card-badge badge-pending">⏳ {{ formatCategory(p.category) }}</div>
           <div class="p-card-body">
             <h3 class="p-card-title">{{ p.title }}</h3>
             <p class="p-card-desc">{{ p.description | slice:0:120 }}</p>
           </div>
-          <div class="p-card-location" *ngIf="p.city">
-            📍 {{ p.city }}
-          </div>
+          <div class="p-card-location" *ngIf="p.city">📍 {{ p.city }}</div>
           <div class="p-card-foot" style="gap:8px">
             <button class="btn-validate" (click)="validatePetition(p)">✅ Validate</button>
             <button class="btn-reject" (click)="rejectPetition(p)">❌ Reject</button>
@@ -574,27 +342,21 @@
         <p>All petitions have been reviewed.</p>
       </div>
 
-      <!-- All petitions with filter -->
-      <div style="margin-top:48px; margin-bottom:16px;
-                  display:flex; align-items:center;
-                  justify-content:space-between; flex-wrap:wrap; gap:12px;">
-        <h2 class="admin-title" style="margin:0">
-          All petitions ({{ getFilteredAdmin().length }})
-        </h2>
+      <div style="margin-top:48px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <h2 class="admin-title" style="margin:0">All petitions ({{ getFilteredAdmin().length }})</h2>
         <div class="filter-row" style="margin:0">
-          <button class="cat-pill" [class.active]="adminFilter === 'all'" (click)="adminFilter = 'all'">All</button>
-          <button class="cat-pill" [class.active]="adminFilter === 'ACTIVE'" (click)="adminFilter = 'ACTIVE'">Active</button>
-          <button class="cat-pill" [class.active]="adminFilter === 'PENDING'" (click)="adminFilter = 'PENDING'">Pending</button>
-          <button class="cat-pill" [class.active]="adminFilter === 'ACHIEVED'" (click)="adminFilter = 'ACHIEVED'">Achieved</button>
-          <button class="cat-pill" [class.active]="adminFilter === 'REJECTED'" (click)="adminFilter = 'REJECTED'">Rejected</button>
-          <button class="cat-pill" [class.active]="adminFilter === 'CLOSED'" (click)="adminFilter = 'CLOSED'">Closed</button>
+          <button class="cat-pill" [class.active]="adminFilter==='all'" (click)="adminFilter='all'">All</button>
+          <button class="cat-pill" [class.active]="adminFilter==='ACTIVE'" (click)="adminFilter='ACTIVE'">Active</button>
+          <button class="cat-pill" [class.active]="adminFilter==='PENDING'" (click)="adminFilter='PENDING'">Pending</button>
+          <button class="cat-pill" [class.active]="adminFilter==='ACHIEVED'" (click)="adminFilter='ACHIEVED'">Achieved</button>
+          <button class="cat-pill" [class.active]="adminFilter==='REJECTED'" (click)="adminFilter='REJECTED'">Rejected</button>
+          <button class="cat-pill" [class.active]="adminFilter==='CLOSED'" (click)="adminFilter='CLOSED'">Closed</button>
         </div>
       </div>
 
       <div class="petition-grid">
         <div class="p-card" *ngFor="let p of getFilteredAdmin()">
-          <div class="p-card-badge"
-               [class]="'badge-' + (p.status || 'active').toLowerCase()">
+          <div class="p-card-badge" [class]="'badge-' + (p.status || 'active').toLowerCase()">
             {{ p.status }} — {{ formatCategory(p.category) }}
           </div>
           <div class="p-card-body">
@@ -602,8 +364,7 @@
             <p class="p-card-desc">{{ p.description | slice:0:100 }}</p>
           </div>
           <div class="p-card-location" *ngIf="p.city">
-            📍 {{ p.city }}
-            <span *ngIf="p.region">, {{ p.region }}</span>
+            📍 {{ p.city }}<span *ngIf="p.region">, {{ p.region }}</span>
           </div>
           <div class="p-card-progress">
             <div class="p-progress-track">
@@ -614,15 +375,206 @@
               <span class="p-goal">/ {{ p.targetSignatures }}</span>
             </div>
           </div>
-          <div class="p-card-foot" style="gap:8px; flex-wrap:wrap">
-            <button class="btn-validate" *ngIf="p.status === 'PENDING'" (click)="validatePetition(p)">✅ Validate</button>
-            <button class="btn-reject" *ngIf="p.status === 'PENDING'" (click)="rejectPetition(p)">❌ Reject</button>
-            <button class="btn-sign" *ngIf="p.status === 'ACTIVE'" (click)="closePetition(p)">🔒 Close</button>
+          <div class="p-card-foot" style="gap:8px;flex-wrap:wrap">
+            <button class="btn-validate" *ngIf="p.status==='PENDING'" (click)="validatePetition(p)">✅ Validate</button>
+            <button class="btn-reject" *ngIf="p.status==='PENDING'" (click)="rejectPetition(p)">❌ Reject</button>
+            <button class="btn-sign" *ngIf="p.status==='ACTIVE'" (click)="closePetition(p)">🔒 Close</button>
             <button class="btn-delete" (click)="adminDeletePetition(p)">🗑 Delete</button>
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
+  <!-- ════════════════════════════════════════════════════════════════
+       TAB 5 : EDIT
+       *ngIf gardé car données fraîches à chaque ouverture
+       ════════════════════════════════════════════════════════════════ -->
+  <div class="tab-content" *ngIf="activeTab === 'edit' && editingPetition">
+    <div class="edit-page-wrapper">
+
+      <div class="edit-page-header">
+        <div class="edit-header-left">
+          <div class="edit-header-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="edit-page-title">Edit petition</h2>
+            <p class="edit-page-subtitle">Modify details for <strong>{{ editingPetition.title }}</strong></p>
+          </div>
+        </div>
+        <div class="edit-header-meta">
+          <span class="edit-meta-badge" [class]="'edit-meta-badge badge-' + (editingPetition.status || 'pending').toLowerCase()">
+            {{ editingPetition.status }}
+          </span>
+          <span class="edit-meta-id">#{{ editingPetition.id }}</span>
+        </div>
+      </div>
+
+      <div class="edit-layout">
+        <div class="edit-form-column">
+
+          <div class="edit-section">
+            <div class="edit-section-label"><span class="edit-section-dot"></span>Core information</div>
+            <div class="field-group">
+              <label class="field-label">Title</label>
+              <input class="field-input" type="text" placeholder="Petition title…"
+                     [(ngModel)]="newPetition.title" maxlength="200">
+              <div class="field-hint">
+                <span>{{ newPetition.title.length }}/200</span>
+                <span *ngIf="newPetition.title.length < 10" class="field-hint-warn">minimum 10 characters</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Description</label>
+              <textarea class="field-textarea" rows="5" placeholder="Describe your cause in detail…"
+                        [(ngModel)]="newPetition.description"></textarea>
+              <div class="field-hint">
+                <span *ngIf="newPetition.description.length < 30" class="field-hint-warn">minimum 30 characters</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="edit-section">
+            <div class="edit-section-label"><span class="edit-section-dot"></span>Category & objective</div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Category</label>
+                <select class="field-select" [(ngModel)]="newPetition.category">
+                  <option value="">Choose…</option>
+                  <option *ngFor="let cat of categories" [value]="cat.key">{{ cat.emoji }} {{ cat.label }}</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Signature goal</label>
+                <div class="goal-pills">
+                  <button class="goal-pill" *ngFor="let g of [100, 500, 1000, 5000]"
+                          [class.active]="newPetition.targetSignatures === g"
+                          (click)="newPetition.targetSignatures = g">
+                    {{ g >= 1000 ? (g / 1000) + 'k' : g }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="edit-section">
+            <div class="edit-section-label"><span class="edit-section-dot"></span>Location & deadline</div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">City</label>
+                <input class="field-input" type="text" placeholder="e.g. Tunis" [(ngModel)]="newPetition.city">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Region</label>
+                <input class="field-input" type="text" placeholder="e.g. Grand Tunis" [(ngModel)]="newPetition.region">
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Deadline</label>
+              <input class="field-input" type="date" [(ngModel)]="deadlineDate">
+            </div>
+          </div>
+
+          <div class="msg msg-error" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
+          <div class="msg msg-success" *ngIf="successMessage">✅ {{ successMessage }}</div>
+
+          <div class="edit-info-banner">
+            <div class="edit-info-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+            </div>
+            <span>Changes are saved on submit. The petition status will remain <strong>{{ editingPetition.status }}</strong>.</span>
+          </div>
+
+          <div class="edit-actions">
+            <button class="btn-edit-save" (click)="updateExistingPetition()" [disabled]="createState === 'processing'">
+              <ng-container [ngSwitch]="createState">
+                <span *ngSwitchCase="'idle'">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Save changes
+                </span>
+                <span *ngSwitchCase="'processing'" class="edit-saving">
+                  <span class="edit-spinner"></span>Saving…
+                </span>
+                <span *ngSwitchDefault>✅ Updated!</span>
+              </ng-container>
+            </button>
+            <button class="btn-edit-cancel" (click)="cancelEdit()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px">
+                <line x1="19" y1="12" x2="5" y2="12"/>
+                <polyline points="12 19 5 12 12 5"/>
+              </svg>
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <div class="edit-preview-column">
+          <div class="edit-preview-sticky">
+            <div class="edit-preview-header">
+              <span class="edit-preview-dot"></span>Live preview
+            </div>
+            <div class="p-card edit-preview-card">
+              <div class="edit-preview-badge-overlay">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                Editing
+              </div>
+              <div class="p-card-badge" [class]="'badge-' + (editingPetition.status || 'pending').toLowerCase()">
+                {{ getCategoryEmoji(newPetition.category) }}
+                {{ newPetition.category ? formatCategory(newPetition.category) : 'Category' }}
+              </div>
+              <div class="p-card-body">
+                <h3 class="p-card-title">{{ newPetition.title || 'Title…' }}</h3>
+                <p class="p-card-desc">{{ (newPetition.description || 'Description…') | slice:0:120 }}</p>
+              </div>
+              <div class="p-card-location" *ngIf="newPetition.city">
+                📍 {{ newPetition.city }}<span *ngIf="newPetition.region">, {{ newPetition.region }}</span>
+              </div>
+              <div class="p-card-progress">
+                <div class="p-progress-track">
+                  <div class="p-progress-fill" [style.width.%]="getProgress(editingPetition)"></div>
+                </div>
+                <div class="p-progress-nums">
+                  <span class="p-sigs">{{ editingPetition.currentSignatures || 0 }}</span>
+                  <span class="p-goal">/ {{ newPetition.targetSignatures }}</span>
+                </div>
+              </div>
+              <div class="p-card-foot">
+                <span class="p-deadline">{{ deadlineDate ? '⏳ ' + deadlineDate : '' }}</span>
+                <button class="btn-sign" disabled>Sign ✍️</button>
+              </div>
+            </div>
+            <div class="edit-preview-stats">
+              <div class="edit-stat">
+                <span class="edit-stat-num">{{ editingPetition.currentSignatures || 0 }}</span>
+                <span class="edit-stat-label">Signatures</span>
+              </div>
+              <div class="edit-stat-divider"></div>
+              <div class="edit-stat">
+                <span class="edit-stat-num">{{ newPetition.targetSignatures }}</span>
+                <span class="edit-stat-label">Goal</span>
+              </div>
+              <div class="edit-stat-divider"></div>
+              <div class="edit-stat">
+                <span class="edit-stat-num">{{ getProgress(editingPetition) | number:'1.0-0' }}%</span>
+                <span class="edit-stat-label">Progress</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
