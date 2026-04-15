@@ -94,11 +94,7 @@ export class DonateComponent implements OnInit, OnDestroy {
     this.loadEvents();
 
     // Also re-fetch if login state changes (e.g. user logs in/out)
-    this.roleSub.add(
-      this.authService.isLoggedIn$.subscribe(loggedIn => {
-        if (loggedIn) this.loadEvents();
-      })
-    );
+   
   }
 
   ngOnDestroy(): void {
@@ -127,15 +123,19 @@ export class DonateComponent implements OnInit, OnDestroy {
   }
 
   loadEvents(): void {
-    this.eventsLoading = true;
-    this.eventService.getAll().subscribe({
-      next: (data) => {
-        this.events = data;
-        this.eventsLoading = false;
-      },
-      error: () => { this.eventsLoading = false; }
-    });
-  }
+  this.eventsLoading = true;
+  this.eventService.getAll().subscribe({
+    next: (data) => {
+      this.events = data;
+      this.eventsLoading = false;
+      this.cdr.markForCheck(); // ← AJOUTE cette ligne
+    },
+    error: () => {
+      this.eventsLoading = false;
+      this.cdr.markForCheck(); // ← AJOUTE cette ligne
+    }
+  });
+}
 
   selectEvent(index: number): void {
     this.selectedEventIndex = index;
@@ -456,4 +456,26 @@ scrollToForm(): void {
     block: 'start'
   });
 }
+  historyFilter: 'all' | 'MONEY' | 'MATERIAL' | 'TIME' = 'all';
+ 
+  // Expose Math for template use
+  Math = Math;
+ 
+  // ─── ADD THESE HELPER METHODS ──────────────────────────────────────
+ 
+  getMoneyCount(): number {
+    return this.donations.filter(d => d.type === 'MONEY').length;
+  }
+ 
+  getMaterialCount(): number {
+    return this.donations.filter(d => d.type === 'MATERIAL').length;
+  }
+ 
+  getTimeCount(): number {
+    return this.donations.filter(d => d.type === 'TIME').length;
+  }
+ 
+  getValidatedCount(): number {
+    return this.donations.filter(d => d.status === 'VALIDATED').length;
+  }
 }

@@ -1,0 +1,149 @@
+<div class="pd-overlay" (click)="close.emit()">
+  <div class="pd-modal" (click)="$event.stopPropagation()">
+
+    <!-- CLOSE -->
+    <button class="pd-close" (click)="close.emit()">✕</button>
+
+    <!-- HERO -->
+    <div class="pd-hero">
+      <div class="pd-hero-pattern"></div>
+      <div class="pd-hero-emoji">{{ getCategoryEmoji(petition.category) }}</div>
+      <div class="pd-hero-overlay"></div>
+      <div class="pd-hero-content">
+        <div class="pd-category-badge">
+          {{ getCategoryEmoji(petition.category) }} {{ petition.category }}
+        </div>
+        <h1 class="pd-title">{{ petition.title }}</h1>
+        <div class="pd-location" *ngIf="petition.city">
+          📍 {{ petition.city }}<span *ngIf="petition.region">, {{ petition.region }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pd-body">
+      <div class="pd-left">
+
+        <!-- COUNTER -->
+        <div class="pd-counter-card">
+          <div class="pd-counter-main">
+            <span class="pd-counter-num">
+              {{ petition.currentSignatures || 0 | number }}
+            </span>
+            <span class="pd-counter-label">Supporters</span>
+          </div>
+          <div class="pd-counter-need">
+            We still need
+            <strong>{{ remaining | number }}</strong> supporters
+          </div>
+
+          <div class="pd-progress-wrap">
+            <div class="pd-progress-track">
+              <div class="pd-progress-fill"
+                   [style.width.%]="progress"
+                   [class.achieved]="progress >= 100">
+              </div>
+            </div>
+            <div class="pd-progress-labels">
+              <span>{{ progress | number:'1.0-0' }}% reached</span>
+              <span>Goal: {{ petition.targetSignatures | number }}</span>
+            </div>
+          </div>
+
+          <div class="pd-deadline" *ngIf="petition.deadline">
+            ⏳ {{ formatDeadline(petition.deadline) }}
+          </div>
+        </div>
+
+        <!-- SIGN FORM -->
+        <div class="pd-sign-card" *ngIf="!isAdmin">
+
+          <div class="pd-signed-badge" *ngIf="signSuccess || hasSigned">
+            <div class="pd-signed-check">✓</div>
+            <div>
+              <strong>You signed this petition!</strong>
+              <p>Thank you for making a difference 🌱</p>
+            </div>
+          </div>
+
+          <ng-container *ngIf="!hasSigned && !signSuccess">
+            <h3 class="pd-sign-title">Support this petition</h3>
+
+            <div class="pd-field">
+              <label class="pd-label">
+                Your message <span class="pd-opt">(optional)</span>
+              </label>
+              <textarea class="pd-textarea" rows="3"
+                placeholder="Why does this cause matter to you?"
+                [(ngModel)]="comment"></textarea>
+            </div>
+
+            <div class="pd-anon-row" (click)="anonymous = !anonymous">
+              <div class="pd-toggle" [class.on]="anonymous">
+                <div class="pd-toggle-thumb"></div>
+              </div>
+              <span>Sign anonymously</span>
+            </div>
+
+            <div class="pd-sign-error" *ngIf="signError">
+              ⚠️ {{ signError }}
+            </div>
+
+            <button class="pd-btn-sign" (click)="sign()"
+                    [disabled]="signing || petition.status !== 'ACTIVE'">
+              <span *ngIf="!signing">
+                Sign this petition →
+              </span>
+              <span *ngIf="signing" class="pd-spinner"></span>
+            </button>
+
+            <p class="pd-inactive-note"
+               *ngIf="petition.status !== 'ACTIVE'">
+              This petition is {{ petition.status?.toLowerCase() }}
+              and no longer accepting signatures.
+            </p>
+          </ng-container>
+        </div>
+
+      </div>
+
+      <div class="pd-right">
+        <!-- DESCRIPTION -->
+        <div class="pd-section">
+          <h2 class="pd-section-title">About this petition</h2>
+          <p class="pd-description">{{ petition.description }}</p>
+        </div>
+
+        <!-- STATUS -->
+        <div class="pd-section">
+          <h2 class="pd-section-title">Status</h2>
+          <div class="pd-status-row">
+            <span class="pd-status-badge"
+                  [class]="'status-' + (petition.status || 'active').toLowerCase()">
+              {{ petition.status }}
+            </span>
+            <span class="pd-admin-note"
+                  *ngIf="petition.adminResponse">
+              {{ petition.adminResponse }}
+            </span>
+          </div>
+        </div>
+
+        <!-- SHARE -->
+        <div class="pd-section">
+          <h2 class="pd-section-title">Share this petition</h2>
+          <div class="pd-share-row">
+            <button class="pd-share-btn" (click)="share('twitter')">
+              🐦 Twitter
+            </button>
+            <button class="pd-share-btn" (click)="share('facebook')">
+              📘 Facebook
+            </button>
+            <button class="pd-share-btn" (click)="share('copy')">
+              🔗 Copy link
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

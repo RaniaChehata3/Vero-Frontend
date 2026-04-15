@@ -1,66 +1,57 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     HERO — Video Background Immersif
+     HERO — Video Background + Floating Stickers
      ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="donate-hero">
-
-  <!-- The background image is set in CSS on .donate-hero -->
-
-  <!-- Dark overlay -->
+  <!-- Video Background -->
+  <video class="hero-video" autoplay muted loop playsinline>
+    <source src="assets/videos/forest-drone.mp4" type="video/mp4">
+  </video>
+  <!-- Fallback image (shows if video fails) -->
+  <div class="hero-fallback"></div>
   <div class="hero-overlay"></div>
 
-  <!-- Hero content -->
+  <!-- Floating Stickers -->
+  <div class="sticker sticker-1">🌿</div>
+  <div class="sticker sticker-2">🍃</div>
+  <div class="sticker sticker-3">🌱</div>
+  <div class="sticker sticker-4">🌍</div>
+  <div class="sticker sticker-5">🦋</div>
+
   <div class="hero-content">
-
-    <!-- Animated text -->
-    <div class="hero-text-wrap">
-      <h1 class="hero-tagline" *ngFor="let text of heroTexts; let i = index" [class.active]="heroTextIndex === i"
-        [class.exit]="heroTextExit === i">
-        {{ text }}
-      </h1>
+    <div class="hero-left">
+      <div class="hero-badge">🌍 Make an Impact</div>
+      <div class="hero-text-wrap">
+        <h1 class="hero-tagline" *ngFor="let text of heroTexts; let i = index"
+          [class.active]="heroTextIndex === i"
+          [class.exit]="heroTextExit === i">
+          {{ text }}
+        </h1>
+      </div>
+      <p class="hero-desc">Every contribution is recorded, traceable, and creates real change.</p>
+      <button class="btn-hero-cta" (click)="scrollToForm()">
+        Donate Now <span class="btn-arrow">→</span>
+      </button>
     </div>
 
-    <!-- CTA Button -->
-    <button class="btn-hero-cta" (click)="scrollToForm()">
-      Donate Now
-    </button>
-
-    <!-- Scroll indicator -->
-    <div class="scroll-indicator">
-      <div class="scroll-dot"></div>
-      <span>Scroll to donate</span>
-    </div>
-
-  </div>
-
-  <!-- Hero stats overlay -->
-  <div class="hero-stats">
-    <div class="hero-stat">
-      <div class="hero-stat-num">{{ events.length }}</div>
-      <div class="hero-stat-label">Active Events</div>
-    </div>
-    <div class="hero-stat-divider"></div>
-    <div class="hero-stat" *ngIf="selectedEvent">
-      <div class="hero-stat-num">€{{ totalDonated }}</div>
-      <div class="hero-stat-label">Raised</div>
-    </div>
-    <div class="hero-stat-divider" *ngIf="selectedEvent"></div>
-    <div class="hero-stat" *ngIf="selectedEvent">
-      <div class="hero-stat-num">{{ donations.length }}</div>
-      <div class="hero-stat-label">Donors</div>
+    <div class="hero-stats-grid">
+      <div class="hero-stat-card">
+        <div class="hero-stat-num">{{ events.length }}</div>
+        <div class="hero-stat-label">Active Events</div>
+      </div>
+      <div class="hero-stat-card" *ngIf="selectedEvent">
+        <div class="hero-stat-num">€{{ totalDonated }}</div>
+        <div class="hero-stat-label">Total Raised</div>
+      </div>
+      <div class="hero-stat-card" *ngIf="selectedEvent">
+        <div class="hero-stat-num">{{ donations.length }}</div>
+        <div class="hero-stat-label">Donors</div>
+      </div>
     </div>
   </div>
-
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     SUCCESS TOAST
-     ═══════════════════════════════════════════════════════════════════════════ -->
-<div class="toast-success" *ngIf="successMessage">
-  ✨ {{ successMessage }}
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MESSAGE MARQUEE LOOP
+     MARQUEE
      ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="marquee-wrapper">
   <div class="marquee-track">
@@ -71,310 +62,213 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
+     TOAST
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="toast-success" *ngIf="successMessage">✨ {{ successMessage }}</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
      MAIN SECTION
      ═══════════════════════════════════════════════════════════════════════════ -->
 <section class="donate-section" id="donate-form">
-  
-  <!-- UX Stepper -->
+
+  <!-- Compact Stepper -->
   <div class="ux-stepper">
-    <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">
-      <div class="step-circle">1</div>
-      <div class="step-label">Choose Event</div>
+    <div class="stepper-step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">
+      <div class="stepper-dot">1</div>
+      <span>Choose Event</span>
     </div>
-    <div class="step-line" [class.active]="currentStep > 1"></div>
-    <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">
-      <div class="step-circle">2</div>
-      <div class="step-label">Enter Details</div>
+    <div class="stepper-line" [class.active]="currentStep > 1"></div>
+    <div class="stepper-step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">
+      <div class="stepper-dot">2</div>
+      <span>Details</span>
     </div>
-    <div class="step-line" [class.active]="currentStep > 2"></div>
-    <div class="step" [class.active]="currentStep === 3">
-      <div class="step-circle">3</div>
-      <div class="step-label">Confirmation</div>
+    <div class="stepper-line" [class.active]="currentStep > 2"></div>
+    <div class="stepper-step" [class.active]="currentStep === 3">
+      <div class="stepper-dot">3</div>
+      <span>Confirm</span>
     </div>
   </div>
 
   <div class="donate-grid">
 
-    <!-- ── LEFT: Events list ──────────────────────────────────────────────── -->
-    <div class="projects-col" [class.has-selection]="currentStep >= 2">
-      <h2 class="col-heading">Choose an event</h2>
-      <p class="col-sub">Select an event to support with your donation.</p>
+    <!-- ── LEFT: Events ──────────────────────────────────────────────── -->
+    <div class="events-col" [class.has-selection]="currentStep >= 2">
+      <div class="col-header">
+        <h2 class="col-heading">Events</h2>
+        <span class="col-count">{{ events.length }} available</span>
+      </div>
 
-      <!-- Loading -->
       <div class="events-loading" *ngIf="eventsLoading">
         <div class="skeleton-card" *ngFor="let s of [1,2,3]"></div>
       </div>
 
-      <!-- Empty -->
       <div class="events-empty" *ngIf="!eventsLoading && events.length === 0">
         <div class="empty-emoji">📅</div>
-        <p>No events available at the moment.</p>
+        <p>No events available.</p>
       </div>
 
-      <!-- Events list -->
-      <div class="project-card" *ngFor="let ev of events; let i = index" [class.selected]="selectedEventIndex === i"
-        (click)="selectEvent(i)" [style.animation-delay]="i * 0.08 + 's'">
-        <div class="proj-select-dot">
-          <div class="dot-inner" *ngIf="selectedEventIndex === i"></div>
-        </div>
-        <div class="proj-icon">📅</div>
-        <div class="proj-content">
-          <div class="proj-region">
-            <span class="event-status-badge" [ngClass]="getEventStatusClass(ev.status)">
-              ● {{ ev.status }}
-            </span>
-            &nbsp;·&nbsp; {{ ev.location }}
+      <div class="events-scroll">
+        <div class="event-card" *ngFor="let ev of events; let i = index"
+          [class.selected]="selectedEventIndex === i"
+          (click)="selectEvent(i)"
+          [style.animation-delay]="i * 0.06 + 's'">
+
+          <!-- Sticker on selected card -->
+          <div class="card-sticker" *ngIf="selectedEventIndex === i">🌿</div>
+
+          <div class="ec-top">
+            <span class="event-status" [ngClass]="getEventStatusClass(ev.status)">● {{ ev.status }}</span>
+            <div class="ec-radio">
+              <div class="ec-radio-fill" *ngIf="selectedEventIndex === i"></div>
+            </div>
           </div>
-          <div class="proj-name">{{ ev.title }}</div>
-          <div class="proj-desc">{{ ev.description }}</div>
-          <div class="proj-tags">
-            <span class="proj-tag">📍 {{ ev.location }}</span>
-            <span class="proj-tag">👥 {{ ev.capacity }} places</span>
-            <span class="proj-tag">
-              📅 {{ ev.startDate | date:'dd MMM' }}
-            </span>
+
+          <div class="ec-title">{{ ev.title }}</div>
+          <div class="ec-desc">{{ ev.description }}</div>
+
+          <div class="ec-meta">
+            <span>📍 {{ ev.location }}</span>
+            <span>👥 {{ ev.capacity }}</span>
+            <span>📅 {{ ev.startDate | date:'dd MMM' }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Trust strip -->
       <div class="trust-strip">
-        <div class="trust-item">
-          <span class="trust-icon">🔒</span>
-          <span>SSL encrypted</span>
-        </div>
-        <div class="trust-item">
-          <span class="trust-icon">🛡️</span>
-          <span>Secure payments</span>
-        </div>
-        <div class="trust-item">
-          <span class="trust-icon">📋</span>
-          <span>Fully traceable</span>
-        </div>
+        <span class="trust-badge">🔒 SSL</span>
+        <span class="trust-badge">🛡️ Secure</span>
+        <span class="trust-badge">📋 Traceable</span>
       </div>
     </div>
 
-    <!-- ── RIGHT: Form + History ───────────────────────────────────────────── -->
+    <!-- ── RIGHT: Form + History ─────────────────────────────────────── -->
     <div class="form-col">
 
-      <!-- Tab switcher -->
       <div class="tab-switcher" *ngIf="selectedEvent">
-        <button class="tab-pill" [class.active]="activeTab === 'donate'" (click)="activeTab = 'donate'">
-          💚 Make a donation
-        </button>
-        <button class="tab-pill" [class.active]="activeTab === 'history'" (click)="activeTab = 'history'">
-          📋 Donations ({{ donations.length }})
-        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'donate'" (click)="activeTab = 'donate'">💚 Donate</button>
+        <button class="tab-btn" [class.active]="activeTab === 'history'" (click)="activeTab = 'history'">📋 History ({{ donations.length }})</button>
       </div>
 
-      <!-- ─── DONATE TAB ────────────────────────────────────────────────── -->
+      <!-- ─── DONATE TAB ──────────────────────────────────────────── -->
       <div class="form-card" *ngIf="activeTab === 'donate'">
 
-        <!-- No event selected -->
         <div class="form-empty" *ngIf="!selectedEvent">
           <div class="form-empty-icon">👈</div>
           <h3>Select an event</h3>
-          <p>Choose an event from the list to start your donation.</p>
+          <p>Choose an event from the list to begin.</p>
         </div>
 
         <ng-container *ngIf="selectedEvent">
           <div class="form-header">
-            <h2 class="form-title">Make a donation</h2>
-            <p class="form-sub">
-              Supporting « {{ selectedEvent.title }} ». 100% traceable.
-            </p>
-          </div>
-
-          <!-- Donation Type Selector -->
-          <div class="type-section">
-            <label class="field-label">Donation type</label>
-            <div class="type-grid">
-              <button class="type-btn" [class.active]="donationType === 'MONEY'" (click)="donationType = 'MONEY'">
-                <span class="type-icon">💶</span>
-                <span class="type-name">Money</span>
-                <span class="type-desc">Financial support</span>
-              </button>
-              <button class="type-btn" [class.active]="donationType === 'MATERIAL'" (click)="donationType = 'MATERIAL'">
-                <span class="type-icon">📦</span>
-                <span class="type-name">Material</span>
-                <span class="type-desc">Goods & supplies</span>
-              </button>
-              <button class="type-btn" [class.active]="donationType === 'TIME'" (click)="donationType = 'TIME'">
-                <span class="type-icon">⏰</span>
-                <span class="type-name">Time</span>
-                <span class="type-desc">Volunteer hours</span>
-              </button>
+            <div class="fh-left">
+              <h2 class="form-title">Donate</h2>
+              <p class="form-sub">{{ selectedEvent.title }}</p>
             </div>
+            <div class="fh-badge" *ngIf="donationType === 'MONEY' && getFinalAmount() > 0">€{{ getFinalAmount() }}</div>
+            <div class="fh-badge time-badge" *ngIf="donationType === 'TIME' && volunteerHours">{{ volunteerHours }}h</div>
           </div>
 
-          <!-- MONEY: Amount selector -->
+          <div class="type-row">
+            <button class="type-chip" [class.active]="donationType === 'MONEY'" (click)="donationType = 'MONEY'">💶 Money</button>
+            <button class="type-chip" [class.active]="donationType === 'MATERIAL'" (click)="donationType = 'MATERIAL'">📦 Material</button>
+            <button class="type-chip" [class.active]="donationType === 'TIME'" (click)="donationType = 'TIME'">⏰ Time</button>
+          </div>
+
+          <!-- MONEY -->
           <div class="amount-section" *ngIf="donationType === 'MONEY'">
-            <label class="field-label">Select amount</label>
             <div class="amount-grid">
-              <button class="amt-btn" *ngFor="let a of [5, 20, 50, 100, 250, 500]" [class.active]="selectedAmount === a"
-                (click)="selectAmount(a)">
-                €{{ a }}
-              </button>
+              <button class="amt-btn" *ngFor="let a of [5, 20, 50, 100, 250, 500]"
+                [class.active]="selectedAmount === a" (click)="selectAmount(a)">€{{ a }}</button>
             </div>
-            <div class="custom-amount-row">
-              <span class="currency-symbol">€</span>
-              <input type="number" class="custom-input" placeholder="Custom amount" [(ngModel)]="customAmount"
-                (input)="selectedAmount = null">
+            <div class="custom-row">
+              <span class="cur">€</span>
+              <input type="number" class="custom-input" placeholder="Custom amount"
+                [(ngModel)]="customAmount" (input)="selectedAmount = null">
             </div>
-          </div>
-
-          <div class="amount-display" *ngIf="donationType === 'MONEY' && getFinalAmount() > 0">
-            <div class="amount-display-label">Your donation</div>
-            <div class="amount-display-value">€{{ getFinalAmount() }}</div>
           </div>
 
           <!-- MATERIAL -->
           <div *ngIf="donationType === 'MATERIAL'" class="material-section">
-            <div class="field-group">
-              <label class="field-label">What are you donating?</label>
-              <textarea class="field-input field-textarea" rows="3"
-                placeholder="Ex: 50 blankets, 20 books, school supplies..." [(ngModel)]="materialQuantity"></textarea>
-              <div class="field-hint">
-                Describe the items and quantities you want to donate
-              </div>
-            </div>
-            <div class="material-examples">
-              <span class="material-tag" (click)="materialQuantity = '10 blankets'">
-                🧣 Blankets
-              </span>
-              <span class="material-tag" (click)="materialQuantity = '20 books'">
-                📚 Books
-              </span>
-              <span class="material-tag" (click)="materialQuantity = 'School supplies'">
-                ✏️ School supplies
-              </span>
-              <span class="material-tag" (click)="materialQuantity = 'Clothing'">
-                👕 Clothing
-              </span>
-              <span class="material-tag" (click)="materialQuantity = 'Food packages'">
-                🍱 Food
-              </span>
+            <textarea class="field-input field-textarea" rows="2"
+              placeholder="Describe items: 50 blankets, 20 books..." [(ngModel)]="materialQuantity"></textarea>
+            <div class="quick-tags">
+              <span class="qtag" (click)="materialQuantity = '10 blankets'">🧣 Blankets</span>
+              <span class="qtag" (click)="materialQuantity = '20 books'">📚 Books</span>
+              <span class="qtag" (click)="materialQuantity = 'School supplies'">✏️ Supplies</span>
+              <span class="qtag" (click)="materialQuantity = 'Clothing'">👕 Clothing</span>
+              <span class="qtag" (click)="materialQuantity = 'Food packages'">🍱 Food</span>
             </div>
           </div>
 
           <!-- TIME -->
           <div *ngIf="donationType === 'TIME'" class="time-section">
-            <div class="field-group">
-              <label class="field-label">Hours you can volunteer</label>
-              <div class="time-grid">
-                <button class="time-btn" *ngFor="let h of [2, 4, 8, 16, 24, 40]" [class.active]="volunteerHours === h"
-                  (click)="volunteerHours = h">
-                  <span class="time-val">{{ h }}</span>
-                  <span class="time-unit">hours</span>
-                </button>
-              </div>
+            <div class="time-grid">
+              <button class="time-btn" *ngFor="let h of [2, 4, 8, 16, 24, 40]"
+                [class.active]="volunteerHours === h" (click)="volunteerHours = h">{{ h }}h</button>
             </div>
-            <div class="time-display" *ngIf="volunteerHours">
-              <div class="amount-display-label">Your time commitment</div>
-              <div class="amount-display-value">{{ volunteerHours }}h</div>
-              <div class="time-display-sub">
-                ≈ {{ (volunteerHours / 8) | number:'1.0-1' }} day(s) of volunteering
-              </div>
+            <div class="time-summary" *ngIf="volunteerHours">
+              ⏱ {{ volunteerHours }}h — ≈ {{ (volunteerHours / 8) | number:'1.0-1' }} day(s)
             </div>
           </div>
 
-          <!-- Message -->
-          <div class="field-group">
-            <label class="field-label">Message (optional)</label>
-            <textarea class="field-input field-textarea" rows="2" placeholder="A word of encouragement..."
-              [(ngModel)]="message"></textarea>
-          </div>
-
-          <!-- Personal info -->
-          <ng-container *ngIf="!isAnonymous">
+          <div class="info-grid" *ngIf="!isAnonymous">
             <div class="field-group">
-              <label class="field-label">Full name</label>
+              <label class="field-label">Name</label>
               <input type="text" class="field-input" placeholder="Your name" [(ngModel)]="fullName">
             </div>
             <div class="field-group">
               <label class="field-label">Email</label>
-              <input type="email" class="field-input" placeholder="you@email.com" [(ngModel)]="email">
+              <input type="email" class="field-input" placeholder="you&#64;email.com" [(ngModel)]="email">
             </div>
-          </ng-container>
-
-          <!-- Anonymous toggle -->
-          <div class="toggle-row" (click)="isAnonymous = !isAnonymous">
-            <div class="toggle-track" [class.on]="isAnonymous">
-              <div class="toggle-thumb"></div>
-            </div>
-            <span class="toggle-text">Make my donation anonymous</span>
           </div>
 
-          <!-- Error -->
-          <div class="msg-error" *ngIf="errorMessage && !editingDonation">
-            ⚠️ {{ errorMessage }}
+          <div class="field-group">
+            <label class="field-label">Message <span class="opt">(optional)</span></label>
+            <input type="text" class="field-input" placeholder="A word of encouragement..." [(ngModel)]="message">
           </div>
 
-          <!-- Chain note -->
-          <div class="chain-note">
-            <div class="chain-icon">
+          <div class="bottom-row">
+            <div class="toggle-row" (click)="isAnonymous = !isAnonymous">
+              <div class="toggle-track" [class.on]="isAnonymous">
+                <div class="toggle-thumb"></div>
+              </div>
+              <span class="toggle-text">Anonymous</span>
+            </div>
+            <div class="chain-note">
               {{ getDonationTypeIcon(donationType) }}
-            </div>
-            <div class="chain-text" [ngSwitch]="donationType">
-              <span *ngSwitchCase="'MONEY'">
-                Your donation is securely recorded and fully traceable.
-                You'll receive a verifiable receipt.
-              </span>
-              <span *ngSwitchCase="'MATERIAL'">
-                Your material donation will be coordinated with the event
-                organizer. You'll be contacted for pickup/delivery details.
-              </span>
-              <span *ngSwitchCase="'TIME'">
-                Your volunteer commitment will be confirmed by the event
-                organizer. You'll receive scheduling details by email.
+              <span [ngSwitch]="donationType">
+                <span *ngSwitchCase="'MONEY'">Secure & traceable receipt</span>
+                <span *ngSwitchCase="'MATERIAL'">Pickup/delivery coordinated</span>
+                <span *ngSwitchCase="'TIME'">Scheduling confirmed by email</span>
               </span>
             </div>
           </div>
 
-          <!-- Submit -->
+          <div class="msg-error" *ngIf="errorMessage && !editingDonation">⚠️ {{ errorMessage }}</div>
+
           <button class="btn-donate" (click)="handleDonate()" [disabled]="donateState === 'processing'">
             <ng-container *ngIf="donateState === 'idle'">
               <span [ngSwitch]="donationType">
-                <ng-container *ngSwitchCase="'MONEY'">
-                  Donate securely
-                </ng-container>
-                <ng-container *ngSwitchCase="'MATERIAL'">
-                  Pledge materials
-                </ng-container>
-                <ng-container *ngSwitchCase="'TIME'">
-                  Volunteer now
-                </ng-container>
+                <ng-container *ngSwitchCase="'MONEY'">Donate securely</ng-container>
+                <ng-container *ngSwitchCase="'MATERIAL'">Pledge materials</ng-container>
+                <ng-container *ngSwitchCase="'TIME'">Volunteer now</ng-container>
               </span>
               <span class="btn-arrow">→</span>
             </ng-container>
-            <ng-container *ngIf="donateState === 'processing'">
-              <span class="spinner"></span>
-              <span>Processing...</span>
-            </ng-container>
-            <ng-container *ngIf="donateState === 'confirmed'">
-              <span>🌱 Confirmed!</span>
-            </ng-container>
-            <ng-container *ngIf="donateState === 'error'">
-              <span>❌ Try again</span>
-            </ng-container>
+            <ng-container *ngIf="donateState === 'processing'"><span class="spinner"></span> Processing...</ng-container>
+            <ng-container *ngIf="donateState === 'confirmed'">🌱 Confirmed!</ng-container>
+            <ng-container *ngIf="donateState === 'error'">❌ Try again</ng-container>
           </button>
-
-          <div class="badge-row">
-            <span class="sec-badge">🔒 SSL</span>
-            <span class="sec-badge">🛡️ Secure</span>
-            <span class="sec-badge">📋 Traceable</span>
-          </div>
-
         </ng-container>
       </div>
 
-      <!-- ─── HISTORY TAB ──────────────────────────────────────────────── -->
+      <!-- ─── HISTORY TAB ────────────────────────────────────────────── -->
       <div class="form-card history-card" *ngIf="activeTab === 'history'">
         <div class="form-header">
-          <h2 class="form-title">Donation history</h2>
-          <p class="form-sub" *ngIf="selectedEvent">
-            Donations for « {{ selectedEvent.title }} »
-          </p>
+          <div class="fh-left">
+            <h2 class="form-title">History</h2>
+            <p class="form-sub" *ngIf="selectedEvent">{{ selectedEvent.title }}</p>
+          </div>
         </div>
 
         <div class="history-loading" *ngIf="donationsLoading">
@@ -382,21 +276,14 @@
         </div>
 
         <div class="history-empty" *ngIf="!donationsLoading && donations.length === 0">
-          <div class="empty-emoji">🌱</div>
-          <p>No donations yet. Be the first to support this event!</p>
-          <button class="btn-switch-tab" (click)="activeTab = 'donate'">
-            Make a donation →
-          </button>
+          <p>🌱 No donations yet. Be the first!</p>
+          <button class="btn-switch-tab" (click)="activeTab = 'donate'">Make a donation →</button>
         </div>
 
         <div class="donation-list" *ngIf="!donationsLoading && donations.length > 0">
-          <div class="donation-item" *ngFor="let d of donations; let i = index"
-            [style.animation-delay]="i * 0.05 + 's'">
-
+          <div class="donation-item" *ngFor="let d of donations; let i = index" [style.animation-delay]="i * 0.04 + 's'">
             <div class="di-header">
-              <div class="di-avatar" [class.anon]="d.anonymous">
-                {{ getDonorInitials(d) }}
-              </div>
+              <div class="di-avatar" [class.anon]="d.anonymous">{{ getDonorInitials(d) }}</div>
               <div class="di-info">
                 <span class="di-name">{{ getDonorName(d) }}</span>
                 <span class="di-time">{{ getTimeAgo(d.donationDate) }}</span>
@@ -407,37 +294,52 @@
                 <span *ngIf="d.type === 'MATERIAL'">📦</span>
               </div>
             </div>
-
-            <div class="di-message" *ngIf="d.message">
-              « {{ d.message }} »
-            </div>
-            <div class="di-material" *ngIf="d.type === 'MATERIAL' && d.quantity">
-              📦 {{ d.quantity }}
-            </div>
-
+            <div class="di-message" *ngIf="d.message">« {{ d.message }} »</div>
+            <div class="di-material" *ngIf="d.type === 'MATERIAL' && d.quantity">📦 {{ d.quantity }}</div>
             <div class="di-footer">
               <div class="di-tags">
-                <span class="di-tag type">
-                  {{ getDonationTypeIcon(d.type) }} {{ d.type }}
-                </span>
-                <span class="di-tag status" [class.validated]="d.status === 'VALIDATED'"
-                  [class.pending]="d.status === 'PENDING' || !d.status" [class.rejected]="d.status === 'REJECTED'">
-                  {{ d.status || 'PENDING' }}
-                </span>
+                <span class="di-tag type">{{ getDonationTypeIcon(d.type) }} {{ d.type }}</span>
+                <span class="di-tag status"
+                  [class.validated]="d.status === 'VALIDATED'"
+                  [class.pending]="d.status === 'PENDING' || !d.status"
+                  [class.rejected]="d.status === 'REJECTED'">{{ d.status || 'PENDING' }}</span>
               </div>
               <div class="di-actions">
-                <button class="di-action-btn" *ngIf="canEdit(d)" (click)="openEdit(d)" title="Edit">✏️</button>
-                <button class="di-action-btn delete" *ngIf="canDelete(d)" (click)="deleteDonation(d)"
-                  [disabled]="deletingId === d.id" title="Delete">🗑️</button>
-                <button class="di-action-btn validate" *ngIf="canValidate() && d.status !== 'VALIDATED'"
-                  (click)="validateDonation(d)" [disabled]="validatingId === d.id" title="Validate">✅</button>
+                <button class="di-action-btn" *ngIf="canEdit(d)" (click)="openEdit(d)">✏️</button>
+                <button class="di-action-btn delete" *ngIf="canDelete(d)" (click)="deleteDonation(d)" [disabled]="deletingId === d.id">🗑️</button>
+                <button class="di-action-btn validate" *ngIf="canValidate() && d.status !== 'VALIDATED'" (click)="validateDonation(d)" [disabled]="validatingId === d.id">✅</button>
               </div>
             </div>
-
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
 
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     IMPACT — Video + 4-Column Cards
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<section class="impact-section">
+  <video class="impact-video" autoplay muted loop playsinline>
+    <source src="assets/videos/ocean-waves.mp4" type="video/mp4">
+  </video>
+  <div class="impact-overlay"></div>
+  <div class="sticker sticker-impact-1">🌊</div>
+  <div class="sticker sticker-impact-2">🐋</div>
+  <div class="sticker sticker-impact-3">🐚</div>
+
+  <div class="impact-inner">
+    <div class="impact-header">
+      <div class="section-tag">Where your money goes</div>
+      <h2 class="impact-heading">Transparent. <em>Traceable.</em> Transformative.</h2>
+    </div>
+    <div class="impact-grid">
+      <div class="impact-card" *ngFor="let step of donationSteps; let i = index" [style.animation-delay]="i * 0.1 + 's'">
+        <div class="ic-num">{{ i + 1 }}</div>
+        <div class="ic-title">{{ step.title }}</div>
+        <div class="ic-desc">{{ step.desc }}</div>
+      </div>
     </div>
   </div>
 </section>
@@ -451,55 +353,37 @@
       <h3>Edit donation</h3>
       <button class="edit-close" (click)="cancelEdit()">✕</button>
     </div>
-
     <div class="edit-type-display">
       <span>{{ getDonationTypeIcon(editType) }}</span>
-      <span>{{ editType }} donation</span>
+      <span>{{ editType }}</span>
     </div>
-
     <div class="field-group" *ngIf="editType === 'MONEY'">
       <label class="field-label">Amount (€)</label>
       <input type="number" class="field-input" [(ngModel)]="editAmount" min="1">
     </div>
-
     <div class="field-group" *ngIf="editType === 'MATERIAL'">
       <label class="field-label">Items</label>
-      <textarea class="field-input field-textarea" rows="3" [(ngModel)]="editQuantity"
-        placeholder="Describe your items..."></textarea>
+      <textarea class="field-input field-textarea" rows="2" [(ngModel)]="editQuantity"></textarea>
     </div>
-
     <div class="field-group" *ngIf="editType === 'TIME'">
       <label class="field-label">Hours</label>
       <input type="number" class="field-input" [(ngModel)]="editAmount" min="1">
     </div>
-
     <div class="field-group">
       <label class="field-label">Message</label>
-      <textarea class="field-input field-textarea" rows="3" [(ngModel)]="editMessage"
-        placeholder="Your message..."></textarea>
+      <input type="text" class="field-input" [(ngModel)]="editMessage" placeholder="Your message...">
     </div>
-
     <div class="toggle-row" (click)="editAnonymous = !editAnonymous">
-      <div class="toggle-track" [class.on]="editAnonymous">
-        <div class="toggle-thumb"></div>
-      </div>
-      <span class="toggle-text">Anonymous donation</span>
+      <div class="toggle-track" [class.on]="editAnonymous"><div class="toggle-thumb"></div></div>
+      <span class="toggle-text">Anonymous</span>
     </div>
-
-    <div class="msg-error" *ngIf="errorMessage && editingDonation">
-      ⚠️ {{ errorMessage }}
-    </div>
-
+    <div class="msg-error" *ngIf="errorMessage && editingDonation">⚠️ {{ errorMessage }}</div>
     <div class="edit-modal-actions">
       <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
       <button class="btn-donate" (click)="submitEdit()" [disabled]="editState === 'processing'">
         <ng-container *ngIf="editState === 'idle'">Update</ng-container>
-        <ng-container *ngIf="editState === 'processing'">
-          <span class="spinner"></span> Updating...
-        </ng-container>
-        <ng-container *ngIf="editState === 'confirmed'">
-          ✅ Updated!
-        </ng-container>
+        <ng-container *ngIf="editState === 'processing'"><span class="spinner"></span> Updating...</ng-container>
+        <ng-container *ngIf="editState === 'confirmed'">✅ Updated!</ng-container>
       </button>
     </div>
   </div>
@@ -512,16 +396,14 @@
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-icon">⚠️</div>
     <h3 class="modal-title">Confirm Donation</h3>
-    <p class="modal-desc">You are about to support <strong>{{ selectedEvent?.title }}</strong>.</p>
-    
+    <p class="modal-desc">Supporting <strong>{{ selectedEvent?.title }}</strong></p>
     <div class="modal-summary">
-      <div class="sm-row"><span>Type:</span> <strong>{{ pendingDonation?.type }}</strong></div>
-      <div class="sm-row" *ngIf="pendingDonation?.type === 'MONEY'"><span>Amount:</span> <strong>€{{ pendingDonation?.amount }}</strong></div>
-      <div class="sm-row" *ngIf="pendingDonation?.type === 'TIME'"><span>Time:</span> <strong>{{ pendingDonation?.amount }} hours</strong></div>
-      <div class="sm-row" *ngIf="pendingDonation?.type === 'MATERIAL'"><span>Items:</span> <strong>{{ materialQuantity }}</strong></div>
-      <div class="sm-row"><span>Name:</span> <strong>{{ pendingDonation?.anonymous ? 'Anonymous' : fullName }}</strong></div>
+      <div class="sm-row"><span>Type</span> <strong>{{ pendingDonation?.type }}</strong></div>
+      <div class="sm-row" *ngIf="pendingDonation?.type === 'MONEY'"><span>Amount</span> <strong>€{{ pendingDonation?.amount }}</strong></div>
+      <div class="sm-row" *ngIf="pendingDonation?.type === 'TIME'"><span>Time</span> <strong>{{ pendingDonation?.amount }}h</strong></div>
+      <div class="sm-row" *ngIf="pendingDonation?.type === 'MATERIAL'"><span>Items</span> <strong>{{ materialQuantity }}</strong></div>
+      <div class="sm-row"><span>Name</span> <strong>{{ pendingDonation?.anonymous ? 'Anonymous' : fullName }}</strong></div>
     </div>
-
     <div class="modal-actions">
       <button class="btn-cancel" (click)="cancelDonation()">Cancel</button>
       <button class="btn-primary" (click)="confirmDonation()" [disabled]="donateState === 'processing'">
@@ -533,44 +415,25 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     SUCCESS MODAL
+     SUCCESS MODAL — With Reward Stickers
      ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="modal-overlay success" *ngIf="showSuccessModal">
   <div class="modal-card success-card">
-    <div class="success-circle">
-      <span class="check-icon">✓</span>
-    </div>
+    <div class="success-sticker s1">🌿</div>
+    <div class="success-sticker s2">🎉</div>
+    <div class="success-sticker s3">💚</div>
+    <div class="success-sticker s4">🌱</div>
+    <div class="success-sticker s5">✨</div>
+
+    <div class="success-circle"><span class="check-icon">✓</span></div>
     <h3 class="modal-title">Thank you! 🌱</h3>
-    <p class="modal-desc">Your contribution has been securely recorded and makes a huge difference. You are amazing!</p>
-    
+    <p class="modal-desc">Your contribution is securely recorded. You are amazing!</p>
+
+    <div class="reward-badge">
+      <span class="reward-icon">🏆</span>
+      <span class="reward-text">Eco Hero</span>
+    </div>
+
     <button class="btn-primary full-width" (click)="viewMyDonations()">View my donations</button>
   </div>
 </div>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     IMPACT SECTION
-     ═══════════════════════════════════════════════════════════════════════════ -->
-<section class="impact-section">
-  <div class="impact-inner">
-    <div class="impact-text-col">
-      <div class="section-tag">Where your money goes ——</div>
-      <h2 class="impact-heading">
-        Transparent.<br><em>Traceable.</em><br>Transformative.
-      </h2>
-      <p class="impact-desc">
-        Every donation is recorded and traceable. You can track exactly how
-        your funds are used — from the moment you donate to the moment it
-        creates real impact.
-      </p>
-    </div>
-    <div class="impact-steps">
-      <div class="step" *ngFor="let step of donationSteps; let i = index" [style.animation-delay]="i * 0.15 + 's'">
-        <div class="step-num">{{ i + 1 }}</div>
-        <div class="step-content">
-          <div class="step-title">{{ step.title }}</div>
-          <div class="step-desc">{{ step.desc }}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>

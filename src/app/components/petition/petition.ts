@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { PetitionService, Petition, PetitionStats } from '../../services/petition.service';
 import { AuthService } from '../../services/auth.service';
 import { forkJoin } from 'rxjs';
+import { PetitionDetail } from '../petition-detail/petition-detail';
 
 @Component({
   selector: 'app-petition',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PetitionDetail], // ← PetitionDetail
   templateUrl: './petition.html',
   styleUrl: './petition.css'
 })
@@ -30,18 +31,19 @@ export class PetitionComponent implements OnInit {
   private myPetitionsLoaded = false;
 
   categories = [
-    { key: 'TRANSPORT',      label: 'Transport',      emoji: '🚲' },
-    { key: 'POLLUTION',      label: 'Pollution',      emoji: '🏭' },
-    { key: 'DECHETS',        label: 'Déchets',        emoji: '♻️' },
-    { key: 'ESPACES_VERTS',  label: 'Espaces verts',  emoji: '🌳' },
-    { key: 'ENERGIE',        label: 'Énergie',        emoji: '⚡' },
-    { key: 'EAU',            label: 'Eau',            emoji: '💧' },
-    { key: 'SENSIBILISATION',label: 'Sensibilisation',emoji: '📢' },
-    { key: 'AUTRE',          label: 'Autre',          emoji: '🌍' }
+    { key: 'TRANSPORT',       label: 'Transport',       emoji: '🚲' },
+    { key: 'POLLUTION',       label: 'Pollution',       emoji: '🏭' },
+    { key: 'DECHETS',         label: 'Déchets',         emoji: '♻️' },
+    { key: 'ESPACES_VERTS',   label: 'Espaces verts',   emoji: '🌳' },
+    { key: 'ENERGIE',         label: 'Énergie',         emoji: '⚡' },
+    { key: 'EAU',             label: 'Eau',             emoji: '💧' },
+    { key: 'SENSIBILISATION', label: 'Sensibilisation', emoji: '📢' },
+    { key: 'AUTRE',           label: 'Autre',           emoji: '🌍' }
   ];
 
   newPetition: Petition = {
-    title: '', description: '', category: '', city: '', region: '', targetSignatures: 1000
+    title: '', description: '', category: '', city: '', region: '',
+    targetSignatures: 1000
   };
   deadlineDate = '';
   editingPetition: Petition | null = null;
@@ -52,6 +54,8 @@ export class PetitionComponent implements OnInit {
   pendingPetitions: Petition[] = [];
   allPetitions: Petition[] = [];
 
+  deletingId: number | null = null;
+
   get isAdmin(): boolean { return this.authService.isAdmin; }
 
   constructor(
@@ -59,47 +63,46 @@ export class PetitionComponent implements OnInit {
     private authService: AuthService
   ) {}
 
-  ngOnInit() {
-    // Charger browse + stats + my petitions en parallèle dès le départ
-    this.browseLoading = true;
-    forkJoin([
-      this.petitionService.getActive(),
-      this.petitionService.getStats()
-    ]).subscribe({
-      next: ([petitions, stats]) => {
-        this.petitions = petitions;
-        this.applyFilter();
-        this.stats = stats;
-        this.browseLoading = false;
-      },
-      error: () => { this.browseLoading = false; }
-    });
+ ngOnInit() {
+  this.browseLoading = true;
 
-    // Précharger my petitions silencieusement en arrière-plan
-    this.petitionService.getMy().subscribe({
-      next: (data) => { this.myPetitions = [...data]; this.myPetitionsLoaded = true; }
-    });
-  }
+  // ✅ Charge TOUT en parallèle dès le démarrage
+  forkJoin([
+    this.petitionService.getActive(),
+    this.petitionService.getStats(),
+    this.petitionService.getMy()
+  ]).subscribe({
+    next: ([petitions, stats, myPetitions]) => {
+      this.petitions = petitions;
+      this.applyFilter();
+      this.stats = stats;
+      this.myPetitions = [...myPetitions];
+      this.myPetitionsLoaded = true;
+      this.browseLoading = false;
+    },
+    error: () => { this.browseLoading = false; }
+  });
+}
 
-  // ── Browse ─────────────────────────────────────────────────────────────────
+loadMyPetitions(forceReload = false) {
+  // ✅ Si déjà chargé et pas de force → ne rien faire du tout
+  if (this.myPetitionsLoaded && !forceReload) return;
 
-  loadMyPetitions(forceReload = false) {
-    if (this.myPetitionsLoaded && !forceReload && this.myPetitions.length > 0) {
-      // Cache valide : rafraîchissement silencieux
-      this.petitionService.getMy().subscribe({
-        next: (data) => { this.myPetitions = [...data]; }
-      });
-      return;
-    }
-    this.myLoading = this.myPetitions.length === 0;
-    this.petitionService.getMy().subscribe({
-      next: (data) => { this.myPetitions = [...data]; this.myLoading = false; this.myPetitionsLoaded = true; },
-      error: () => { this.myPetitions = []; this.myLoading = false; }
-    });
-  }
+  this.myLoading = this.myPetitions.length === 0;
+  this.petitionService.getMy().subscribe({
+    next: (data: Petition[]) => {
+      this.myPetitions = [...data];
+      this.myLoading = false;
+      this.myPetitionsLoaded = true;
+    },
+    error: () => { this.myPetitions = []; this.myLoading = false; }
+  });
+}
 
   loadStats() {
-    this.petitionService.getStats().subscribe({ next: (data) => this.stats = data });
+    this.petitionService.getStats().subscribe({
+      next: (data: PetitionStats) => this.stats = data
+    });
   }
 
   private refreshAll() {
@@ -120,9 +123,9 @@ export class PetitionComponent implements OnInit {
   loadAllPetitions() {
     this.adminLoading = this.allPetitions.length === 0;
     this.petitionService.getAll().subscribe({
-      next: (data) => {
+      next: (data: Petition[]) => {
         this.allPetitions = data;
-        this.pendingPetitions = data.filter(p => p.status === 'PENDING');
+        this.pendingPetitions = data.filter((p: Petition) => p.status === 'PENDING');
         this.adminLoading = false;
       },
       error: () => { this.adminLoading = false; }
@@ -159,7 +162,9 @@ export class PetitionComponent implements OnInit {
     if (!this.newPetition.description.trim() || this.newPetition.description.trim().length < 30) {
       this.errorMessage = 'Description must be at least 30 characters'; return;
     }
-    if (!this.newPetition.category) { this.errorMessage = 'Please select a category'; return; }
+    if (!this.newPetition.category) {
+      this.errorMessage = 'Please select a category'; return;
+    }
 
     this.errorMessage = '';
     this.createState = 'processing';
@@ -170,20 +175,30 @@ export class PetitionComponent implements OnInit {
     };
 
     this.petitionService.create(petition).subscribe({
-      next: () => {
-        this.createState = 'confirmed';
-        this.successMessage = 'Petition created! Awaiting admin validation.';
-        setTimeout(() => {
-          this.createState = 'idle';
-          this.successMessage = '';
-          this.resetForm();
-          this.refreshAll();
-          this.myPetitionsLoaded = false;
-        }, 800);
-      },
-      error: (err) => {
+      next: (created: Petition) => {
+        // ✅ Navigation instantanée
         this.createState = 'idle';
-        const raw = err.error?.message || err.message || 'Creation failed';
+        this.resetForm();
+
+        // Ajout optimiste immédiat
+        this.myPetitions = [{ ...created, status: 'PENDING' }, ...this.myPetitions];
+        this.myPetitionsLoaded = true;
+
+        this.successMessage = '🌱 Petition submitted! Awaiting admin validation.';
+        this.activeTab = 'my';
+
+        // Rafraîchissement silencieux
+        setTimeout(() => {
+          this.successMessage = '';
+          this.refreshAll();
+          this.petitionService.getMy().subscribe({
+            next: (data: Petition[]) => { this.myPetitions = [...data]; }
+          });
+        }, 2000);
+      },
+      error: (err: any) => {
+        this.createState = 'idle';
+        const raw = err.message || 'Creation failed';
         this.errorMessage = raw.includes('RuntimeException')
           ? raw.split('RuntimeException:').pop()?.trim() || raw : raw;
       }
@@ -191,7 +206,10 @@ export class PetitionComponent implements OnInit {
   }
 
   resetForm() {
-    this.newPetition = { title: '', description: '', category: '', city: '', region: '', targetSignatures: 1000 };
+    this.newPetition = {
+      title: '', description: '', category: '', city: '', region: '',
+      targetSignatures: 1000
+    };
     this.deadlineDate = '';
   }
 
@@ -199,21 +217,24 @@ export class PetitionComponent implements OnInit {
     event.stopPropagation();
     if (!petition.id) return;
     this.petitionService.sign(petition.id).subscribe({
-      next: () => { petition.currentSignatures = (petition.currentSignatures || 0) + 1; },
-      error: (err) => {
-        const msg = err.error?.message || err.message || 'Error';
-        alert(msg.includes('RuntimeException') ? msg.split('RuntimeException:').pop()?.trim() : msg);
+      next: () => {
+        petition.currentSignatures = (petition.currentSignatures || 0) + 1;
+      },
+      error: (err: any) => {
+        const msg = err.message || 'Error';
+        alert(msg.includes('RuntimeException')
+          ? msg.split('RuntimeException:').pop()?.trim() : msg);
       }
     });
   }
 
-  selectPetition(p: Petition) { console.log('View petition', p.id); }
 
   editPetition(p: Petition) {
     this.editingPetition = { ...p };
     this.newPetition = {
       title: p.title, description: p.description, category: p.category,
-      city: p.city || '', region: p.region || '', targetSignatures: p.targetSignatures
+      city: p.city || '', region: p.region || '',
+      targetSignatures: p.targetSignatures
     };
     this.deadlineDate = p.deadline ? p.deadline.split('T')[0] : '';
     this.errorMessage = '';
@@ -221,15 +242,17 @@ export class PetitionComponent implements OnInit {
     this.activeTab = 'edit';
   }
 
-  deletingId: number | null = null;
-
   deletePetition(p: Petition) {
     if (!p.id || this.deletingId === p.id) return;
     if (!confirm('Delete this petition?')) return;
     this.deletingId = p.id;
     this.myPetitions = this.myPetitions.filter(pet => pet.id !== p.id);
     this.petitionService.delete(p.id).subscribe({
-      next: () => { this.deletingId = null; this.loadMyPetitions(true); this.loadStats(); },
+      next: () => {
+        this.deletingId = null;
+        this.loadMyPetitions(true);
+        this.loadStats();
+      },
       error: () => { this.deletingId = null; this.loadMyPetitions(true); }
     });
   }
@@ -263,7 +286,6 @@ export class PetitionComponent implements OnInit {
     });
   }
 
-  // ✅ FIX SAVE : navigation instantanée, 0 reload HTTP
   updateExistingPetition() {
     if (this.createState !== 'idle' || !this.editingPetition?.id) return;
 
@@ -273,7 +295,9 @@ export class PetitionComponent implements OnInit {
     if (!this.newPetition.description.trim() || this.newPetition.description.trim().length < 30) {
       this.errorMessage = 'Description must be at least 30 characters'; return;
     }
-    if (!this.newPetition.category) { this.errorMessage = 'Please select a category'; return; }
+    if (!this.newPetition.category) {
+      this.errorMessage = 'Please select a category'; return;
+    }
 
     this.errorMessage = '';
     this.createState = 'processing';
@@ -285,46 +309,47 @@ export class PetitionComponent implements OnInit {
 
     this.petitionService.update(this.editingPetition.id, petition).subscribe({
       next: () => {
-        // 1. Mise à jour optimiste immédiate dans myPetitions
+        // ✅ Mise à jour optimiste
         const idx = this.myPetitions.findIndex(p => p.id === this.editingPetition!.id);
         if (idx !== -1) {
           this.myPetitions[idx] = {
             ...this.myPetitions[idx],
             ...this.newPetition,
-            deadline: this.deadlineDate ? this.deadlineDate + 'T00:00:00' : this.myPetitions[idx].deadline
+            deadline: this.deadlineDate
+              ? this.deadlineDate + 'T00:00:00'
+              : this.myPetitions[idx].deadline
           };
         }
 
-        // 2. Navigation instantanée vers My petitions — 0 délai, 0 reload
+        // ✅ Navigation instantanée
         this.createState = 'idle';
         this.editingPetition = null;
         this.resetForm();
         this.activeTab = 'my';
 
-        // 3. Rafraîchissement silencieux en arrière-plan
-        this.refreshAll();
+        setTimeout(() => this.refreshAll(), 1000);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.createState = 'idle';
-        const raw = err.error?.message || err.message || 'Update failed';
+        const raw = err.message || 'Update failed';
         this.errorMessage = raw.includes('RuntimeException')
           ? raw.split('RuntimeException:').pop()?.trim() || raw : raw;
       }
     });
   }
 
-  // ✅ FIX : cancelEdit sans reload (données déjà en cache)
   cancelEdit() {
     this.editingPetition = null;
     this.resetForm();
     this.activeTab = 'my';
-    // Pas de loadMyPetitions() ici — les données sont déjà en mémoire
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
   getProgress(p: Petition): number {
-    return p.targetSignatures ? Math.min(100, ((p.currentSignatures || 0) / p.targetSignatures) * 100) : 0;
+    return p.targetSignatures
+      ? Math.min(100, ((p.currentSignatures || 0) / p.targetSignatures) * 100)
+      : 0;
   }
 
   getCategoryEmoji(cat: string): string {
@@ -336,10 +361,33 @@ export class PetitionComponent implements OnInit {
   }
 
   formatDeadline(deadline: string): string {
-    const diff = Math.ceil((new Date(deadline).getTime() - Date.now()) / 86400000);
+    const diff = Math.ceil(
+      (new Date(deadline).getTime() - Date.now()) / 86400000
+    );
     if (diff < 0) return 'Expired';
     if (diff === 0) return 'Last day!';
     if (diff <= 7) return `${diff}d left`;
-    return new Date(deadline).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    return new Date(deadline).toLocaleDateString('fr-FR', {
+      day: 'numeric', month: 'short'
+    });
   }
+  loadAllPetitionsOnce() {
+  // ✅ Ne charge qu'une seule fois
+  if (this.allPetitions.length > 0) return;
+  this.loadAllPetitions();
+}
+selectedPetition: Petition | null = null;
+
+selectPetition(p: Petition) {
+  this.selectedPetition = p;
+}
+
+closeDetail() {
+  this.selectedPetition = null;
+}
+
+onSigned(p: Petition) {
+  p.currentSignatures = (p.currentSignatures || 0) + 1;
+  this.applyFilter();
+}
 }

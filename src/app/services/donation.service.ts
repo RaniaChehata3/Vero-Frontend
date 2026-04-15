@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { tap, shareReplay } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 export interface Donation {
   id?: number;
@@ -26,15 +26,7 @@ export class DonationService {
 
   private apiUrl = 'http://localhost:8080/api/donations';
 
-  private eventDonationsCache = new Map<number, Observable<Donation[]>>();
-  private eventTotalCache = new Map<number, Observable<number>>();
-
   constructor(private http: HttpClient) { }
-
-  clearCache(): void {
-    this.eventDonationsCache.clear();
-    this.eventTotalCache.clear();
-  }
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('vero_jwt_token');
@@ -46,8 +38,11 @@ export class DonationService {
 
   // ── Créer un don pour un événement ─────────────────────────────────────────
   createDonationForEvent(donation: Donation, eventId: number): Observable<Donation> {
-    return this.http.post<Donation>(`${this.apiUrl}/event/${eventId}`, donation, { headers: this.getHeaders() })
-      .pipe(tap(() => this.clearCache()));
+    return this.http.post<Donation>(
+      `${this.apiUrl}/event/${eventId}`,
+      donation,
+      { headers: this.getHeaders() }
+    );
   }
 
   // ── Créer un don pour un partenaire ────────────────────────────────────────
@@ -77,22 +72,18 @@ export class DonationService {
 
   // ── Dons d'un événement ────────────────────────────────────────────────────
   getDonationsByEvent(eventId: number): Observable<Donation[]> {
-    if (!this.eventDonationsCache.has(eventId)) {
-      const request = this.http.get<Donation[]>(`${this.apiUrl}/event/${eventId}`, { headers: this.getHeaders() })
-        .pipe(shareReplay(1));
-      this.eventDonationsCache.set(eventId, request);
-    }
-    return this.eventDonationsCache.get(eventId)!;
+    return this.http.get<Donation[]>(
+      `${this.apiUrl}/event/${eventId}`,
+      { headers: this.getHeaders() }
+    );
   }
 
   // ── Total d'un événement ───────────────────────────────────────────────────
   getTotalByEvent(eventId: number): Observable<number> {
-    if (!this.eventTotalCache.has(eventId)) {
-      const request = this.http.get<number>(`${this.apiUrl}/event/${eventId}/total`, { headers: this.getHeaders() })
-        .pipe(shareReplay(1));
-      this.eventTotalCache.set(eventId, request);
-    }
-    return this.eventTotalCache.get(eventId)!;
+    return this.http.get<number>(
+      `${this.apiUrl}/event/${eventId}/total`,
+      { headers: this.getHeaders() }
+    );
   }
 
   // ── Total d'un partenaire ──────────────────────────────────────────────────
@@ -105,19 +96,27 @@ export class DonationService {
 
   // ── Modifier un don ────────────────────────────────────────────────────────
   update(id: number, donation: Partial<Donation>): Observable<Donation> {
-    return this.http.put<Donation>(`${this.apiUrl}/${id}`, donation, { headers: this.getHeaders() })
-      .pipe(tap(() => this.clearCache()));
+    return this.http.put<Donation>(
+      `${this.apiUrl}/${id}`,
+      donation,
+      { headers: this.getHeaders() }
+    ).pipe(tap(() => {}));
   }
 
   // ── Supprimer un don ───────────────────────────────────────────────────────
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() })
-      .pipe(tap(() => this.clearCache()));
+    return this.http.delete<void>(
+      `${this.apiUrl}/${id}`,
+      { headers: this.getHeaders() }
+    );
   }
 
   // ── Valider un don (admin) ─────────────────────────────────────────────────
   validate(id: number): Observable<Donation> {
-    return this.http.put<Donation>(`${this.apiUrl}/${id}/validate`, {}, { headers: this.getHeaders() })
-      .pipe(tap(() => this.clearCache()));
+    return this.http.put<Donation>(
+      `${this.apiUrl}/${id}/validate`,
+      {},
+      { headers: this.getHeaders() }
+    );
   }
 }
