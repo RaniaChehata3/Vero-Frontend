@@ -119,4 +119,19 @@ export class DonationService {
       { headers: this.getHeaders() }
     );
   }
+
+  createStripeCheckout(amount: number, donationId: number): Observable<{url: string}> {
+    return this.http.post<{url: string}>(
+      'http://localhost:8080/api/stripe/checkout',
+      { amount, donationId },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  verifyStripePayment(sessionId: string, donationId: number): Observable<any> {
+    return this.http.get(
+      `http://localhost:8080/api/stripe/verify?sessionId=${sessionId}&donationId=${donationId}`,
+      { headers: this.getHeaders() }
+    );
+  }
 }

@@ -62,7 +62,7 @@ export class DonateComponent implements OnInit, OnDestroy {
   deletingId: number | null = null;
   validatingId: number | null = null;
 
-  activeTab: 'donate' | 'history' = 'donate';
+  activeTab: 'browse' | 'donate' | 'history' = 'browse';
 
   // UX Refactor States
   currentStep = 1;
@@ -100,6 +100,10 @@ export class DonateComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     clearInterval(this.heroInterval);
     this.roleSub?.unsubscribe();
+  }
+
+  scrollToForm(): void {
+    document.querySelector('.donate-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   get isAdmin(): boolean { return this.currentRole === 'ADMIN'; }
@@ -140,8 +144,23 @@ export class DonateComponent implements OnInit, OnDestroy {
   selectEvent(index: number): void {
     this.selectedEventIndex = index;
     this.currentStep = 2; // Move to Step 2 when event is selected
-    this.activeTab = 'donate'; // Ensure form tab is active
+    this.goToDonate();
     this.loadDonationsForEvent();
+  }
+
+  goToDonate(): void {
+    if (this.selectedEventIndex === -1) return;
+    this.activeTab = 'donate';
+    setTimeout(() => {
+      document.querySelector('.donate-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  }
+
+  goToBrowse(): void {
+    this.activeTab = 'browse';
+    setTimeout(() => {
+      document.querySelector('.donate-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
   }
 
   loadDonationsForEvent(): void {
@@ -238,45 +257,52 @@ export class DonateComponent implements OnInit, OnDestroy {
     const ev = this.selectedEvent;
     if (!ev?.id || !this.pendingDonation) return;
 
-    // Optimistic UI Update: close modal immediately to avoid waiting for backend API
     this.showConfirmModal = false;
-    this.donateState = 'confirmed';
-    this.showSuccessModal = true;
-    this.currentStep = 3; // Step 3: Confirmation
+    this.donateState = 'processing';
 
-    // Full Optimistic Data Insertion
-    const optimisticDonation: Donation = {
-      ...this.pendingDonation,
-      id: Date.now(), // temporary pseudo-ID
-      status: 'PENDING',
-      donationDate: new Date().toISOString(),
-      userName: this.isAnonymous ? 'Anonymous' : (this.fullName || 'User')
-    };
-    this.donations = [optimisticDonation, ...this.donations];
-    
+    // ── Pour les dons MONEY → passer par Stripe ──────────────────────────
     if (this.pendingDonation.type === 'MONEY') {
-      this.totalDonated += this.pendingDonation.amount;
+      this.donationService.createDonationForEvent(
+        this.pendingDonation, ev.id
+      ).subscribe({
+        next: (donation) => {
+          // Ouvrir Stripe Checkout
+          if (!donation.id) return;
+          this.donationService.createStripeCheckout(
+            this.pendingDonation!.amount,
+            donation.id
+          ).subscribe({
+            next: (res) => {
+              // ✅ Redirection vers Stripe
+              window.location.href = res.url;
+            },
+            error: () => {
+              this.donateState = 'error';
+              this.errorMessage = 'Payment initialization failed.';
+            }
+          });
+        },
+        error: () => {
+          this.donateState = 'error';
+          this.errorMessage = 'Donation failed.';
+        }
+      });
+      return;
     }
 
-    this.donationService.createDonationForEvent(this.pendingDonation, ev.id).subscribe({
+    // ── Pour MATERIAL et TIME → pas de paiement ──────────────────────────
+    this.donationService.createDonationForEvent(
+      this.pendingDonation, ev.id
+    ).subscribe({
       next: () => {
+        this.donateState = 'confirmed';
+        this.showSuccessModal = true;
+        this.resetForm();
         this.loadDonationsForEvent();
-        setTimeout(() => {
-          this.donateState = 'idle';
-          this.resetForm();
-        }, 500);
       },
-      error: (err: any) => {
-        // Rollback optimistic update on error
-        this.donations = this.donations.filter(d => d.id !== optimisticDonation.id);
-        if (this.pendingDonation && this.pendingDonation.type === 'MONEY') {
-          this.totalDonated -= this.pendingDonation.amount;
-        }
-
-        this.showSuccessModal = false;
+      error: () => {
         this.donateState = 'error';
-        this.errorMessage = err.error?.message || 'Donation failed. Please try again.';
-        setTimeout(() => { this.donateState = 'idle'; }, 3000);
+        this.errorMessage = 'Donation failed.';
       }
     });
   }
@@ -450,12 +476,7 @@ export class DonateComponent implements OnInit, OnDestroy {
   }, 4500);
 }
 
-scrollToForm(): void {
-  document.getElementById('donate-form')?.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start'
-  });
-}
+
   historyFilter: 'all' | 'MONEY' | 'MATERIAL' | 'TIME' = 'all';
  
   // Expose Math for template use

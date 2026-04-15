@@ -23,6 +23,9 @@ export class PetitionDetail {  // ← nom exact de la classe
   hasSigned = false;
   signError = '';
   signSuccess = false;
+  
+  mapLoading = false;
+  mapPoints: any[] = [];
 
   get isAdmin(): boolean { return this.authService.isAdmin; }
 

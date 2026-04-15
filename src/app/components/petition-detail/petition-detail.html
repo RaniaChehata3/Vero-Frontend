@@ -4,23 +4,51 @@
     <!-- CLOSE -->
     <button class="pd-close" (click)="close.emit()">✕</button>
 
-    <!-- HERO -->
+    <!-- HERO avec image de fond -->
     <div class="pd-hero">
-      <div class="pd-hero-pattern"></div>
-      <div class="pd-hero-emoji">{{ getCategoryEmoji(petition.category) }}</div>
-      <div class="pd-hero-overlay"></div>
+
+      <div class="pd-hero-bg">
+        <img src="assets/images/petition-hero.jpg" alt="" class="pd-hero-img">
+        <div class="pd-hero-overlay"></div>
+      </div>
+
       <div class="pd-hero-content">
         <div class="pd-category-badge">
           {{ getCategoryEmoji(petition.category) }} {{ petition.category }}
         </div>
         <h1 class="pd-title">{{ petition.title }}</h1>
-        <div class="pd-location" *ngIf="petition.city">
-          📍 {{ petition.city }}<span *ngIf="petition.region">, {{ petition.region }}</span>
+        <p class="pd-hero-subtitle">
+          Every signature is a seed. Plant yours today.
+        </p>
+        <button class="pd-btn-hero-sign"
+                *ngIf="!isAdmin && !hasSigned && !signSuccess"
+                (click)="sign()">
+          Support this Petition Now!
+        </button>
+        <div class="pd-signed-hero" *ngIf="hasSigned || signSuccess">
+          ✓ You already signed this petition 🌱
         </div>
       </div>
-    </div>
 
+      <div class="pd-counter-float">
+        <div class="pd-cf-line">
+          With <strong>{{ petition.currentSignatures || 0 | number }}</strong> Supporters
+        </div>
+        <div class="pd-progress-track">
+          <div class="pd-progress-fill" [style.width.%]="progress"></div>
+        </div>
+        <div class="pd-cf-line muted">
+          We Still Need <strong>{{ remaining | number }}</strong> Supporters
+        </div>
+      </div>
+
+    </div>
+    <!-- FIN HERO -->
+
+    <!-- CORPS -->
     <div class="pd-body">
+
+      <!-- ── GAUCHE ──────────────────────────────────────── -->
       <div class="pd-left">
 
         <!-- COUNTER -->
@@ -35,7 +63,6 @@
             We still need
             <strong>{{ remaining | number }}</strong> supporters
           </div>
-
           <div class="pd-progress-wrap">
             <div class="pd-progress-track">
               <div class="pd-progress-fill"
@@ -48,7 +75,6 @@
               <span>Goal: {{ petition.targetSignatures | number }}</span>
             </div>
           </div>
-
           <div class="pd-deadline" *ngIf="petition.deadline">
             ⏳ {{ formatDeadline(petition.deadline) }}
           </div>
@@ -56,7 +82,6 @@
 
         <!-- SIGN FORM -->
         <div class="pd-sign-card" *ngIf="!isAdmin">
-
           <div class="pd-signed-badge" *ngIf="signSuccess || hasSigned">
             <div class="pd-signed-check">✓</div>
             <div>
@@ -67,7 +92,6 @@
 
           <ng-container *ngIf="!hasSigned && !signSuccess">
             <h3 class="pd-sign-title">Support this petition</h3>
-
             <div class="pd-field">
               <label class="pd-label">
                 Your message <span class="pd-opt">(optional)</span>
@@ -76,26 +100,20 @@
                 placeholder="Why does this cause matter to you?"
                 [(ngModel)]="comment"></textarea>
             </div>
-
             <div class="pd-anon-row" (click)="anonymous = !anonymous">
               <div class="pd-toggle" [class.on]="anonymous">
                 <div class="pd-toggle-thumb"></div>
               </div>
               <span>Sign anonymously</span>
             </div>
-
             <div class="pd-sign-error" *ngIf="signError">
               ⚠️ {{ signError }}
             </div>
-
             <button class="pd-btn-sign" (click)="sign()"
                     [disabled]="signing || petition.status !== 'ACTIVE'">
-              <span *ngIf="!signing">
-                Sign this petition →
-              </span>
+              <span *ngIf="!signing">Sign this petition →</span>
               <span *ngIf="signing" class="pd-spinner"></span>
             </button>
-
             <p class="pd-inactive-note"
                *ngIf="petition.status !== 'ACTIVE'">
               This petition is {{ petition.status?.toLowerCase() }}
@@ -105,8 +123,11 @@
         </div>
 
       </div>
+      <!-- FIN GAUCHE -->
 
+      <!-- ── DROITE ──────────────────────────────────────── -->
       <div class="pd-right">
+
         <!-- DESCRIPTION -->
         <div class="pd-section">
           <h2 class="pd-section-title">About this petition</h2>
@@ -121,8 +142,7 @@
                   [class]="'status-' + (petition.status || 'active').toLowerCase()">
               {{ petition.status }}
             </span>
-            <span class="pd-admin-note"
-                  *ngIf="petition.adminResponse">
+            <span class="pd-admin-note" *ngIf="petition.adminResponse">
               {{ petition.adminResponse }}
             </span>
           </div>
@@ -143,7 +163,54 @@
             </button>
           </div>
         </div>
+        <!-- FIN SHARE -->
+
+        <!-- ── SIGNATURES MAP ────────────────────────────── -->
+        <div class="pd-section">
+          <h2 class="pd-section-title">🗺️ Signatures map</h2>
+
+          <!-- Loading -->
+          <div *ngIf="mapLoading"
+               style="text-align:center;padding:24px;
+                      color:#8a8a7a;font-size:13px">
+            ⏳ Loading map...
+          </div>
+
+          <!-- Pas de données -->
+          <div *ngIf="!mapLoading && mapPoints.length === 0"
+               style="text-align:center;padding:24px;
+                      background:rgba(106,170,106,.04);
+                      border-radius:12px;
+                      border:1px dashed rgba(26,46,26,.1);
+                      color:#8a8a7a;font-size:13px">
+            🌍 No location data yet — be the first!
+          </div>
+
+          <!-- Carte Leaflet -->
+          <div id="signatures-map"
+               *ngIf="!mapLoading && mapPoints.length > 0"
+               style="height:300px;
+                      border-radius:16px;
+                      overflow:hidden;
+                      border:1px solid rgba(26,46,26,.08)">
+          </div>
+
+          <!-- Légende -->
+          <div *ngIf="!mapLoading && mapPoints.length > 0"
+               style="text-align:center;margin-top:10px;
+                      font-size:13px;color:#6aaa6a;font-weight:500">
+            🌍 {{ mapPoints.length }}
+            {{ mapPoints.length > 1 ? 'cities' : 'city' }} represented
+          </div>
+
+        </div>
+        <!-- FIN MAP -->
+
       </div>
+      <!-- FIN DROITE -->
+
     </div>
+    <!-- FIN CORPS -->
+
   </div>
 </div>

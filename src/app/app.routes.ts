@@ -16,6 +16,14 @@ export const routes: Routes = [
     loadComponent: () => import('./components/donate/donate.component').then(m => m.DonateComponent)
   },
   {
+    path: 'donate/success',
+    loadComponent: () => import('./components/donate/donate-success.component').then(m => m.DonateSuccessComponent)
+  },
+  {
+    path: 'donate/cancel',
+    redirectTo: '/donate'
+  },
+  {
     path: 'login',
     loadComponent: () => import('./components/login/login.component').then(m => m.LoginComponent)
   },

@@ -54,12 +54,13 @@
 /* ── HERO ────────────────────────────────────────────────────── */
 .pd-hero {
   position: relative;
-  height: 280px;
-  background: #1a2e1a;
-  border-radius: 24px 24px 0 0;
-  overflow: hidden;
+  min-height: 480px;
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 24px 24px 0 0;
 }
 
 .pd-hero-pattern {
@@ -90,41 +91,44 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    to top,
-    rgba(26,46,26,.95) 0%,
-    rgba(26,46,26,.3) 60%,
-    transparent 100%
+    to bottom,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.60) 50%,
+    rgba(0, 0, 0, 0.85) 100%
   );
 }
 
+/* ── Contenu centré ──────────────────────────────────────── */
 .pd-hero-content {
   position: relative;
   z-index: 2;
-  padding: 32px;
-  width: 100%;
+  text-align: center;
+  padding: 60px 40px 160px;
+  max-width: 680px;
 }
 
 .pd-category-badge {
   display: inline-block;
-  background: rgba(106,170,106,.3);
-  border: 1px solid rgba(106,170,106,.5);
+  background: rgba(106, 170, 106, 0.3);
+  border: 1px solid rgba(106, 170, 106, 0.5);
   color: #a8d5a8;
-  padding: 4px 12px;
+  padding: 4px 14px;
   border-radius: 100px;
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: .08em;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
 }
 
 .pd-title {
-  color: #f0ede6;
-  font-size: 28px;
+  color: #ffffff;
+  font-size: clamp(24px, 4vw, 40px);
   font-weight: 700;
-  margin: 0 0 8px;
-  line-height: 1.3;
-  letter-spacing: -.5px;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  margin: 0 0 14px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.4);
 }
 
 .pd-location {
@@ -441,4 +445,96 @@
   background: #1a2e1a;
   color: #f0ede6;
   border-color: #1a2e1a;
+}
+.pd-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.pd-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+.pd-hero-subtitle {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 16px;
+  font-style: italic;
+  margin-bottom: 32px;
+}
+/* ── Bouton CTA vert comme WeChange mais en vert ─────────── */
+.pd-btn-hero-sign {
+  display: inline-block;
+  background: #4a7c59;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 18px 48px;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  transition: all .25s;
+  letter-spacing: .01em;
+  box-shadow: 0 8px 32px rgba(74, 124, 89, 0.5);
+}
+.pd-btn-hero-sign:hover {
+  background: #6aaa6a;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(74, 124, 89, 0.6);
+}
+
+.pd-signed-hero {
+  display: inline-block;
+  background: rgba(106, 170, 106, 0.2);
+  border: 1px solid rgba(106, 170, 106, 0.4);
+  color: #a8d5a8;
+  padding: 14px 32px;
+  border-radius: 100px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.pd-counter-float {
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  padding: 24px 40px 8px;
+  min-width: 380px;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
+  text-align: center;
+}
+
+.pd-cf-line {
+  font-size: 15px;
+  color: #3a3a2a;
+  margin-bottom: 10px;
+}
+.pd-cf-line.muted {
+  font-size: 13px;
+  color: #8a8a7a;
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+.pd-cf-line strong {
+  color: #1a2e1a;
+  font-weight: 700;
+}
+
+.pd-progress-track {
+  height: 10px;
+  background: rgba(26, 46, 26, 0.08);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.pd-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2d5a2d, #6aaa6a);
+  border-radius: 100px;
+  transition: width .8s ease;
 }

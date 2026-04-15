@@ -120,6 +120,17 @@ loadMyPetitions(forceReload = false) {
 
   // ── Admin ──────────────────────────────────────────────────────────────────
 
+  goToCreate() {
+    this.activeTab = 'create';
+    setTimeout(() => {
+      const section = document.querySelector('.petition-section');
+      if (section) {
+        const y = section.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }, 100);
+  }
+
   loadAllPetitions() {
     this.adminLoading = this.allPetitions.length === 0;
     this.petitionService.getAll().subscribe({
