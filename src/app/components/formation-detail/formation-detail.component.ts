@@ -6,6 +6,7 @@ import { SessionService } from '../../services/session.service';
 import { Formation, FormationResource, Session } from '../../services/formation.models';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-formation-detail',
@@ -21,10 +22,9 @@ export class FormationDetailComponent implements OnInit {
   loading = true;
   error: string | null = null;
   formationId: number = 0;
-
   currentUser: any = null;
   hasQuiz = false;
-  quizSubmission: any = null;
+  quizPassed = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -49,7 +49,15 @@ export class FormationDetailComponent implements OnInit {
         this.formation = formation;
         this.loadSessions();
         this.loadResources();
-        this.loadCurrentUser();
+        // Load user AFTER formation is ready so checkQuizStatus works
+        if (this.authService.isLoggedIn) {
+          this.authService.getCurrentUser().subscribe({
+            next: (user) => {
+              this.currentUser = user;
+              this.checkQuizStatus();
+            }
+          });
+        }
       },
       error: (err) => {
         console.error('Error loading formation:', err);
@@ -65,8 +73,7 @@ export class FormationDetailComponent implements OnInit {
         this.sessions = sessions;
         this.loading = false;
       },
-      error: (err) => {
-        console.error('Error loading sessions:', err);
+      error: () => {
         this.sessions = [];
         this.loading = false;
       }
@@ -76,46 +83,41 @@ export class FormationDetailComponent implements OnInit {
   loadResources(): void {
     this.formationService.getResources(this.formationId).subscribe({
       next: (resources) => { this.resources = resources; },
-      error: (err) => { console.error('Error loading resources:', err); }
+      error: () => { this.resources = []; }
     });
   }
 
-  loadCurrentUser(): void {
-    if (!this.authService.isLoggedIn) return;
-    this.authService.getCurrentUser().subscribe({
-      next: (user) => {
-        this.currentUser = user;
-        if (this.isParticipant() && this.formation?.status === 'COMPLETED') {
-          this.checkQuiz();
-        }
-      },
-      error: () => {}
-    });
-  }
-
-  checkQuiz(): void {
+  checkQuizStatus(): void {
+    if (!this.formation || this.formation.status !== 'COMPLETED') return;
     this.formationService.getQuiz(this.formationId).subscribe({
       next: () => { this.hasQuiz = true; },
-      error: (err) => {
-        if (err.status === 404) { this.hasQuiz = false; }
-        // 403 or 409 — silently ignore
-      }
+      error: () => { this.hasQuiz = false; }
     });
+  }
+
+  register(): void {
+    if (!this.authService.isLoggedIn) {
+      this.notificationService.show('Veuillez vous connecter pour vous inscrire', 'warning');
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.router.navigate(['/formations', this.formationId, 'checkout']);
   }
 
   isParticipant(): boolean {
-    return !!(this.currentUser && this.formation?.participantIds?.includes(this.currentUser.id));
+    if (!this.formation || !this.currentUser) return false;
+    return this.formation.participantIds?.includes(this.currentUser.id) || false;
   }
 
   canTakeQuiz(): boolean {
     return this.isParticipant() &&
            this.formation?.status === 'COMPLETED' &&
            this.hasQuiz &&
-           !this.quizSubmission?.passed;
+           !this.quizPassed;
   }
 
   hasCertificate(): boolean {
-    return this.quizSubmission?.passed === true;
+    return this.quizPassed;
   }
 
   goToQuiz(): void {
@@ -132,71 +134,34 @@ export class FormationDetailComponent implements OnInit {
         a.click();
         URL.revokeObjectURL(url);
       },
-      error: (err) => {
-        console.error('Error downloading certificate:', err);
+      error: () => {
         this.notificationService.show('Erreur lors du téléchargement du certificat', 'error');
-      }
-    });
-  }
-
-  // Resources helpers
-  getFileIcon(fileType: string): string {
-    if (!fileType) return '📎';
-    if (fileType === 'application/pdf') return '📄';
-    if (fileType.includes('word')) return '📝';
-    if (fileType.includes('excel') || fileType.includes('spreadsheet')) return '📊';
-    if (fileType.includes('powerpoint') || fileType.includes('presentation')) return '📑';
-    if (fileType.startsWith('image/')) return '🖼️';
-    return '📎';
-  }
-
-  formatFileSize(bytes: number): string {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / 1024 / 1024).toFixed(2) + ' MB';
-  }
-
-  downloadResource(resourceId: number, fileName: string): void {
-    const url = this.formationService.getResourceDownloadUrl(this.formationId, resourceId);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.target = '_blank';
-    a.click();
-  }
-
-  register(): void {
-    if (!this.authService.isLoggedIn) {
-      this.notificationService.show('Veuillez vous connecter pour vous inscrire', 'warning');
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    this.authService.getCurrentUser().subscribe({
-      next: (user) => {
-        this.formationService.register(this.formationId, user.id).subscribe({
-          next: () => {
-            this.notificationService.show('Inscription réussie !', 'success');
-            this.loadFormationDetails();
-          },
-          error: (err) => {
-            console.error(err);
-            const errorMsg = err.error?.message || "Erreur lors de l'inscription";
-            this.notificationService.show(errorMsg, 'error');
-          }
-        });
-      },
-      error: (err) => {
-        console.error(err);
-        this.notificationService.show("Erreur lors de la récupération de l'utilisateur", 'error');
       }
     });
   }
 
   getAvailableSpots(): number {
     if (!this.formation) return 0;
-    const registered = this.formation.participantIds?.length || 0;
-    return this.formation.maxCapacity - registered;
+    return this.formation.maxCapacity - (this.formation.participantIds?.length || 0);
+  }
+
+  getDownloadUrl(resourceId: number): string {
+    return `${environment.apiUrl}/api/formations/${this.formationId}/resources/${resourceId}/download`;
+  }
+
+  getFileIcon(fileType: string): string {
+    if (fileType?.includes('pdf')) return '📄';
+    if (fileType?.includes('word') || fileType?.includes('doc')) return '📝';
+    if (fileType?.includes('powerpoint') || fileType?.includes('presentation')) return '📊';
+    if (fileType?.includes('excel') || fileType?.includes('spreadsheet')) return '📈';
+    if (fileType?.includes('image')) return '🖼️';
+    return '📎';
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
   }
 
   getStatusLabel(status: string): string {
@@ -213,21 +178,14 @@ export class FormationDetailComponent implements OnInit {
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('fr-FR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
     });
   }
 
   formatTime(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   }
 
   goBack(): void {

@@ -1,0 +1,70 @@
+<div class="checkout-container">
+  <button class="btn-back" (click)="goBack()">← Retour à la formation</button>
+
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Chargement...</p>
+    </div>
+  }
+
+  @if (success) {
+    <div class="success-card">
+      <div class="success-icon">✅</div>
+      <h2>Inscription confirmée !</h2>
+      <p>Vous êtes maintenant inscrit à cette formation. Redirection en cours...</p>
+    </div>
+  }
+
+  @if (formation && !loading && !success) {
+    <div class="checkout-card">
+      <h1>Confirmer l'inscription</h1>
+
+      <div class="formation-summary">
+        <h2>{{ formation.title }}</h2>
+        <div class="summary-details">
+          <span>⏱️ {{ formation.duration }}h</span>
+          <span>👥 {{ formation.participantIds?.length || 0 }}/{{ formation.maxCapacity }} inscrits</span>
+          <span class="price-tag">
+            {{ formation.price && formation.price > 0 ? '€' + formation.price.toFixed(2) : 'Gratuit' }}
+          </span>
+        </div>
+      </div>
+
+      @if (isAlreadyRegistered()) {
+        <div class="already-registered">
+          <p>✅ Vous êtes déjà inscrit à cette formation.</p>
+          <button class="btn-back" (click)="goBack()">Retour à la formation</button>
+        </div>
+      } @else {
+        @if (error) {
+          <div class="error-msg">{{ error }}</div>
+        }
+
+        @if (isPaid()) {
+          <!-- Stripe card -->
+          <div class="payment-section">
+            <h3>Paiement sécurisé</h3>
+            <div id="card-element" class="card-element-container"></div>
+          </div>
+          <button class="btn-pay" (click)="payAndRegister()" [disabled]="processing">
+            @if (processing) {
+              <span class="spinner-sm"></span> Traitement...
+            } @else {
+              💳 Payer €{{ formation.price!.toFixed(2) }} et s'inscrire
+            }
+          </button>
+        } @else {
+          <p class="free-note">Cette formation est gratuite. Confirmez votre inscription.</p>
+          <button class="btn-pay free" (click)="registerFree()" [disabled]="processing">
+            @if (processing) {
+              <span class="spinner-sm"></span> Inscription...
+            } @else {
+              ✅ S'inscrire gratuitement
+            }
+          </button>
+        }
+      }
+    </div>
+  }
+</div>

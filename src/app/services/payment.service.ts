@@ -39,4 +39,8 @@ export class PaymentService {
   getConfig(): Observable<{ publishableKey: string }> {
     return this.http.get<{ publishableKey: string }>(`${this.apiUrl}/config`);
   }
+
+  createFormationPaymentIntent(formationId: number, userId: number): Observable<{ clientSecret: string }> {
+    return this.http.post<{ clientSecret: string }>(`${this.apiUrl}/formation-payment-intent`, { formationId, userId });
+  }
 }

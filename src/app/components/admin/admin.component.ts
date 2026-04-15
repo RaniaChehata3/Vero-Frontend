@@ -553,7 +553,7 @@ export class AdminComponent implements OnInit {
       return;
     }
 
-    const formationData: any = { ...this.formationForm };
+    const formationData: any = { ...this.formationForm, pinned: false };
     
     if (this.editingFormation) {
       formationData.id = this.editingFormation.id;

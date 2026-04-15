@@ -35,6 +35,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/formation-detail/formation-detail.component').then(m => m.FormationDetailComponent)
   },
   {
+    path: 'formations/:id/checkout',
+    loadComponent: () => import('./components/formation-checkout/formation-checkout.component').then(m => m.FormationCheckoutComponent)
+  },
+  {
     path: 'formations/:id/quiz',
     loadComponent: () => import('./components/quiz/quiz.component').then(m => m.QuizComponent)
   },
