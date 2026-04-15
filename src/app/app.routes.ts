@@ -1,15 +1,22 @@
 import { Routes } from '@angular/router';
-import { LandingComponent } from './components/landing/landing.component';
-import { TrackerComponent } from './components/tracker/tracker.component';
-import { ShopComponent } from './components/shop/shop.component';
-import { EventsComponent } from './components/events/events.component';
-import { DonateComponent } from './components/donate/donate.component';
 
 export const routes: Routes = [
-  { path: '', component: LandingComponent },
-  { path: 'track', component: TrackerComponent },
-  { path: 'shop', component: ShopComponent },
-  { path: 'events', component: EventsComponent },
+  { 
+    path: '', 
+    loadComponent: () => import('./components/landing/landing.component').then(m => m.LandingComponent) 
+  },
+  { 
+    path: 'track', 
+    loadComponent: () => import('./components/tracker/tracker.component').then(m => m.TrackerComponent) 
+  },
+  { 
+    path: 'shop', 
+    loadComponent: () => import('./components/shop/shop.component').then(m => m.ShopComponent) 
+  },
+  { 
+    path: 'events', 
+    loadComponent: () => import('./components/events/events.component').then(m => m.EventsComponent) 
+  },
   {
     path: 'donate',
     loadComponent: () => import('./components/donate/donate.component').then(m => m.DonateComponent)

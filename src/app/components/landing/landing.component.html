@@ -1,10 +1,9 @@
 <div class="landing-page">
   <!-- Hero Section -->
   <section class="landing-section hero-section">
-    <div class="hero-bg-img">
-      <img src="/assets/images/hero_minimal_leaf.png" alt="Aesthetic minimal nature background" />
-      <div class="hero-gradient-overlay"></div>
-    </div>
+    <video loop muted [muted]="true" playsinline class="hero-bg-video lazy-video" data-src="assets/244754.mp4">
+    </video>
+    <div class="hero-gradient-overlay"></div>
     <div class="hero-content">
       <div class="hero-eyebrow fade-in">Vero Platform</div>
       <h1 class="hero-h1 fade-in" style="transition-delay: .1s">
@@ -21,9 +20,8 @@
         Vero brings together carbon tracking, verified eco-products, community action, and transparent donations — all in one place built for people who believe the planet is worth fighting for.
       </p>
       
-      <div class="hero-stats-floating">
-        <app-stats></app-stats>
-      </div>
+      <!-- Removed unused stats component -->
+
 
       <div class="scrolldown-indicator">
         <span>Scroll to Explore</span>
@@ -32,71 +30,248 @@
     </div>
   </section>
 
-  <!-- Track Preview Section -->
-  <section class="landing-section feature-section" style="background-color: #FFF3CD;">
-    <div class="feature-layout left-visual">
-      <div class="feature-visual fade-in">
-        <div class="preview-card bg-white">
-          <img src="/assets/images/tracker-preview.png" alt="Carbon Footprint Tracker Dashboard Dashboard" class="preview-img" />
-        </div>
+  <!-- Cinematic Storytelling Section (Horizontal Scroll + Spline 3D) -->
+  <section class="storytelling-container" #storySection>
+    <div class="story-sticky-stage">
+      <!-- Cinematic Nature Video Background -->
+      <div class="storytelling-bg">
+        <video loop muted [muted]="true" playsinline class="bg-video lazy-video" data-src="/assets/261372.mp4">
+        </video>
+        <div class="story-overlay-gradient"></div>
       </div>
-      <div class="feature-text fade-in">
-        <div class="feature-tag">Carbon Tracker</div>
-        <h2 class="feature-h2">Your footprint,<br><em>mapped</em> in real time</h2>
-        <p class="feature-desc">Connect your accounts and Vero automatically measures your environmental impact across every lifestyle category. See where you stand and how to improve.</p>
-        <a routerLink="/track" class="btn-explore">Explore Tracker →</a>
+      
+      <!-- Horizontal Panels Wrapper -->
+      <div class="story-panels-wrapper" #storyPanels>
+        <!-- Panel 1: The Hook -->
+        <div class="story-panel">
+          <h2 class="story-headline">We have one home.</h2>
+        </div>
+        
+        <!-- Panel 2: The Problem -->
+        <div class="story-panel">
+          <h2 class="story-headline">But it's fading faster<br>than we can <em class="text-clay">track</em>.</h2>
+        </div>
+        
+        <!-- Panel 3: The Solution -->
+        <div class="story-panel">
+          <div class="story-solution-box glass-panel-side">
+            <div class="feature-tag mb-4">The Solution</div>
+            <h2 class="story-headline-medium">Until now.</h2>
+            <p class="feature-desc mt-4">Every action, every purchase, every donation—seamlessly traced and mapped to real-world restoration.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Shop Preview Section -->
-  <section class="landing-section feature-section" style="background-color: #E0F4F4;">
-    <div class="feature-layout right-visual">
-      <div class="feature-text fade-in">
-        <div class="feature-tag">Eco Shop</div>
-        <h2 class="feature-h2" style="color: #0c4d4d;">Verified<br><em>sustainable</em> products</h2>
-        <p class="feature-desc">Discover the best planet-friendly products, vetted for actual impact. From zero-waste home goods to low-carbon fashion.</p>
-        <a routerLink="/shop" class="btn-explore" style="background-color: #0c4d4d;">Browse the Shop →</a>
+  <!-- Track Preview Section -->
+  <section class="landing-section feature-section has-bg" style="background: var(--charcoal)">
+    <div class="feature-bg-media">
+      <video loop muted [muted]="true" playsinline class="bg-layer lazy-video" style="opacity: 0.8;" data-src="assets/278750.mp4">
+      </video>
+    </div>
+    <div class="feature-layout left-visual">
+      <div class="feature-text glass-panel">
+        <div class="feature-tag">Carbon Tracker</div>
+        <h2 class="feature-h2">Your footprint,<br><em>mapped</em> in real time</h2>
+        <p class="feature-desc">Connect your accounts and Vero automatically measures your environmental impact across every lifestyle category. See where you stand and how to improve.</p>
+        <div class="glass-stats-row-small mt-6">
+          <div class="glass-stat">
+            <span class="gs-val">-42%</span>
+            <span class="gs-lbl">Avg. Reduction</span>
+          </div>
+        </div>
+        <a routerLink="/track" class="btn-explore mt-8">Explore Tracker →</a>
       </div>
-      <div class="feature-visual fade-in">
-        <div class="preview-card">
-          <img src="/assets/images/shop-preview.png" alt="Flat lay of sustainable eco-friendly products" class="preview-img rounded-img" />
+      <div class="feature-visual empty-visual">
+      </div>
+    </div>
+  </section>
+  <!-- Elegant Shop Section -->
+  <section class="premium-shop-section has-bg">
+    <!-- Cinematic Video Background -->
+    <div class="feature-bg-media">
+      <video loop muted [muted]="true" playsinline class="bg-layer lazy-video" style="opacity: 0.85;" data-src="/assets/10835-226624999.mp4">
+      </video>
+      <div class="story-overlay-gradient"></div>
+    </div>
+
+    <div class="shop-grid-layout">
+      <!-- High-End Typography Left -->
+      <div class="shop-editorial-text">
+        <span class="editorial-tag">Curated Goods</span>
+        <h2 class="editorial-h2">Verified<br><em>sustainable</em><br>impact.</h2>
+        <p class="editorial-desc">
+          We painstakingly source and vet the best planet-friendly products designed for a low-carbon lifestyle. 
+          Everything you need, without the footprint.
+        </p>
+        <a routerLink="/shop" class="btn-elegant">Enter the Shop</a>
+      </div>
+
+      <!-- The Exploding Animation Visual -->
+      <div class="shop-visual-stage">
+        <div class="shop-animation-wrapper">
+          <img src="assets/images/animation/a_only_keep_the_backgr.png" class="shop-bg" alt="Mint Linen Display" />
+          <div class="shop-items-container">
+            <img src="assets/images/animation/1.png" class="shop-item" style="top: 0%; left: 0%; width: 28.41%;" alt="Cosmetics" />
+            <img src="assets/images/animation/2.png" class="shop-item" style="top: 10.25%; left: 25.87%; width: 45.89%;" alt="Bottle" />
+            <img src="assets/images/animation/3.png" class="shop-item" style="top: 8.49%; left: 74.12%; width: 17.67%;" alt="Soap" />
+            <img src="assets/images/animation/4.png" class="shop-item" style="top: 34.96%; left: 4.98%; width: 29.29%;" alt="Pouch" />
+            <img src="assets/images/animation/5.png" class="shop-item" style="top: 27.73%; left: 34.17%; width: 38.37%;" alt="Oils" />
+            <img src="assets/images/animation/6.png" class="shop-item" style="top: 44.04%; left: 35.64%; width: 18.65%;" alt="Serum" />
+            <img src="assets/images/animation/7.png" class="shop-item" style="top: 43.35%; left: 56.25%; width: 15.13%;" alt="Cream" />
+            <img src="assets/images/animation/8.png" class="shop-item" style="top: 73.33%; left: 7.61%; width: 22.55%;" alt="Pads" />
+            <img src="assets/images/animation/9.png" class="shop-item" style="top: 68.06%; left: 25.87%; width: 30.27%;" alt="Brush" />
+            <img src="assets/images/animation/10.png" class="shop-item" style="top: 69.04%; left: 53.9%; width: 12.69%;" alt="Comb" />
+            <img src="assets/images/animation/11.png" class="shop-item" style="top: 44.23%; left: 67.38%; width: 29.29%;" alt="Tote Bag" />
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Events Preview Section -->
-  <section class="landing-section feature-section" style="background-color: #FFE8E0;">
-    <div class="feature-layout left-visual">
-      <div class="feature-visual fade-in">
-        <div class="preview-card">
-          <img src="/assets/images/events-preview.png" alt="Community cleanup event on a beach at sunset" class="preview-img rounded-img" />
+  <section class="landing-section cinematic-section events-section">
+    <!-- Base Background Strategy: Cleaned flatlay background -->
+    <img src="assets/images/events/gemini-3.1-flash-image-preview (nano-banana-2)_a_remove_the_elements_.png" class="cinematic-bg-img" alt="Events Empty Background" />
+    <div class="cinematic-overlay" style="background: rgba(140, 60, 40, 0.4); z-index: 1;"></div>
+    
+    <div class="shop-grid-layout" style="z-index: 2; position: relative;">
+      <!-- High-End Typography Left -->
+      <div class="shop-editorial-text" style="padding-left: 5%;">
+        <span class="cinematic-tag">Community Action</span>
+        <h2 class="cinematic-h2">Act together,<br><em>change</em> more.</h2>
+        <p class="cinematic-desc">From local ocean cleanups to global climate marches — join thousands of others making a tangible, measurable difference in the real world.</p>
+        <div class="cinematic-stats" style="margin-bottom: 30px;">
+          <div class="cinematic-stat">
+            <span class="cinematic-stat-val">12K+</span>
+            <span class="cinematic-stat-lbl">Volunteers</span>
+          </div>
+          <div class="cinematic-stat">
+            <span class="cinematic-stat-val">340</span>
+            <span class="cinematic-stat-lbl">Events Worldwide</span>
+          </div>
         </div>
+        <a routerLink="/events" class="btn-cinematic" style="background: #FFF; color: #8A3C28;">See All Events</a>
       </div>
-      <div class="feature-text fade-in">
-        <div class="feature-tag">Community Action</div>
-        <h2 class="feature-h2" style="color: #612716;">Act together,<br><em>change</em> more</h2>
-        <p class="feature-desc">From local clean-ups to global climate marches — join events that make a real difference and join thousands of others.</p>
-        <a routerLink="/events" class="btn-explore" style="background-color: #612716;">See All Events →</a>
+
+      <!-- The Exploding Animation Visual Right -->
+      <div class="shop-visual-stage">
+        <div class="shop-animation-wrapper" style="width: 100%;">
+          <div class="shop-items-container events-items-container">
+            <!-- Programmatic slicing layout for 13 items -->
+            <img src="assets/images/events/1.png" class="events-item shop-item" style="top: 5%; left: 5%; width: 25%;" />
+            <img src="assets/images/events/2.png" class="events-item shop-item" style="top: 15%; left: 35%; width: 40%;" />
+            <img src="assets/images/events/3.png" class="events-item shop-item" style="top: 10%; left: 80%; width: 15%;" />
+            <img src="assets/images/events/4.png" class="events-item shop-item" style="top: 40%; left: 10%; width: 25%;" />
+            <img src="assets/images/events/5.png" class="events-item shop-item" style="top: 30%; left: 40%; width: 35%;" />
+            <img src="assets/images/events/6.png" class="events-item shop-item" style="top: 50%; left: 30%; width: 20%;" />
+            <img src="assets/images/events/7.png" class="events-item shop-item" style="top: 60%; left: 55%; width: 25%;" />
+            <img src="assets/images/events/8.png" class="events-item shop-item" style="top: 75%; left: 15%; width: 20%;" />
+            <img src="assets/images/events/9.png" class="events-item shop-item" style="top: 70%; left: 40%; width: 15%;" />
+            <img src="assets/images/events/10.png" class="events-item shop-item" style="top: 80%; left: 60%; width: 30%;" />
+            <img src="assets/images/events/11.png" class="events-item shop-item" style="top: 20%; left: 70%; width: 20%;" />
+            <img src="assets/images/events/12.png" class="events-item shop-item" style="top: 90%; left: 25%; width: 40%;" />
+            <img src="assets/images/events/13.png" class="events-item shop-item" style="top: 45%; left: 80%; width: 18%;" />
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
+
+
   <!-- Donate Preview Section -->
-  <section class="landing-section feature-section" style="background-color: #E8F0E8;">
-    <div class="feature-layout right-visual">
-      <div class="feature-text fade-in">
-        <div class="feature-tag">Traceable Donations</div>
-        <h2 class="feature-h2" style="color: var(--forest);">Every euro,<br><em>traced</em> to impact</h2>
-        <p class="feature-desc">All donations flow through verified smart contracts. Watch your money grow forests, clean oceans, and power communities with real-time updates.</p>
-        <a routerLink="/donate" class="btn-explore">Start Donating →</a>
+  <section class="landing-section cinematic-section donate-section">
+    <!-- Base Background Strategy: Cleaned flatlay background -->
+    <img src="assets/images/donation/gemini-3.1-flash-image-preview (nano-banana-2)_a_remove_the_elements,.png" class="cinematic-bg-img" alt="Donation Empty Background" />
+    <div class="donate-overlay" style="background: rgba(14, 52, 38, 0.6); z-index: 1; position: absolute; inset: 0;"></div>
+    
+    <div class="shop-grid-layout" style="z-index: 2; position: relative; flex-direction: row-reverse;">
+      <!-- High-End Typography Right -->
+      <div class="shop-editorial-text" style="padding-right: 5%; text-align: right; align-items: flex-end;">
+        <span class="cinematic-tag" style="color: #A7F3D0;">Traceable Donations</span>
+        <h2 class="cinematic-h2">Every euro,<br><em>traced</em> to impact.</h2>
+        <p class="cinematic-desc" style="text-align: right;">All donations flow through verified smart contracts. Watch your money grow forests, clean oceans, and power communities — with real-time proof of impact.</p>
+        <div class="cinematic-stats" style="margin-bottom: 30px; justify-content: flex-end;">
+          <div class="cinematic-stat" style="align-items: flex-end;">
+            <span class="cinematic-stat-val">€2.4M</span>
+            <span class="cinematic-stat-lbl">Total Donated</span>
+          </div>
+          <div class="cinematic-stat" style="align-items: flex-end;">
+            <span class="cinematic-stat-val">100%</span>
+            <span class="cinematic-stat-lbl">Transparent</span>
+          </div>
+        </div>
+        <a routerLink="/donate" class="btn-cinematic" style="background: #A7F3D0; color: #064E3B;">Start Donating</a>
       </div>
-      <div class="feature-visual fade-in">
-        <div class="preview-card">
-          <img src="/assets/images/donate-preview.png" alt="Planting a sapling in a forest" class="preview-img rounded-img" />
+
+      <!-- The Exploding Animation Visual Left -->
+      <div class="shop-visual-stage">
+        <div class="shop-animation-wrapper" style="width: 100%;">
+          <div class="shop-items-container donate-items-container">
+            <!-- Programmatic slicing layout for 12 items -->
+            <img src="assets/images/donation/1.png" class="donate-item shop-item" style="top: 10%; left: 10%; width: 30%;" />
+            <img src="assets/images/donation/2.png" class="donate-item shop-item" style="top: 25%; left: 45%; width: 20%;" />
+            <img src="assets/images/donation/3.png" class="donate-item shop-item" style="top: 15%; left: 70%; width: 25%;" />
+            <img src="assets/images/donation/4.png" class="donate-item shop-item" style="top: 45%; left: 15%; width: 20%;" />
+            <img src="assets/images/donation/5.png" class="donate-item shop-item" style="top: 50%; left: 40%; width: 35%;" />
+            <img src="assets/images/donation/6.png" class="donate-item shop-item" style="top: 40%; left: 80%; width: 15%;" />
+            <img src="assets/images/donation/7.png" class="donate-item shop-item" style="top: 70%; left: 20%; width: 25%;" />
+            <img src="assets/images/donation/8.png" class="donate-item shop-item" style="top: 80%; left: 50%; width: 15%;" />
+            <img src="assets/images/donation/9.png" class="donate-item shop-item" style="top: 75%; left: 70%; width: 20%;" />
+            <img src="assets/images/donation/10.png" class="donate-item shop-item" style="top: 20%; left: 30%; width: 10%;" />
+            <img src="assets/images/donation/11.png" class="donate-item shop-item" style="top: 60%; left: 10%; width: 12%;" />
+            <img src="assets/images/donation/12.png" class="donate-item shop-item" style="top: 85%; left: 80%; width: 18%;" />
+          </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- News & Announcements (Playful Peek Hover) -->
+  <section class="landing-section feature-section" style="background: var(--charcoal); flex-direction: column; align-items: flex-start; justify-content: flex-start;">
+    <h2 class="feature-h2" style="color: white; margin-bottom: 60px; text-align: center; width: 100%;">News & announcements</h2>
+    
+    <div class="news-grid">
+      <!-- Card 1 -->
+      <a href="#" class="news-card glass-panel" style="background: rgba(86, 126, 106, 0.4); border-color: rgba(255,255,255,0.15);">
+        <img src="assets/images/reveal/card_char_frog.png" class="news-peek-icon peek-frog" alt="Frog peeking" />
+        <div class="news-card-inner">
+          <div class="news-meta">
+            <span class="news-badge" style="background: var(--sage); color: var(--charcoal);">Community</span>
+            <span class="news-date">1 week ago</span>
+          </div>
+          <h3 class="news-title">Local beach cleanup removed 2 tons of plastic</h3>
+          <span class="news-readmore">Read More →</span>
+        </div>
+      </a>
+
+      <!-- Card 2 -->
+      <a href="#" class="news-card glass-panel" style="background: rgba(59, 154, 178, 0.3); border-color: rgba(255,255,255,0.15);">
+        <img src="assets/images/reveal/card_char_owl.png" class="news-peek-icon peek-toucan" alt="Owl peeking" />
+        <div class="news-card-inner">
+          <div class="news-meta">
+            <span class="news-badge" style="background: var(--ocean); color: white;">Platform</span>
+            <span class="news-date">1 week ago</span>
+          </div>
+          <h3 class="news-title">New carbon tracker algorithm is now live globally</h3>
+          <span class="news-readmore">Read More →</span>
+        </div>
+      </a>
+
+      <!-- Card 3 -->
+      <a href="#" class="news-card glass-panel" style="background: rgba(181, 137, 85, 0.3); border-color: rgba(255,255,255,0.15);">
+        <img src="assets/images/reveal/card_char_bee.png" class="news-peek-icon peek-monkey" alt="Bee peeking" />
+        <div class="news-card-inner">
+          <div class="news-meta">
+            <span class="news-badge" style="background: var(--clay); color: white;">Impact</span>
+            <span class="news-date">2 weeks ago</span>
+          </div>
+          <h3 class="news-title">Vero funds 500,000th tree in the Amazon basin</h3>
+          <span class="news-readmore">Read More →</span>
+        </div>
+      </a>
     </div>
   </section>
 

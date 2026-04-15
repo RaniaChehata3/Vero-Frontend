@@ -1,19 +1,18 @@
 <div class="almanac-page">
 
+  <!-- ══ INTERACTIVE DOT GRID (community theme) ══ -->
+  <canvas class="community-dot-canvas" #communityCanvas></canvas>
+
   <!-- ══ MASTHEAD ══ -->
   <div class="almanac-masthead">
-    <div class="masthead-bg">
-      <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1800&q=80"
-           alt="Nature background" class="masthead-image" />
-      <div class="masthead-overlay"></div>
-    </div>
+    <!-- hero image removed: dot grid shows through -->
     <div class="masthead-content">
       <span class="masthead-eyebrow">
         <span class="eyebrow-line"></span>
-        Ecological Intelligence Network
+        <span data-tw="Ecological Intelligence Network"></span>
       </span>
-      <h1 class="masthead-title">The <em>Vero</em><br>Almanac</h1>
-      <p class="masthead-sub">Voices from the frontier of climate action, shared transparently.</p>
+      <h1 class="masthead-title"><span data-tw="The Vero Almanac" class="tw-title"></span></h1>
+      <p class="masthead-sub" data-tw="Voices from the frontier of climate action, shared transparently."></p>
       <div class="masthead-meta">
         <span>{{ posts.length || 0 }} dispatches</span>
         <span class="meta-dot">·</span>
@@ -21,7 +20,7 @@
       </div>
     </div>
     <!-- Scroll cue -->
-    <div class="masthead-scroll-cue">scroll ↓</div>
+    <div class="masthead-scroll-cue" data-tw="scroll ↓"></div>
   </div>
 
   <!-- ══ MAIN BODY ══ -->
@@ -31,7 +30,7 @@
     <aside class="almanac-rail left-rail">
       <div class="rail-sticky">
         <div class="rail-section">
-          <div class="rail-label">Navigate</div>
+          <div class="rail-label" data-tw="Navigate"></div>
           <nav class="rail-nav">
             <a routerLink="/community" class="rail-link active">
               <span class="rail-link-icon">◆</span> Global Feed
@@ -40,12 +39,12 @@
         </div>
 
         <div class="rail-section">
-          <div class="rail-label">About this Space</div>
-          <p class="rail-desc">A living record of ecological action, questions & dispatches from the Vero network.</p>
+          <div class="rail-label" data-tw="About this Space"></div>
+          <p class="rail-desc" data-tw="A living record of ecological action, questions & dispatches from the Vero network."></p>
         </div>
 
         <div class="rail-section">
-          <div class="rail-label">Trending Tags</div>
+          <div class="rail-label" data-tw="Trending Tags"></div>
           <div class="rail-tags">
             <span class="rail-tag">#OceanCleanup</span>
             <span class="rail-tag">#CarbonTax</span>
@@ -202,22 +201,22 @@
     <aside class="almanac-rail right-rail">
       <div class="rail-sticky">
         <div class="rail-section">
-          <div class="rail-label">Trending Dispatches</div>
+          <div class="rail-label" data-tw="Trending Dispatches"></div>
 
           <div class="trend-card">
-            <div class="trend-cat-badge">ACTION</div>
-            <div class="trend-headline">#OceanCleanup</div>
-            <div class="trend-stats">1.2k posts</div>
+            <div class="trend-cat-badge" data-tw="ACTION"></div>
+            <div class="trend-headline" data-tw="#OceanCleanup"></div>
+            <div class="trend-stats" data-tw="1.2k posts"></div>
           </div>
           <div class="trend-card">
-            <div class="trend-cat-badge">NEWS</div>
-            <div class="trend-headline">Carbon Tax Updated</div>
-            <div class="trend-stats">854 posts</div>
+            <div class="trend-cat-badge" data-tw="NEWS"></div>
+            <div class="trend-headline" data-tw="Carbon Tax Updated"></div>
+            <div class="trend-stats" data-tw="854 posts"></div>
           </div>
           <div class="trend-card">
-            <div class="trend-cat-badge">DISCUSSION</div>
-            <div class="trend-headline">Zero-Waste Tips</div>
-            <div class="trend-stats">432 posts</div>
+            <div class="trend-cat-badge" data-tw="DISCUSSION"></div>
+            <div class="trend-headline" data-tw="Zero-Waste Tips"></div>
+            <div class="trend-stats" data-tw="432 posts"></div>
           </div>
         </div>
 

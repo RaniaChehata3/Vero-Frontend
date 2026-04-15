@@ -4,6 +4,82 @@
    Fonts: Playfair Display + DM Mono + DM Sans
    ═══════════════════════════════════════════════════════ */
 
+/* ══════════════════════════════════════════════════
+   STITCH-STYLE INTERACTIVE DOT GRID BACKGROUND
+   Canvas fills viewport, fixed behind all content
+   ══════════════════════════════════════════════════ */
+
+.dot-grid-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  /* Deep, sophisticated dark gradient using the Vero dark palette */
+  background: linear-gradient(145deg, var(--charcoal) 0%, var(--forest) 50%, var(--moss) 100%); 
+}
+
+/* All page content must sit above the fixed canvas */
+.vt-hero,
+.vt-form-panel,
+.vt-body {
+  position: relative;
+  z-index: 1;
+}
+
+/* Page background is transparent — canvas shows through */
+.vt-page {
+  background: transparent !important;
+}
+
+/* Cards on dark background */
+.vt-card {
+  background: rgba(255, 255, 255, 0.04) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.4) !important;
+}
+.vt-card:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Ensure hero text is light and readable on the dark background */
+.vt-headline { color: rgba(255,255,255,0.95) !important; }
+.vt-eyebrow  { color: rgba(255,255,255,0.6) !important; }
+.vt-eyebrow-line { background: var(--fern) !important; }
+
+/* Typography on dark background */
+.vt-card-title { color: rgba(255,255,255,0.92) !important; }
+.vt-card-tag   { color: rgba(106,170,106,0.85) !important; }
+.vt-vector-name,
+.vt-vector-val { color: rgba(255,255,255,0.85) !important; }
+.vt-goal-type,
+.vt-goal-range { color: rgba(255,255,255,0.7) !important; }
+.vt-log-desc   { color: rgba(255,255,255,0.88) !important; }
+.vt-log-meta   { color: rgba(255,255,255,0.45) !important; }
+.vt-log-kg     { color: rgba(106,170,106,1) !important; }
+.vt-tip-text   { color: rgba(255,255,255,0.8) !important; }
+.vt-tip-num    { color: var(--fern) !important; opacity: 0.7; }
+
+/* Form panel over dark bg */
+.vt-form-panel {
+  background: rgba(10, 20, 14, 0.9) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+}
+.vt-label       { color: rgba(106,170,106,0.8) !important; }
+.vt-kg-input,
+.vt-desc-input  { color: rgba(255,255,255,0.9) !important; }
+.vt-kg-unit     { color: rgba(255,255,255,0.5) !important; }
+.vt-desc-input  { border-bottom-color: rgba(255,255,255,0.15) !important; }
+.vt-desc-input:focus { border-bottom-color: var(--fern) !important; }
+.vt-desc-input::placeholder { color: rgba(255,255,255,0.25) !important; }
+.vt-goal-bar    { background: rgba(255,255,255,0.07) !important; }
+.vt-add-btn     { background: rgba(255,255,255,0.06) !important; color: rgba(255,255,255,0.8) !important; }
+.vt-add-btn:hover { background: rgba(255,255,255,0.12) !important; }
+
+
 /* ═══════════════════════════════════
    MASTER KEYFRAMES — Award-level motion
    ═══════════════════════════════════ */
@@ -168,7 +244,25 @@
   animation: orbFloat3 30s ease-in-out infinite 8s;
 }
 
-/* Grain drift animation */
+/* ═══ TYPEWRITER CURSOR ═══ */
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.typed-cursor {
+  display: inline-block;
+  color: var(--fern);
+  font-weight: 300;
+  animation: cursorBlink 0.8s ease-in-out infinite;
+  margin-left: 2px;
+}
+
+.typed-headline em {
+  font-style: italic;
+  color: var(--fern);
+}
+
 .vt-grain { animation: grainDrift 0.12s steps(1) infinite; }
 
 /* ═══════════════════════════════════

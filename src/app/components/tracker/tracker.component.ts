@@ -23,8 +23,27 @@ import { EcosystemScene } from './scene-manager';
   styleUrl: './tracker.component.css'
 })
 export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('ecoCanvas', { static: false }) ecoCanvas!: ElementRef<HTMLDivElement>;
+  @ViewChild('ecoCanvas',    { static: false }) ecoCanvas!:    ElementRef<HTMLDivElement>;
+  @ViewChild('dotCanvas',    { static: false }) dotCanvas!:    ElementRef<HTMLCanvasElement>;
+  @ViewChild('typedHeadline',{ static: false }) typedHeadline!:ElementRef<HTMLSpanElement>;
+  @ViewChild('typedAiDesc',  { static: false }) typedAiDesc!:  ElementRef<HTMLSpanElement>;
   private ecoScene!: EcosystemScene;
+  private dotGridRaf: number | null = null;
+  private dotMouseHandler: ((e: MouseEvent) => void) | null = null;
+  private twRaf: number | null = null;  // typewriter RAF
+
+  // Cycling placeholder prompts for the AI bar
+  typedPlaceholder = '';
+  private phraseCycle = [
+    'Drove 40 km to work today...',
+    'Had a steak dinner last night...',
+    'Flew London to Paris...',
+    'Turned on the AC for 3 hours...',
+    'Ordered online delivery x2...',
+    'Describe an activity — AI will calculate its impact...'
+  ];
+  private phraseIndex = 0;
+  private phraseRaf: ReturnType<typeof setTimeout> | null = null;
   
   ecoHealth = 0;
   ecoLabel = '';
@@ -130,10 +149,236 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       document.querySelectorAll('.vt-observe').forEach(el => observer.observe(el));
     }, 500);
+
+    // ── Universal Scroll-Typewriter: any element with data-tw types in when visible ──
+    const typewriteEl = (el: HTMLElement) => {
+      const text = el.getAttribute('data-tw') || '';
+      if (!text || el.classList.contains('tw-done')) return;
+      el.classList.add('tw-done');
+      el.textContent = '';
+
+      // Calculate speed: shorter texts type faster
+      const charSpeed = text.length > 20 ? 30 : 45;
+      let i = 0;
+      const tick = () => {
+        if (i <= text.length) {
+          el.textContent = text.substring(0, i);
+          i++;
+          setTimeout(tick, charSpeed);
+        }
+      };
+      tick();
+    };
+
+    const twObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            typewriteEl(entry.target as HTMLElement);
+            twObserver.unobserve(entry.target); // only once
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    // Observe all [data-tw] elements — deferred to wait for data render
+    setTimeout(() => {
+      document.querySelectorAll('[data-tw]').forEach(el => twObserver.observe(el));
+    }, 600);
+
+    // Init Stitch-style interactive dot grid — deferred to ensure ViewChild is painted
+    setTimeout(() => this.ngZone.runOutsideAngular(() => this.initDotGrid()), 50);
+
+    // Typewriter: headline on load
+    setTimeout(() => this.typeHeadline(), 200);
+
+    // Typewriter: cycling placeholder for AI bar
+    this.cyclePlaceholder();
   }
 
   ngOnDestroy(): void {
-    if (this.ecoScene) this.ecoScene.dispose();
+    if (this.ecoScene)        this.ecoScene.dispose();
+    if (this.dotGridRaf)      cancelAnimationFrame(this.dotGridRaf);
+    if (this.dotMouseHandler) window.removeEventListener('mousemove', this.dotMouseHandler);
+    if (this.twRaf)           cancelAnimationFrame(this.twRaf);
+    if (this.phraseRaf)       clearTimeout(this.phraseRaf);
+  }
+
+  // ── Typewriter: Main Headline ─────────────────────────────────────
+  private typeHeadline(): void {
+    const el = this.typedHeadline?.nativeElement;
+    if (!el) return;
+
+    // HTML with the italic <em> tag preserved
+    const segments = [
+      { text: 'Your ', em: false },
+      { text: 'Carbon', em: true },
+      { text: ' Footprint', em: false }
+    ];
+
+    let segIdx = 0;
+    let charIdx = 0;
+    el.innerHTML = '';
+
+    const tick = () => {
+      if (segIdx >= segments.length) return; // done
+      const seg = segments[segIdx];
+      if (charIdx < seg.text.length) {
+        // Append next character in appropriate element
+        let span = el.querySelector(`[data-seg="${segIdx}"]`) as HTMLElement | null;
+        if (!span) {
+          span = document.createElement(seg.em ? 'em' : 'span');
+          span.setAttribute('data-seg', String(segIdx));
+          el.appendChild(span);
+        }
+        span.textContent += seg.text[charIdx];
+        charIdx++;
+      } else {
+        segIdx++;
+        charIdx = 0;
+      }
+      setTimeout(tick, segIdx === 1 && charIdx === 0 ? 80 : 55); // slight pause before 'Carbon'
+    };
+    tick();
+  }
+
+  // ── Typewriter: Cycling AI placeholder ────────────────────────────
+  private cyclePlaceholder(): void {
+    const phrase = this.phraseCycle[this.phraseIndex];
+    let i = 0;
+
+    const typeChar = () => {
+      if (i <= phrase.length) {
+        this.ngZone.run(() => { this.typedPlaceholder = phrase.substring(0, i); });
+        i++;
+        this.phraseRaf = setTimeout(typeChar, 45);
+      } else {
+        // Pause then erase
+        this.phraseRaf = setTimeout(() => this.erasePhrase(phrase.length), 1800);
+      }
+    };
+    typeChar();
+  }
+
+  private erasePhrase(len: number): void {
+    let i = len;
+    const erase = () => {
+      if (i >= 0) {
+        this.ngZone.run(() => {
+          this.typedPlaceholder = this.phraseCycle[this.phraseIndex].substring(0, i);
+        });
+        i--;
+        this.phraseRaf = setTimeout(erase, 20);
+      } else {
+        // Next phrase
+        this.phraseIndex = (this.phraseIndex + 1) % this.phraseCycle.length;
+        this.phraseRaf = setTimeout(() => this.cyclePlaceholder(), 300);
+      }
+    };
+    erase();
+  }
+
+  // ── Typewriter: AI result description ─────────────────────────────
+  private typeAiResult(text: string): void {
+    const el = this.typedAiDesc?.nativeElement;
+    if (!el) return;
+    el.textContent = '';
+    let i = 0;
+    const tick = () => {
+      if (i <= text.length) {
+        el.textContent = text.substring(0, i);
+        i++;
+        setTimeout(tick, 18); // fast — feels like real-time AI output
+      }
+    };
+    tick();
+  }
+
+  private initDotGrid(): void {
+    const canvas = this.dotCanvas?.nativeElement;
+    if (!canvas) { console.warn('[DotGrid] canvas not found'); return; }
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // ── Config — tune these to adjust the look ──────────────────
+    const SPACING   = 26;          // px between each dot
+    const DOT_R     = 1.5;         // resting dot radius
+    const MAX_R     = 5;           // radius at cursor center
+    const REPEL_R   = 120;         // cursor influence radius in px
+    const DOT_COLOR = '140, 190, 160'; // light refreshing mint/sage for dark bg
+    const LERP      = 0.12;        // spring-back speed (lower = slower)
+    // ────────────────────────────────────────────────────────────
+
+    let mouse = { x: -9999, y: -9999 };
+    let dots: { ox: number; oy: number; x: number; y: number }[] = [];
+
+    const buildGrid = () => {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight; // Must match viewport to prevent fixed element squishing
+      dots = [];
+      const cols = Math.ceil(canvas.width  / SPACING) + 2;
+      const rows = Math.ceil(document.documentElement.scrollHeight / SPACING) + 2;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          dots.push({ ox: c * SPACING, oy: r * SPACING, x: c * SPACING, y: r * SPACING });
+        }
+      }
+    };
+
+    buildGrid();
+    window.addEventListener('resize', buildGrid, { passive: true });
+
+    this.dotMouseHandler = (e: MouseEvent) => {
+      // Account for scroll position since canvas is fixed
+      mouse.x = e.clientX;
+      mouse.y = e.clientY + window.scrollY;
+    };
+    window.addEventListener('mousemove', this.dotMouseHandler!, { passive: true });
+
+    const draw = () => {
+      // Clear the fixed viewport canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const scrollY = window.scrollY;
+      const viewTop = scrollY;
+      const viewBot = scrollY + window.innerHeight + SPACING;
+
+      for (const d of dots) {
+        // Skip dots not in the visible viewport (perf optimisation)
+        if (d.oy < viewTop - SPACING || d.oy > viewBot) continue;
+
+        const dx   = d.ox - mouse.x;
+        const dy   = d.oy - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < REPEL_R && dist > 0) {
+          const force = (1 - dist / REPEL_R);       // 0→1
+          const push  = force * force * 44;          // squared for sharp bubble
+          const angle = Math.atan2(dy, dx);
+          d.x = d.ox + Math.cos(angle) * push;
+          d.y = d.oy + Math.sin(angle) * push;
+        } else {
+          d.x += (d.ox - d.x) * LERP;
+          d.y += (d.oy - d.y) * LERP;
+        }
+
+        const curDist = Math.sqrt((d.x - mouse.x) ** 2 + (d.y - mouse.y) ** 2);
+        const proximity = Math.max(0, 1 - curDist / REPEL_R);
+
+        const r     = DOT_R + (MAX_R - DOT_R) * proximity;
+        const alpha = 0.28 + 0.65 * proximity;  // 0.28 base → 0.93 at cursor
+
+        ctx.beginPath();
+        ctx.arc(d.x, d.y - scrollY, r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${DOT_COLOR},${alpha})`;
+        ctx.fill();
+      }
+
+      this.dotGridRaf = requestAnimationFrame(draw);
+    };
+
+    this.dotGridRaf = requestAnimationFrame(draw);
   }
 
   loadData(): void {
@@ -376,6 +621,8 @@ export class TrackerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.aiLoading = false;
         this.aiText    = '';
         this.loadData();
+        // Typewrite the AI result description after a brief render cycle
+        setTimeout(() => this.typeAiResult(result.description ?? ''), 80);
       },
       error: () => {
         this.aiLoading = false;

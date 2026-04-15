@@ -2,16 +2,16 @@ import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+
 import { ForumService } from '../../../services/forum.service';
 import { Post, Comment } from '../../../services/forum.models';
-import { FadeInDirective } from '../../../fade-in.directive';
+
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-thread',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, FadeInDirective],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './thread.component.html',
   styleUrl: './thread.component.css'
 })

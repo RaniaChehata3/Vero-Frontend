@@ -1,29 +1,24 @@
 <!-- ═══ VERO CARBON INTELLIGENCE DASHBOARD ═══ -->
 <div class="vt-page">
+
+  <!-- ═══ STITCH-STYLE INTERACTIVE DOT GRID ═══ -->
+  <canvas class="dot-grid-canvas" #dotCanvas></canvas>
+
     <!-- ═══ CINEMATIC HERO PANEL ═══ -->
     <section class="vt-hero" [class.hero-ready]="heroReady">
-      <div class="vt-hero-bg">
-        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1800&q=80"
-             alt="Forest" class="vt-hero-img" />
-        <div class="vt-hero-overlay"></div>
-        <!-- Animated grain overlay -->
-        <div class="vt-grain"></div>
-        <!-- Floating ambient orbs -->
-        <div class="vt-orb vt-orb-1"></div>
-        <div class="vt-orb vt-orb-2"></div>
-        <div class="vt-orb vt-orb-3"></div>
-      </div>
+      <!-- Removal of hero image to let the dot-grid flow everywhere -->
+
 
       <div class="vt-hero-content">
         <div class="vt-eyebrow">
           <span class="vt-eyebrow-line"></span>
-          Carbon Intelligence — 2026
+          <span data-tw="Carbon Intelligence — 2026"></span>
         </div>
 
         <div class="vt-hero-row">
           <div class="vt-headline-block">
             <h1 class="vt-headline">
-              Your<br><em>Carbon</em><br>Footprint
+              <span #typedHeadline class="typed-headline"></span><span class="typed-cursor">|</span>
             </h1>
           </div>
 
@@ -50,7 +45,7 @@
         <div class="vt-ai-bar">
           <span class="vt-ai-dot"></span>
           <input type="text" [(ngModel)]="aiText" class="vt-ai-input"
-                 placeholder="Describe an activity — AI will calculate its impact..."
+                 [placeholder]="typedPlaceholder"
                  (keyup.enter)="analyzeWithAI()" />
           <button class="vt-ai-btn" (click)="analyzeWithAI()" [disabled]="aiLoading">
             @if (aiLoading) {
@@ -66,7 +61,7 @@
         @if (aiResult) {
           <div class="vt-ai-result">
             <span class="vt-ai-tag">{{ labels[aiResult.activityType] }}</span>
-            <span class="vt-ai-desc">{{ aiResult.description }}</span>
+            <span class="vt-ai-desc" #typedAiDesc></span>
             <span class="vt-ai-impact">+{{ formatKg(aiResult.carbonKg) }}</span>
           </div>
         }
@@ -145,8 +140,8 @@
         <div class="vt-card eco-panel vt-observe">
           <div class="eco-hud">
             <div class="eco-meta">
-              <span class="vt-card-tag">Ecosystem</span>
-              <h2 class="vt-card-title">Terrarium Health</h2>
+              <span class="vt-card-tag" data-tw="Ecosystem"></span>
+              <h2 class="vt-card-title" data-tw="Terrarium Health"></h2>
             </div>
             <div class="eco-score-block">
               <div class="eco-val">{{ ecoHealth }}</div>
@@ -161,8 +156,8 @@
         <!-- Category Breakdown -->
         <div class="vt-card vt-observe">
           <div class="vt-card-header">
-            <span class="vt-card-tag">Breakdown</span>
-            <h2 class="vt-card-title">Emission Vectors</h2>
+            <span class="vt-card-tag" data-tw="Breakdown"></span>
+            <h2 class="vt-card-title" data-tw="Emission Vectors"></h2>
           </div>
           <div class="vt-vectors">
             @for (row of categoryRows; track row.type; let i = $index) {
@@ -199,8 +194,8 @@
         <div class="vt-card vt-observe">
           <div class="vt-card-header vt-flex-header">
             <div>
-              <span class="vt-card-tag">Goals</span>
-              <h2 class="vt-card-title">My Targets</h2>
+              <span class="vt-card-tag" data-tw="Goals"></span>
+              <h2 class="vt-card-title" data-tw="My Targets"></h2>
             </div>
             <button class="vt-add-btn" (click)="showGoalForm = !showGoalForm">
               {{ showGoalForm ? 'Cancel' : '+ New Target' }}
@@ -258,8 +253,8 @@
         <!-- AI Tips -->
         <div class="vt-card vt-tips-card vt-observe">
           <div class="vt-card-header">
-            <span class="vt-card-tag ai-tag">AI Insights</span>
-            <h2 class="vt-card-title">Personalised Recommendations</h2>
+            <span class="vt-card-tag ai-tag" data-tw="AI Insights"></span>
+            <h2 class="vt-card-title" data-tw="Personalised Recommendations"></h2>
           </div>
           @if (tips.length === 0) {
             <div class="vt-tips-loading">
@@ -284,8 +279,8 @@
 
         <div class="vt-card vt-log-card vt-observe">
           <div class="vt-card-header">
-            <span class="vt-card-tag">Records</span>
-            <h2 class="vt-card-title">Activity Log</h2>
+            <span class="vt-card-tag" data-tw="Records"></span>
+            <h2 class="vt-card-title" data-tw="Activity Log"></h2>
           </div>
 
           <div class="vt-log">

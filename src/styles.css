@@ -1,25 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
 :root {
-  --forest: #1a2e1a;
-  --moss: #2d4a2d;
-  --sage: #4a7a4a;
-  --fern: #6aaa6a;
-  --mist: #c8dfc8;
-  --cream: #f5f0e8;
-  --parchment: #ede6d6;
-  --earth: #8b6f47;
-  --clay: #c4956a;
-  --gold: #d4a843;
-  --charcoal: #2c2c28;
-  --smoke: #6b6b65;
-  --white: #fdfdf8;
+  --forest: #0a1f2e; /* Deep ocean navy */
+  --moss: #123e54; /* Deep teal/blue */
+  --sage: #1e708a; /* Azure */
+  --fern: #3b9ab2; /* Cyan/Sea glass */
+  --mist: #c8e0e8; /* Pale seafoam */
+  --cream: #f4f8fa; /* Crisp cool water white */
+  --parchment: #e5eff2; /* Soft water blue */
+  --earth: #9c8e73; /* Wet Sand */
+  --clay: #d6bfa3; /* Warm Sand */
+  --gold: #edda9d; /* Sunlit Dune */
+  --charcoal: #15222b; /* Very dark navy */
+  --smoke: #60798a; /* Cool grey-blue */
+  --white: #ffffff;
+  
   --nav-h: 72px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--cream);
   color: var(--charcoal);
   overflow-x: hidden;

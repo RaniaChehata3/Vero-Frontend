@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
+import { Router, NavigationEnd, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ForumService } from '../../services/forum.service';
 import { AuthService } from '../../services/auth.service';
@@ -21,8 +21,10 @@ export class NavComponent implements OnInit, OnDestroy {
   constructor(
     private forumService: ForumService,
     public authService: AuthService,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) {
+  }
 
   ngOnInit() {
     if (this.authService.isLoggedIn) {
