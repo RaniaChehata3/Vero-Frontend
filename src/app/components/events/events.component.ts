@@ -77,10 +77,10 @@ export class EventsComponent implements OnInit, OnDestroy {
   private roleSub!: Subscription;
 
   constructor(
-    private api:  EventApiService,
+    private api: EventApiService,
     private auth: AuthService,
-    private cdr:  ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.generateLeaves();
@@ -153,7 +153,7 @@ export class EventsComponent implements OnInit, OnDestroy {
   // ── Roles ─────────────────────────────────────────────────────────────────
   isAdmin():   boolean { return this.auth.isAdmin; }
   isPartner(): boolean { return this.auth.isPartner; }
-  isUser():    boolean { return !this.auth.isAdmin && !this.auth.isPartner; }
+  isUser(): boolean { return !this.auth.isAdmin && !this.auth.isPartner; }
   canManage(): boolean { return this.auth.canManageEvents; }
 
   // ── Detail ────────────────────────────────────────────────────────────────
