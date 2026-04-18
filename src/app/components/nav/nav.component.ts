@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterModule, Router } from '@angular/router';
+import { Router, NavigationEnd, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { loadStripe, Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';

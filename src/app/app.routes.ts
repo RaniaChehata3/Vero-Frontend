@@ -1,30 +1,45 @@
 import { Routes } from '@angular/router';
-import { LandingComponent } from './components/landing/landing.component';
-import { TrackerComponent } from './components/tracker/tracker.component';
-import { ShopComponent } from './components/shop/shop.component';
-import { EventsComponent } from './components/events/events.component';
-import { DonateComponent } from './components/donate/donate.component';
 
 export const routes: Routes = [
-  { path: '', component: LandingComponent },
-  { path: 'track', component: TrackerComponent },
-  { path: 'shop', component: ShopComponent },
-  { path: 'events', component: EventsComponent },
+  { 
+    path: '', 
+    loadComponent: () => import('./components/landing/landing.component').then(m => m.LandingComponent) 
+  },
+  { 
+    path: 'track', 
+    loadComponent: () => import('./components/tracker/tracker.component').then(m => m.TrackerComponent) 
+  },
+  { 
+    path: 'shop', 
+    loadComponent: () => import('./components/shop/shop.component').then(m => m.ShopComponent) 
+  },
+  { 
+    path: 'events', 
+    loadComponent: () => import('./components/events/events.component').then(m => m.EventsComponent) 
+  },
   {
     path: 'donate',
     loadComponent: () => import('./components/donate/donate.component').then(m => m.DonateComponent)
   },
   {
+    path: 'donate/success',
+    loadComponent: () => import('./components/donate/donate-success.component').then(m => m.DonateSuccessComponent)
+  },
+  {
+    path: 'donate/cancel',
+    redirectTo: '/donate'
+  },
+  {
     path: 'login',
     loadComponent: () => import('./components/login/login.component').then(m => m.LoginComponent)
   },
-  { 
-    path: 'community', 
-    loadComponent: () => import('./components/community/community.component').then(m => m.CommunityComponent) 
+  {
+    path: 'community',
+    loadComponent: () => import('./components/community/community.component').then(m => m.CommunityComponent)
   },
-  { 
-    path: 'community/:id', 
-    loadComponent: () => import('./components/community/thread/thread.component').then(m => m.ThreadComponent) 
+  {
+    path: 'community/:id',
+    loadComponent: () => import('./components/community/thread/thread.component').then(m => m.ThreadComponent)
   },
   {
     path: 'formations',
@@ -57,6 +72,15 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadComponent: () => import('./components/admin/admin.component').then(m => m.AdminComponent)
+  },
+  {
+    path: 'my-reservations',
+    loadComponent: () => import('./components/my-reservations/my-reservations.component').then(m => m.MyReservationsComponent)
+  },
+  {
+    path: 'petitions',
+    loadComponent: () => import('./components/petition/petition')
+      .then(m => m.PetitionComponent)
   },
   { path: '**', redirectTo: '' }
 ];
