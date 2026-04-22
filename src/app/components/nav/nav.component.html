@@ -1,0 +1,34 @@
+<nav>
+  <div class="nav-logo" routerLink="/">Ver<span>o</span></div>
+  <div class="nav-links">
+    <a routerLink="/track" routerLinkActive="active-link">Track</a>
+    <a routerLink="/community" routerLinkActive="active-link">Community</a>
+    <button type="button" class="nav-chat-btn nav-mobile-show nav-chat-link" [class.active-link]="router.url.startsWith('/chat')" (click)="goChat()">Chatbot</button>
+    <a routerLink="/shop" routerLinkActive="active-link">Shop</a>
+    <a routerLink="/events" routerLinkActive="active-link">Events</a>
+    <a routerLink="/donate" routerLinkActive="active-link">Donate</a>
+
+    @if (authService.isLoggedIn) {
+      <div class="nav-notifications">
+        <button class="btn-icon" (click)="openMessages()" aria-label="Open inbox">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5z"/><path d="M7 8h10"/><path d="M7 12h7"/><path d="M7 16h5"/></svg>
+          @if (messageUnreadCount > 0) {<span class="badge">{{ messageUnreadCount }}</span>}
+        </button>
+        <button class="btn-icon" (click)="toggleDropdown($event)" aria-label="Open notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          @if (unreadCount > 0) {<span class="badge">{{ unreadCount }}</span>}
+        </button>
+        @if (showDropdown) {
+          <div class="notif-dropdown" (click)="$event.stopPropagation()"><div class="notif-header">Notifications</div><div class="notif-list">@for (n of notifications; track n.id) {<div class="notif-item" [class.unread]="!n.isRead"><div class="notif-content"><p class="notif-msg">{{ n.message }}</p><span class="notif-time">{{ n.createdAt | date:'short' }}</span></div>@if (!n.isRead) {<button class="btn-mark" (click)="markAsRead(n, $event)">Mark</button>}</div>} @if (notifications.length === 0) {<div class="notif-empty">You're all caught up.</div>}</div></div>
+        }
+      </div>
+    }
+
+    @if (authService.isLoggedIn) {
+      <a routerLink="/profile" routerLinkActive="active-link" class="nav-mobile-show">Profile</a>
+      <a routerLink="/" class="nav-cta" (click)="logout()">Sign out</a>
+    } @else {
+      <a routerLink="/login" class="nav-cta">Authenticate</a>
+    }
+  </div>
+</nav>
