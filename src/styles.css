@@ -64,3 +64,18 @@ section { padding: 100px 80px; }
 @media(max-width: 900px) {
   section { padding: 60px 24px; }
 }
+/* ═══════════════════════════════════════════════════════════
+   FOOTER — Garder la couleur verte #5AA371 (Forest Green)
+   ═══════════════════════════════════════════════════════════ */
+
+footer,
+app-footer,
+.footer,
+.app-footer,
+.site-footer,
+[class*="footer"] {
+  background: #5AA371 !important;
+  background-color: #5AA371 !important;
+  background-image: none !important;
+}
+
