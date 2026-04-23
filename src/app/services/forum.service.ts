@@ -13,7 +13,7 @@ export class ForumService {
   private notificationSubject = new Subject<Notification>();
   private notificationStompClient: Client | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // ─── POSTS ───
   getAllPosts(): Observable<Post[]> {

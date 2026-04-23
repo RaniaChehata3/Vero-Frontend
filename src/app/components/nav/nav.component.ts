@@ -1,10 +1,26 @@
-import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
-import { Router, NavigationEnd, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  HostListener,
+  ChangeDetectorRef
+} from '@angular/core';
+
+import {
+  Router,
+  NavigationEnd,
+  RouterLink,
+  RouterLinkActive,
+  RouterModule
+} from '@angular/router';
+
 import { CommonModule } from '@angular/common';
+import { Subscription, filter, catchError, of } from 'rxjs';
+
 import { ForumService } from '../../services/forum.service';
-import { AuthService } from '../../services/auth.service';
-import { Notification } from '../../services/forum.models';
+import { AuthService, UserResponse } from '../../services/auth.service';
+import { Notification as ForumNotification } from '../../services/forum.models';
+import { MessagerieService } from '../../services/messagerie.service';
 
 export interface ToastNotification {
   id: number;
@@ -22,115 +38,104 @@ export interface ToastNotification {
   styleUrl: './nav.component.css'
 })
 export class NavComponent implements OnInit, OnDestroy {
-  notifications: Notification[] = [];
+
+  // ===================== FORUM =====================
+  notifications: ForumNotification[] = [];
   unreadCount = 0;
+
+  // ===================== MESSAGES =====================
+  messageUnreadCount = 0;
+  currentUser: UserResponse | null = null;
+
+  // ===================== UI =====================
   showDropdown = false;
+  showChatDropdown = false;
   toasts: ToastNotification[] = [];
   private toastIdCounter = 0;
-  private pollInterval: any;
-  private wsSub?: Subscription;
+
+  // ===================== TIMERS =====================
+  private pollInterval: ReturnType<typeof setInterval> | null = null;
+  private messageSyncInterval: ReturnType<typeof setInterval> | null = null;
+
+  // ===================== SUBSCRIPTIONS =====================
   private authSub?: Subscription;
+  private routeSub?: Subscription;
+  private messageSub?: Subscription;
+
+  // ===================== STATE =====================
+  private knownConversationLastTime = new Map<string, number>();
 
   constructor(
     private forumService: ForumService,
+    private messagerieService: MessagerieService,
     public authService: AuthService,
-    private cdr: ChangeDetectorRef,
-    private router: Router
-  ) {
-  }
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
-  ngOnInit() {
-    this.authSub = this.authService.roleStream$.subscribe(role => {
-      const userId = this.authService.currentUserId;
-      if (role && userId) {
-        this.fetchNotifications();
-        this.pollInterval ||= setInterval(() => this.fetchNotifications(), 30000);
-        this.wsSub ||= this.forumService.subscribeToNotifications(userId).subscribe(n => this.handleNewNotification(n));
+  // =================================================
+  // INIT
+  // =================================================
+  ngOnInit(): void {
+
+    this.authSub = this.authService.isLoggedIn$.subscribe(loggedIn => {
+
+      if (loggedIn) {
+        this.startForumPolling();
+        this.initMessaging();
+        this.requestNotificationPermission();
       } else {
-        this.cleanup();
-        this.notifications = [];
-        this.toasts = [];
-        this.unreadCount = 0;
-        this.cdr.markForCheck();
+        this.cleanupAll();
       }
-    });
-  }
 
-  private cleanup() {
-    clearInterval(this.pollInterval);
-    this.pollInterval = null;
-    this.wsSub?.unsubscribe();
-    this.wsSub = undefined;
-    this.forumService.disconnectNotificationStomp();
-  }
-
-  ngOnDestroy() {
-    this.authSub?.unsubscribe();
-    this.cleanup();
-  }
-
-  fetchNotifications() {
-    this.forumService.getUnreadNotifications().subscribe(nots => {
-      this.notifications = nots.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      this.unreadCount = this.notifications.filter(n => !n.isRead).length;
       this.cdr.markForCheck();
     });
+
+    this.routeSub = this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(e => {
+        if (e.urlAfterRedirects.startsWith('/messages')) {
+          this.messageUnreadCount = 0;
+          this.cdr.markForCheck();
+        }
+      });
   }
 
-  handleNewNotification(notif: Notification) {
-    if (this.notifications.some(n => n.id === notif.id)) return;
-    this.notifications.unshift(notif);
-    if (!notif.isRead) this.unreadCount++;
-    this.cdr.markForCheck();
-    this.playNotificationSound();
-    this.showToast(notif);
+  // =================================================
+  // FORUM NOTIFICATIONS
+  // =================================================
+  private startForumPolling(): void {
+    if (this.pollInterval) return;
+
+    this.fetchNotifications();
+    this.pollInterval = setInterval(() => this.fetchNotifications(), 30000);
   }
 
-  showToast(notif: Notification) {
-    const toast: ToastNotification = { id: ++this.toastIdCounter, message: notif.message, type: notif.type, visible: false };
-    this.toasts = [...this.toasts, toast];
-    this.cdr.detectChanges();
-    setTimeout(() => { toast.visible = true; this.cdr.detectChanges(); }, 50);
-    toast.timeout = setTimeout(() => this.dismissToast(toast.id), 5000);
-  }
-
-  dismissToast(id: number) {
-    const toast = this.toasts.find(t => t.id === id);
-    if (!toast) return;
-    clearTimeout(toast.timeout);
-    toast.visible = false;
-    this.cdr.detectChanges();
-    setTimeout(() => { this.toasts = this.toasts.filter(t => t.id !== id); this.cdr.detectChanges(); }, 400);
-  }
-
-  playNotificationSound() {
-    try {
-      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
-      if (!Ctx) return;
-      const ctx = new Ctx();
-      const osc = ctx.createOscillator(), gain = ctx.createGain();
-      osc.connect(gain).connect(ctx.destination);
-      osc.frequency.value = 600;
-      
-      gain.gain.setValueAtTime(0, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-      
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.4);
-    } catch {}
-  }
-
-  toggleDropdown(event: Event) {
-    event.stopPropagation();
-    this.showDropdown = !this.showDropdown;
-    if (this.showDropdown) {
-      this.fetchNotifications();
+  private stopForumPolling(): void {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+      this.pollInterval = null;
     }
   }
 
-  markAsRead(n: Notification, event: Event) {
+  fetchNotifications(): void {
+    this.forumService.getUnreadNotifications()
+      .pipe(catchError(() => of([])))
+      .subscribe((nots: ForumNotification[]) => {
+        this.notifications = nots.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime()
+        );
+
+        this.unreadCount = this.notifications.filter(n => !n.isRead).length;
+        this.cdr.markForCheck();
+      });
+  }
+
+  markAsRead(n: ForumNotification, event: Event): void {
     event.stopPropagation();
+
     this.forumService.markNotificationAsRead(n.id).subscribe(() => {
       n.isRead = true;
       this.unreadCount = Math.max(0, this.unreadCount - 1);
@@ -138,8 +143,180 @@ export class NavComponent implements OnInit, OnDestroy {
     });
   }
 
-  @HostListener('document:click')
-  closeDropdown() {
+  // =================================================
+  // MESSAGING SYSTEM
+  // =================================================
+  private initMessaging(): void {
+
+    this.authService.getMe().subscribe(user => {
+      this.currentUser = user;
+
+      this.messagerieService.connect(
+        user.id,
+        user.role === 'ADMIN'
+      );
+    });
+
+    if (!this.messageSub) {
+      this.messageSub = this.messagerieService.incomingMessage$
+        .subscribe(message => {
+
+          if (!message || !this.currentUser) return;
+
+          const isForMe = message.receiver.id === this.currentUser.id;
+          const onMessagesPage = this.router.url.startsWith('/messages');
+
+          if (isForMe && !onMessagesPage) {
+            this.messageUnreadCount++;
+            this.showDesktopNotification(
+              message.sender.fullName,
+              message.content
+            );
+            this.cdr.markForCheck();
+          }
+        });
+    }
+
+    this.startMessageSync();
+  }
+
+  private startMessageSync(): void {
+    if (this.messageSyncInterval) return;
+
+    this.syncMessages();
+    this.messageSyncInterval = setInterval(() => this.syncMessages(), 5000);
+  }
+
+  private stopMessageSync(): void {
+    if (this.messageSyncInterval) {
+      clearInterval(this.messageSyncInterval);
+      this.messageSyncInterval = null;
+    }
+    this.knownConversationLastTime.clear();
+  }
+
+  private syncMessages(): void {
+    if (!this.currentUser) return;
+
+    this.messagerieService.loadConversations().subscribe(conversations => {
+
+      for (const conv of conversations) {
+
+        const ts = new Date(conv.lastMessageTime).getTime();
+        const prev = this.knownConversationLastTime.get(conv.conversationKey);
+
+        this.knownConversationLastTime.set(conv.conversationKey, ts);
+
+        if (prev == null || ts <= prev) continue;
+
+        const isIncoming = conv.lastMessageSenderId !== this.currentUser!.id;
+        const onMessagesPage = this.router.url.startsWith('/messages');
+
+        if (isIncoming && !onMessagesPage) {
+          this.messageUnreadCount++;
+
+          const sender =
+            conv.otherUser?.fullName ||
+              conv.userA.id === this.currentUser!.id
+              ? conv.userB.fullName
+              : conv.userA.fullName;
+
+          this.showDesktopNotification(sender, conv.lastMessagePreview || 'New message');
+        }
+      }
+
+      this.cdr.markForCheck();
+    });
+  }
+
+  // =================================================
+  // UI HELPERS
+  // =================================================
+  toggleDropdown(event: Event): void {
+    event.stopPropagation();
+    this.showDropdown = !this.showDropdown;
+    this.showChatDropdown = false;
+
+    if (this.showDropdown) {
+      this.fetchNotifications();
+    }
+  }
+
+  toggleChatDropdown(event: Event): void {
+    event.stopPropagation();
+    this.showChatDropdown = !this.showChatDropdown;
     this.showDropdown = false;
+  }
+
+  openMessages(): void {
+    this.messageUnreadCount = 0;
+    void this.router.navigateByUrl('/messages');
+  }
+
+  goChat(): void {
+    if (this.authService.isLoggedIn) {
+      void this.router.navigateByUrl('/chat');
+    } else {
+      void this.router.navigate(['/login'], {
+        queryParams: { returnUrl: '/chat' }
+      });
+    }
+  }
+
+  logout(): void {
+    this.messagerieService.disconnect();
+    this.authService.logout();
+
+    this.cleanupAll();
+  }
+
+  // =================================================
+  // NOTIFICATIONS (DESKTOP)
+  // =================================================
+  private requestNotificationPermission(): void {
+    if (!('Notification' in window)) return;
+
+    if (Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => { });
+    }
+  }
+
+  private showDesktopNotification(title: string, body: string): void {
+    if (!('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
+
+    new Notification(`New message from ${title}`, {
+      body: body.length > 90 ? body.slice(0, 87) + '...' : body
+    });
+  }
+
+  // =================================================
+  // CLEANUP
+  // =================================================
+  private cleanupAll(): void {
+    this.stopForumPolling();
+    this.stopMessageSync();
+
+    this.notifications = [];
+    this.unreadCount = 0;
+    this.messageUnreadCount = 0;
+    this.currentUser = null;
+
+    this.messageSub?.unsubscribe();
+    this.messageSub = undefined;
+  }
+
+  ngOnDestroy(): void {
+    this.authSub?.unsubscribe();
+    this.routeSub?.unsubscribe();
+    this.messageSub?.unsubscribe();
+    this.cleanupAll();
+  }
+
+  // close dropdown
+  @HostListener('document:click')
+  closeDropdown(): void {
+    this.showDropdown = false;
+    this.showChatDropdown = false;
   }
 }

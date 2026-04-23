@@ -220,7 +220,7 @@
               <div class="eco-dot-col">
                 <div class="eco-dot-title">{{ row.label }}</div>
                 <div class="eco-dot-matrix">
-                  @for (filled of getDotGrid(row.pct); track $index) {
+                  @for (filled of row.dotGrid; track $index) {
                     <div class="eco-dot" [class.filled]="filled" [style.--dc]="row.color"></div>
                   }
                 </div>
@@ -432,7 +432,7 @@
               @if (activities.length === 0) {
                 <div class="eco-empty light">No activities recorded yet</div>
               }
-              @for (a of activities.slice(0, 10); track a.id; let i = $index) {
+              @for (a of recentActivities; track a.id; let i = $index) {
                 <div class="eco-log-row eco-anim-slide-up" [style.animation-delay]="(i * 50) + 'ms'" [class.editing]="editingActivityId === a.id">
                   @if (editingActivityId === a.id) {
                     <div class="eco-edit-inline">
