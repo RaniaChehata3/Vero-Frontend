@@ -244,82 +244,93 @@ export class DonateComponent implements OnInit, OnDestroy {
   }
 
   // ══════════════════════════════════════════════════════════════
-  //  ✅ OPTIMISTIC UI — confirmDonation
-  //  Show success IMMEDIATELY on confirm click.
-  //  API call runs in the background; rolls back on failure.
+  //  confirmDonation — attend la réponse API (pas d'optimistic UI)
+  //  Affiche l'erreur exacte du backend si ça échoue
   // ══════════════════════════════════════════════════════════════
   confirmDonation(): void {
     const ev = this.selectedEvent;
     if (!ev?.id || !this.pendingDonation) return;
 
     this.showConfirmModal = false;
+    this.donateState = 'processing';
+    this.errorMessage = '';
 
-    // ── Build an optimistic donation entry ─────────────────────
-    const optimisticDonation: Donation = {
-      ...this.pendingDonation,
-      id: undefined,                           // no id yet
-      donationDate: new Date().toISOString(),
-      userName: this.isAnonymous ? '' : (this.currentUserEmail || ''),
-      status: 'PENDING'
-    };
-
-    // ── Capture snapshot for possible rollback ─────────────────
-    const previousDonations = [...this.donations];
-    const previousTotal = this.totalDonated;
     const snapshot = { ...this.pendingDonation };
 
-    // ── ✅ Immediately show success ────────────────────────────
-    this.donations = [optimisticDonation, ...this.donations];
-    if (this.donationType === 'MONEY') {
-      this.totalDonated += optimisticDonation.amount;
-    }
-    this.donateState = 'confirmed';
-    this.showSuccessModal = true;
-    this.successMessage = 'Donation confirmed!';
-    this.resetForm();
-    setTimeout(() => { this.donateState = 'idle'; this.successMessage = ''; }, 3000);
-
-    // ── MONEY: Stripe flow runs in background ──────────────────
+    // ── MONEY : créer le don puis Stripe ──────────────────────
     if (this.donationType === 'MONEY') {
       this.donationService.createDonationForEvent(snapshot, ev.id).subscribe({
         next: (donation) => {
-          if (!donation.id) { this._rollback(previousDonations, previousTotal, 'Could not create donation record.'); return; }
-          // Replace optimistic entry with real one, then redirect
-          this.donations = this.donations.map(d => d === optimisticDonation ? donation : d);
+          if (!donation?.id) {
+            this._showError('Could not create donation record.');
+            return;
+          }
+          // Don créé → lancer Stripe
           this.donationService.createStripeCheckout(snapshot.amount, donation.id).subscribe({
             next: (res) => { window.location.href = res.url; },
-            error: () => { this._rollback(previousDonations, previousTotal, 'Payment initialization failed. Please try again.'); }
+            error: (stripeErr: any) => {
+              console.error('Stripe error:', stripeErr);
+              this._showError('Payment initialization failed. Please try again.');
+            }
           });
         },
         error: (err: any) => {
-          this._rollback(previousDonations, previousTotal, err.error?.message || 'Donation failed. Please try again.');
+          console.error('=== DONATION ERROR ===', err);
+          const msg = this._extractError(err);
+          this._showError(msg);
         }
       });
       return;
     }
 
-    // ── MATERIAL / TIME: fire-and-forget, rollback on error ────
+    // ── MATERIAL / TIME : sauvegarde directe ──────────────────
     this.donationService.createDonationForEvent(snapshot, ev.id).subscribe({
       next: (donation) => {
-        // Swap the optimistic placeholder with the real record
-        this.donations = this.donations.map(d => d === optimisticDonation ? donation : d);
+        this.donations = [donation, ...this.donations];
+        this.donateState = 'confirmed';
+        this.showSuccessModal = true;
+        this.successMessage = 'Donation confirmed! Thank you 💚';
+        this.resetForm();
+        this.loadDonationsForEvent();
+        setTimeout(() => {
+          this.donateState = 'idle';
+          this.successMessage = '';
+        }, 3000);
         this.cdr.markForCheck();
       },
       error: (err: any) => {
-        this._rollback(previousDonations, previousTotal, err.error?.message || 'Donation failed. Please try again.');
+        console.error('=== DONATION ERROR ===', err);
+        this._showError(this._extractError(err));
       }
     });
   }
 
-  /** Roll back the optimistic update and surface an error. */
+  /** Extrait le message d'erreur depuis la réponse Spring Boot */
+  private _extractError(err: any): string {
+    if (typeof err?.error === 'string')   return err.error;
+    if (err?.error?.message)              return err.error.message;
+    if (err?.error?.error)                return err.error.error;
+    if (err?.message)                     return err.message;
+    return 'Donation failed. Please try again.';
+  }
+
+  /** Affiche une erreur et remet l'état à idle après 5s */
+  private _showError(msg: string): void {
+    this.donateState = 'error';
+    this.errorMessage = msg;
+    this.showSuccessModal = false;
+    setTimeout(() => {
+      this.donateState = 'idle';
+      this.errorMessage = '';
+    }, 5000);
+    this.cdr.markForCheck();
+  }
+
+  /** Conservé pour compatibilité */
   private _rollback(previousDonations: Donation[], previousTotal: number, msg: string): void {
     this.donations = previousDonations;
     this.totalDonated = previousTotal;
-    this.showSuccessModal = false;
-    this.donateState = 'error';
-    this.errorMessage = msg;
-    setTimeout(() => { this.donateState = 'idle'; this.errorMessage = ''; }, 4000);
-    this.cdr.markForCheck();
+    this._showError(msg);
   }
 
   viewMyDonations(): void {
@@ -472,8 +483,8 @@ export class DonateComponent implements OnInit, OnDestroy {
     return classes[status || ''] || '';
   }
 
-  getMoneyCount(): number { return this.donations.filter(d => d.type === 'MONEY').length; }
+  getMoneyCount(): number    { return this.donations.filter(d => d.type === 'MONEY').length; }
   getMaterialCount(): number { return this.donations.filter(d => d.type === 'MATERIAL').length; }
-  getTimeCount(): number { return this.donations.filter(d => d.type === 'TIME').length; }
+  getTimeCount(): number     { return this.donations.filter(d => d.type === 'TIME').length; }
   getValidatedCount(): number { return this.donations.filter(d => d.status === 'VALIDATED').length; }
 }
