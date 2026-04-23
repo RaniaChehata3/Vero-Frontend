@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -11,14 +11,15 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, DatePipe],
   templateUrl: './donate.component.html',
-  styleUrl: './donate.component.css'
+  styleUrl: './donate.component.css',
+  encapsulation: ViewEncapsulation.None
 })
 export class DonateComponent implements OnInit, OnDestroy {
 
   // ── Hero animated text ────────────────────────────────────────
   heroTexts = ['Save Our Environment.', 'Take Action.', 'Make a Difference.'];
   heroTextIndex = 0;
-  heroTextExit  = -1;
+  heroTextExit = -1;
   private heroInterval: any;
 
   // ── Events ────────────────────────────────────────────────────
@@ -28,42 +29,42 @@ export class DonateComponent implements OnInit, OnDestroy {
 
   // ── Donate form ───────────────────────────────────────────────
   selectedAmount: number | null = 20;
-  customAmount:   number | null = null;
+  customAmount: number | null = null;
   donateState: 'idle' | 'processing' | 'confirmed' | 'error' = 'idle';
 
-  message     = '';
+  message = '';
   isAnonymous = false;
-  errorMessage   = '';
+  errorMessage = '';
   successMessage = '';
 
-  donationType:     'MONEY' | 'MATERIAL' | 'TIME' = 'MONEY';
+  donationType: 'MONEY' | 'MATERIAL' | 'TIME' = 'MONEY';
   materialQuantity = '';
-  volunteerHours:  number | null = null;
+  volunteerHours: number | null = null;
 
   // ── Donations history ─────────────────────────────────────────
-  donations:        Donation[] = [];
-  donationsLoading  = false;
-  totalDonated      = 0;
+  donations: Donation[] = [];
+  donationsLoading = false;
+  totalDonated = 0;
 
   // ── Edit modal ────────────────────────────────────────────────
   editingDonation: Donation | null = null;
-  editAmount   = 0;
-  editMessage  = '';
+  editAmount = 0;
+  editMessage = '';
   editAnonymous = false;
   editType: 'MONEY' | 'MATERIAL' | 'TIME' = 'MONEY';
   editQuantity = '';
   editState: 'idle' | 'processing' | 'confirmed' = 'idle';
 
   // ── Auth ──────────────────────────────────────────────────────
-  currentRole:       string | null = null;
-  currentUserEmail:  string | null = null;
-  private roleSub!:  Subscription;
+  currentRole: string | null = null;
+  currentUserEmail: string | null = null;
+  private roleSub!: Subscription;
 
   // ── UI state ──────────────────────────────────────────────────
-  deletingId:  number | null = null;
+  deletingId: number | null = null;
   validatingId: number | null = null;
   activeTab: 'browse' | 'donate' | 'history' = 'browse';
-  currentStep   = 1;
+  currentStep = 1;
   showConfirmModal = false;
   showSuccessModal = false;
   pendingDonation: Donation | null = null;
@@ -71,18 +72,18 @@ export class DonateComponent implements OnInit, OnDestroy {
   Math = Math;
 
   donationSteps = [
-    { title: 'You donate',            desc: 'Choose an event, select an amount or volunteer your time.' },
-    { title: 'We record it',          desc: 'Your transaction is permanently recorded and traceable.' },
+    { title: 'You donate', desc: 'Choose an event, select an amount or volunteer your time.' },
+    { title: 'We record it', desc: 'Your transaction is permanently recorded and traceable.' },
     { title: 'Funds reach the event', desc: 'Funds are released directly to verified event organizers.' },
-    { title: 'Track your impact',     desc: 'Watch real-time updates as your donation creates change.' }
+    { title: 'Track your impact', desc: 'Watch real-time updates as your donation creates change.' }
   ];
 
   constructor(
     private donationService: DonationService,
-    private eventService:    EventApiService,
-    private authService:     AuthService,
-    private cdr:             ChangeDetectorRef
-  ) {}
+    private eventService: EventApiService,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   // ── Lifecycle ─────────────────────────────────────────────────
   ngOnInit(): void {
@@ -101,7 +102,7 @@ export class DonateComponent implements OnInit, OnDestroy {
   }
 
   // ── Getters ───────────────────────────────────────────────────
-  get isAdmin():    boolean { return this.currentRole === 'ADMIN'; }
+  get isAdmin(): boolean { return this.currentRole === 'ADMIN'; }
   get isLoggedIn(): boolean { return this.authService.isLoggedIn; }
 
   get selectedEvent(): Event | null {
@@ -121,7 +122,7 @@ export class DonateComponent implements OnInit, OnDestroy {
     this.heroInterval = setInterval(() => {
       this.heroTextExit = this.heroTextIndex;
       setTimeout(() => {
-        this.heroTextExit  = -1;
+        this.heroTextExit = -1;
         this.heroTextIndex = (this.heroTextIndex + 1) % this.heroTexts.length;
       }, 600);
     }, 4500);
@@ -136,7 +137,7 @@ export class DonateComponent implements OnInit, OnDestroy {
   loadEvents(): void {
     this.eventsLoading = true;
     this.eventService.getAll().subscribe({
-      next:  (data) => {
+      next: (data) => {
         this.events = data;
         this.eventsLoading = false;
         this.cdr.markForCheck();
@@ -177,19 +178,19 @@ export class DonateComponent implements OnInit, OnDestroy {
     if (!ev?.id) return;
     this.donationsLoading = true;
     this.donationService.getDonationsByEvent(ev.id).subscribe({
-      next:  (data) => { this.donations = data; this.donationsLoading = false; },
-      error: ()     => { this.donations = []; this.donationsLoading = false; }
+      next: (data) => { this.donations = data; this.donationsLoading = false; },
+      error: () => { this.donations = []; this.donationsLoading = false; }
     });
     this.donationService.getTotalByEvent(ev.id).subscribe({
-      next:  (total) => this.totalDonated = total,
-      error: ()      => this.totalDonated = 0
+      next: (total) => this.totalDonated = total,
+      error: () => this.totalDonated = 0
     });
   }
 
   // ── Donate form ───────────────────────────────────────────────
   selectAmount(amount: number): void {
     this.selectedAmount = amount;
-    this.customAmount   = null;
+    this.customAmount = null;
   }
 
   getFinalAmount(): number {
@@ -226,11 +227,11 @@ export class DonateComponent implements OnInit, OnDestroy {
 
     this.errorMessage = '';
     this.pendingDonation = {
-      amount:        this.donationType === 'TIME' ? (this.volunteerHours || 0) : amount,
-      type:          this.donationType,
-      quantity:      this.donationType === 'MATERIAL' ? this.materialQuantity : undefined,
-      message:       this.message || '',
-      anonymous:     this.isAnonymous,
+      amount: this.donationType === 'TIME' ? (this.volunteerHours || 0) : amount,
+      type: this.donationType,
+      quantity: this.donationType === 'MATERIAL' ? this.materialQuantity : undefined,
+      message: this.message || '',
+      anonymous: this.isAnonymous,
       transactionId: `TXN-${Date.now()}`
     };
 
@@ -239,100 +240,109 @@ export class DonateComponent implements OnInit, OnDestroy {
 
   cancelDonation(): void {
     this.showConfirmModal = false;
-    this.pendingDonation  = null;
+    this.pendingDonation = null;
   }
 
   // ══════════════════════════════════════════════════════════════
-  //  ✅ FIX — confirmDonation optimisé
-  //  MATERIAL & TIME → confirmation immédiate sans Stripe
-  //  MONEY           → Stripe checkout (redirection)
+  //  ✅ OPTIMISTIC UI — confirmDonation
+  //  Show success IMMEDIATELY on confirm click.
+  //  API call runs in the background; rolls back on failure.
   // ══════════════════════════════════════════════════════════════
   confirmDonation(): void {
     const ev = this.selectedEvent;
     if (!ev?.id || !this.pendingDonation) return;
 
     this.showConfirmModal = false;
-    this.donateState      = 'processing';
 
-    // ── MATERIAL ou TIME : confirmation directe et rapide ──────
-    if (this.donationType !== 'MONEY') {
-      this.donationService.createDonationForEvent(this.pendingDonation, ev.id).subscribe({
-        next: () => {
-          // ✅ Confirmation immédiate — pas de Stripe
-          this.donateState    = 'confirmed';
-          this.showSuccessModal = true;
-          this.successMessage  = 'Donation confirmed!';
-          this.resetForm();
-          this.loadDonationsForEvent();
+    // ── Build an optimistic donation entry ─────────────────────
+    const optimisticDonation: Donation = {
+      ...this.pendingDonation,
+      id: undefined,                           // no id yet
+      donationDate: new Date().toISOString(),
+      userName: this.isAnonymous ? '' : (this.currentUserEmail || ''),
+      status: 'PENDING'
+    };
 
-          // Réinitialiser après 3s
-          setTimeout(() => {
-            this.donateState    = 'idle';
-            this.successMessage = '';
-          }, 3000);
+    // ── Capture snapshot for possible rollback ─────────────────
+    const previousDonations = [...this.donations];
+    const previousTotal = this.totalDonated;
+    const snapshot = { ...this.pendingDonation };
+
+    // ── ✅ Immediately show success ────────────────────────────
+    this.donations = [optimisticDonation, ...this.donations];
+    if (this.donationType === 'MONEY') {
+      this.totalDonated += optimisticDonation.amount;
+    }
+    this.donateState = 'confirmed';
+    this.showSuccessModal = true;
+    this.successMessage = 'Donation confirmed!';
+    this.resetForm();
+    setTimeout(() => { this.donateState = 'idle'; this.successMessage = ''; }, 3000);
+
+    // ── MONEY: Stripe flow runs in background ──────────────────
+    if (this.donationType === 'MONEY') {
+      this.donationService.createDonationForEvent(snapshot, ev.id).subscribe({
+        next: (donation) => {
+          if (!donation.id) { this._rollback(previousDonations, previousTotal, 'Could not create donation record.'); return; }
+          // Replace optimistic entry with real one, then redirect
+          this.donations = this.donations.map(d => d === optimisticDonation ? donation : d);
+          this.donationService.createStripeCheckout(snapshot.amount, donation.id).subscribe({
+            next: (res) => { window.location.href = res.url; },
+            error: () => { this._rollback(previousDonations, previousTotal, 'Payment initialization failed. Please try again.'); }
+          });
         },
         error: (err: any) => {
-          this.donateState  = 'error';
-          this.errorMessage = err.error?.message || 'Donation failed. Please try again.';
-          setTimeout(() => {
-            this.donateState  = 'idle';
-            this.errorMessage = '';
-          }, 3000);
+          this._rollback(previousDonations, previousTotal, err.error?.message || 'Donation failed. Please try again.');
         }
       });
       return;
     }
 
-    // ── MONEY : créer le don puis rediriger vers Stripe ────────
-    this.donationService.createDonationForEvent(this.pendingDonation, ev.id).subscribe({
+    // ── MATERIAL / TIME: fire-and-forget, rollback on error ────
+    this.donationService.createDonationForEvent(snapshot, ev.id).subscribe({
       next: (donation) => {
-        if (!donation.id) {
-          this.donateState  = 'error';
-          this.errorMessage = 'Could not create donation record.';
-          return;
-        }
-        // Lancer Stripe checkout
-        this.donationService.createStripeCheckout(
-          this.pendingDonation!.amount,
-          donation.id
-        ).subscribe({
-          next:  (res) => { window.location.href = res.url; },
-          error: () => {
-            this.donateState  = 'error';
-            this.errorMessage = 'Payment initialization failed. Please try again.';
-            setTimeout(() => { this.donateState = 'idle'; }, 3000);
-          }
-        });
+        // Swap the optimistic placeholder with the real record
+        this.donations = this.donations.map(d => d === optimisticDonation ? donation : d);
+        this.cdr.markForCheck();
       },
       error: (err: any) => {
-        this.donateState  = 'error';
-        this.errorMessage = err.error?.message || 'Donation failed. Please try again.';
-        setTimeout(() => { this.donateState = 'idle'; }, 3000);
+        this._rollback(previousDonations, previousTotal, err.error?.message || 'Donation failed. Please try again.');
       }
     });
   }
 
+  /** Roll back the optimistic update and surface an error. */
+  private _rollback(previousDonations: Donation[], previousTotal: number, msg: string): void {
+    this.donations = previousDonations;
+    this.totalDonated = previousTotal;
+    this.showSuccessModal = false;
+    this.donateState = 'error';
+    this.errorMessage = msg;
+    setTimeout(() => { this.donateState = 'idle'; this.errorMessage = ''; }, 4000);
+    this.cdr.markForCheck();
+  }
+
   viewMyDonations(): void {
     this.showSuccessModal = false;
-    this.currentStep      = 1;
-    this.activeTab        = 'history';
+    this.currentStep = 1;
+    this.activeTab = 'history';
   }
 
   // ── Edit ──────────────────────────────────────────────────────
   openEdit(donation: Donation): void {
     this.editingDonation = { ...donation };
-    this.editAmount      = donation.amount;
-    this.editMessage     = donation.message || '';
-    this.editAnonymous   = donation.anonymous;
-    this.editType        = (donation.type as any) || 'MONEY';
-    this.editQuantity    = donation.quantity || '';
-    this.editState       = 'idle';
-    this.errorMessage    = '';
+    this.editAmount = donation.amount;
+    this.editMessage = donation.message || '';
+    this.editAnonymous = donation.anonymous;
+    this.editType = (donation.type as any) || 'MONEY';
+    this.editQuantity = donation.quantity || '';
+    this.editState = 'idle';
+    this.errorMessage = '';
   }
 
   cancelEdit(): void {
     this.editingDonation = null;
-    this.errorMessage    = '';
+    this.errorMessage = '';
   }
 
   submitEdit(): void {
@@ -343,26 +353,26 @@ export class DonateComponent implements OnInit, OnDestroy {
       return;
     }
     this.errorMessage = '';
-    this.editState    = 'processing';
+    this.editState = 'processing';
     this.donationService.update(this.editingDonation.id, {
-      amount:    this.editAmount,
-      message:   this.editMessage,
+      amount: this.editAmount,
+      message: this.editMessage,
       anonymous: this.editAnonymous,
-      type:      this.editType,
-      quantity:  this.editType === 'MATERIAL' ? this.editQuantity : undefined
+      type: this.editType,
+      quantity: this.editType === 'MATERIAL' ? this.editQuantity : undefined
     }).subscribe({
       next: () => {
-        this.editState      = 'confirmed';
+        this.editState = 'confirmed';
         this.successMessage = 'Donation updated!';
         setTimeout(() => {
-          this.editState       = 'idle';
-          this.successMessage  = '';
+          this.editState = 'idle';
+          this.successMessage = '';
           this.editingDonation = null;
           this.loadDonationsForEvent();
         }, 1500);
       },
       error: (err: any) => {
-        this.editState    = 'idle';
+        this.editState = 'idle';
         this.errorMessage = err.error?.message || 'Update failed.';
       }
     });
@@ -372,10 +382,10 @@ export class DonateComponent implements OnInit, OnDestroy {
     if (!donation.id || this.deletingId === donation.id) return;
     if (!confirm('Delete this donation?')) return;
     this.deletingId = donation.id;
-    this.donations  = this.donations.filter(d => d.id !== donation.id);
+    this.donations = this.donations.filter(d => d.id !== donation.id);
     this.donationService.delete(donation.id).subscribe({
       next: () => {
-        this.deletingId     = null;
+        this.deletingId = null;
         this.successMessage = 'Donation deleted!';
         setTimeout(() => this.successMessage = '', 3000);
         this.loadDonationsForEvent();
@@ -392,7 +402,7 @@ export class DonateComponent implements OnInit, OnDestroy {
     this.validatingId = donation.id;
     this.donationService.validate(donation.id).subscribe({
       next: () => {
-        this.validatingId   = null;
+        this.validatingId = null;
         this.successMessage = 'Donation validated!';
         setTimeout(() => this.successMessage = '', 3000);
         this.loadDonationsForEvent();
@@ -410,28 +420,28 @@ export class DonateComponent implements OnInit, OnDestroy {
   }
 
   resetForm(): void {
-    this.selectedAmount   = 20;
-    this.customAmount     = null;
-    this.message          = '';
-    this.isAnonymous      = false;
-    this.donationType     = 'MONEY';
+    this.selectedAmount = 20;
+    this.customAmount = null;
+    this.message = '';
+    this.isAnonymous = false;
+    this.donationType = 'MONEY';
     this.materialQuantity = '';
-    this.volunteerHours   = null;
-    this.donateState      = 'idle';
-    this.pendingDonation  = null;
+    this.volunteerHours = null;
+    this.donateState = 'idle';
+    this.pendingDonation = null;
   }
 
-  isOwner(donation: Donation):   boolean { return donation.userName === this.currentUserEmail; }
-  canEdit(donation: Donation):   boolean { return this.isOwner(donation) || this.isAdmin; }
+  isOwner(donation: Donation): boolean { return donation.userName === this.currentUserEmail; }
+  canEdit(donation: Donation): boolean { return this.isOwner(donation) || this.isAdmin; }
   canDelete(donation: Donation): boolean { return this.isOwner(donation) || this.isAdmin; }
-  canValidate():                 boolean { return this.isAdmin; }
+  canValidate(): boolean { return this.isAdmin; }
 
   getTimeAgo(dateStr?: string): string {
     if (!dateStr) return '';
-    const diff  = Date.now() - new Date(dateStr).getTime();
-    const mins  = Math.floor(diff / 60000);
-    if (mins < 1)   return 'Just now';
-    if (mins < 60)  return `${mins}min ago`;
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}min ago`;
     const hours = Math.floor(mins / 60);
     if (hours < 24) return `${hours}h ago`;
     return `${Math.floor(hours / 24)}d ago`;
@@ -454,16 +464,16 @@ export class DonateComponent implements OnInit, OnDestroy {
 
   getEventStatusClass(status?: string): string {
     const classes: Record<string, string> = {
-      UPCOMING:  'status-upcoming',
-      ONGOING:   'status-ongoing',
+      UPCOMING: 'status-upcoming',
+      ONGOING: 'status-ongoing',
       COMPLETED: 'status-completed',
       CANCELLED: 'status-cancelled'
     };
     return classes[status || ''] || '';
   }
 
-  getMoneyCount():     number { return this.donations.filter(d => d.type === 'MONEY').length; }
-  getMaterialCount():  number { return this.donations.filter(d => d.type === 'MATERIAL').length; }
-  getTimeCount():      number { return this.donations.filter(d => d.type === 'TIME').length; }
+  getMoneyCount(): number { return this.donations.filter(d => d.type === 'MONEY').length; }
+  getMaterialCount(): number { return this.donations.filter(d => d.type === 'MATERIAL').length; }
+  getTimeCount(): number { return this.donations.filter(d => d.type === 'TIME').length; }
   getValidatedCount(): number { return this.donations.filter(d => d.status === 'VALIDATED').length; }
 }

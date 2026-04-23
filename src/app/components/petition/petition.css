@@ -8,28 +8,28 @@
    Forest Green       #5AA371
    ═══════════════════════════════════════════════════ */
 :root {
-  --jungle:    #1E201F;
-  --jungle2:   #193A31;
-  --deep:      #1D6C61;
-  --verd:      #3EB9A8;
-  --forest:    #5AA371;
+  --jungle:    #0a1f2e;
+  --jungle2:   #123e54;
+  --deep:      #1e708a;
+  --verd:      #3b9ab2;
+  --forest:    #3b9ab2;
 
   /* Aliases fonctionnels */
-  --navy:      #1E201F;
-  --navy2:     #193A31;
-  --navy3:     #1a2e28;
-  --teal:      #3EB9A8;
-  --teal2:     #1D6C61;
-  --teal3:     #193A31;
-  --gold:      #a8e6cf;     /* accent clair bio-luminescent */
-  --cream:     #f0f7f4;
-  --smoke:     #6b9e8a;
-  --mist:      #a8cfc4;
+  --navy:      #0a1f2e;
+  --navy2:     #123e54;
+  --navy3:     #0d141e;
+  --teal:      #3b9ab2;
+  --teal2:     #1e708a;
+  --teal3:     #123e54;
+  --gold:      #edda9d;     
+  --cream:     #f4f8fa;
+  --smoke:     #60798a;
+  --mist:      #c8e0e8;
   --white:     #ffffff;
 
   /* Glows */
-  --glow-teal: rgba(62,185,168,.35);
-  --glow-soft: rgba(62,185,168,.12);
+  --glow-teal: rgba(59,154,178,.35);
+  --glow-soft: rgba(59,154,178,.12);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -734,6 +734,26 @@
   color: var(--deep); line-height: 1.5;
 }
 .eco-banner-icon { font-size: 18px; flex-shrink: 0; }
+
+/* AI score colour states */
+.eco-banner { transition: background .4s ease, border-color .4s ease; }
+
+.eco-banner-checking {
+  background: rgba(62,185,168,.05);
+  border-color: rgba(62,185,168,.2);
+  animation: ecoPulse 1.4s ease-in-out infinite;
+}
+@keyframes ecoPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(62,185,168,.2); }
+  50%      { box-shadow: 0 0 0 6px rgba(62,185,168,0); }
+}
+.eco-banner-green  { background: rgba(62,185,168,.12); border-color: rgba(62,185,168,.35); color: #1a6b5a; }
+.eco-banner-orange { background: rgba(255,152,0,.08);  border-color: rgba(255,152,0,.3);  color: #8a5700; }
+.eco-banner-red    { background: rgba(211,47,47,.08);  border-color: rgba(211,47,47,.25); color: #b71c1c; }
+
+.eco-score-green  { color: #1e7b5e; font-weight: 600; }
+.eco-score-orange { color: #8a5700; font-weight: 600; }
+.eco-score-red    { color: #b71c1c; font-weight: 600; }
 
 /* ── Publish Button ─────────────────────────────── */
 .btn-publish {

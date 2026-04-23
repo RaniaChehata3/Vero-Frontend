@@ -65,7 +65,7 @@ section { padding: 100px 80px; }
   section { padding: 60px 24px; }
 }
 /* ═══════════════════════════════════════════════════════════
-   FOOTER — Garder la couleur verte #5AA371 (Forest Green)
+   FOOTER — Ocean Navy
    ═══════════════════════════════════════════════════════════ */
 
 footer,
@@ -74,8 +74,8 @@ app-footer,
 .app-footer,
 .site-footer,
 [class*="footer"] {
-  background: #5AA371 !important;
-  background-color: #5AA371 !important;
+  background: #0a1f2e !important;
+  background-color: #0a1f2e !important;
   background-image: none !important;
 }
 

@@ -110,9 +110,21 @@ export class PetitionDetail implements OnInit {
 
   sign() {
     if (this.signing || this.hasSigned || !this.petition?.id) return;
-    this.signing = true;
+
     this.signError = '';
 
+    // ── Snapshot for rollback ──────────────────────────────────
+    const previousCount  = this.petition.currentSignatures || 0;
+    const previousSigned = this.hasSigned;
+
+    // ── ✅ Optimistic update — instant feedback ────────────────
+    this.hasSigned   = true;
+    this.signSuccess = true;
+    this.petition.currentSignatures = previousCount + 1;
+    this.signed.emit();
+
+    // ── API call in background ────────────────────────────────
+    this.signing = true;
     this.petitionService.sign(
       this.petition.id,
       this.comment || undefined,
@@ -120,18 +132,19 @@ export class PetitionDetail implements OnInit {
     ).subscribe({
       next: () => {
         this.signing = false;
-        this.hasSigned = true;
-        this.signSuccess = true;
-        this.petition.currentSignatures =
-          (this.petition.currentSignatures || 0) + 1;
-        this.signed.emit();
         this.loadMap();
+        this.cdr.markForCheck();
       },
       error: (err: any) => {
-        this.signing = false;
+        // 🔄 Roll back optimistic changes
+        this.hasSigned   = previousSigned;
+        this.signSuccess = false;
+        this.petition.currentSignatures = previousCount;
+        this.signing   = false;
         this.signError = err?.error?.message
           || err?.message
           || 'Error signing petition';
+        this.cdr.markForCheck();
       }
     });
   }
@@ -145,8 +158,10 @@ export class PetitionDetail implements OnInit {
         '_blank'
       );
     } else if (platform === 'facebook') {
+      // Le crawler de Facebook ne peut pas lire "localhost". 
+      // Ajouter "&quote=" permet au moins de pré-remplir le texte de la publication.
       window.open(
-        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`,
         '_blank'
       );
     } else if (platform === 'copy') {

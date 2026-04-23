@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PetitionService, Petition, PetitionStats } from '../../services/petition.service';
 import { AuthService } from '../../services/auth.service';
+import { EcoModerationService, ModerationResult } from '../../services/eco-moderation.service';
 import { forkJoin } from 'rxjs';
 import { PetitionDetail } from '../petition-detail/petition-detail';
 import * as THREE from 'three';
@@ -59,6 +60,11 @@ export class PetitionComponent implements OnInit, OnDestroy {
   errorMessage = '';
   successMessage = '';
 
+  // ── AI Moderation ──────────────────────────────────────────────
+  moderationResult: ModerationResult | null = null;
+  moderationState: 'idle' | 'checking' | 'done' | 'error' = 'idle';
+  private moderationTimer: any;
+
   pendingPetitions: Petition[] = [];
   allPetitions: Petition[] = [];
 
@@ -69,7 +75,8 @@ export class PetitionComponent implements OnInit, OnDestroy {
 
   constructor(
     private petitionService: PetitionService,
-    private authService: AuthService
+    private authService: AuthService,
+    private ecoModeration: EcoModerationService
   ) {}
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -141,9 +148,9 @@ export class PetitionComponent implements OnInit, OnDestroy {
 
     // Positions des 3 arbres : [x, z, scale, rotY]
     const treeConfigs = [
-      { x: 0,    z: 0,    scale: 1.0,  rotY: 0 },          // Arbre central — grand
-      { x: -2.8, z: -1.5, scale: 0.65, rotY: 0.8 },        // Gauche — petit, reculé
-      { x:  2.6, z: -1.2, scale: 0.72, rotY: -0.5 },       // Droite — moyen, reculé
+      { x: 0,    z: -0.5, scale: 1.35, rotY: 0 },          // Arbre central — plus grand et légèrement reculé
+      { x: -3.2, z: -1.8, scale: 0.85, rotY: 0.8 },        // Gauche — plus grand, plus excentré
+      { x:  3.1, z: -1.5, scale: 0.92, rotY: -0.5 },       // Droite — plus grand, plus excentré
     ];
 
     let loadedCount = 0;
@@ -301,8 +308,42 @@ export class PetitionComponent implements OnInit, OnDestroy {
 
   // ── CRUD ──────────────────────────────────────────────────────────────────
 
+  // ── Live AI moderation (called on title/description change) ──
+  triggerLiveModeration(): void {
+    clearTimeout(this.moderationTimer);
+    const title = this.newPetition.title?.trim();
+    if (!title || title.length < 5) {
+      this.moderationResult = null;
+      this.moderationState  = 'idle';
+      return;
+    }
+    this.moderationState = 'checking';
+    this.moderationTimer = setTimeout(() => {
+      this.ecoModeration.moderate(title, this.newPetition.description).subscribe(result => {
+        this.moderationResult = result;
+        this.moderationState  = result ? 'done' : 'error';
+      });
+    }, 600);  // debounce 600ms
+  }
+
+  getModerationScoreClass(): string {
+    if (!this.moderationResult) return '';
+    const s = this.moderationResult.score;
+    if (s >= 70) return 'eco-score-green';
+    if (s >= 50) return 'eco-score-orange';
+    return 'eco-score-red';
+  }
+
+  getModerationIcon(): string {
+    if (!this.moderationResult) return '';
+    const d = this.moderationResult.decision;
+    if (d === 'PENDING') return '✅';
+    if (d === 'REVIEW')  return '⚠️';
+    return '❌';
+  }
+
   submitPetition() {
-    if (this.createState !== 'idle') return;
+    if (this.createState !== 'idle' && this.createState !== 'confirmed') return;
     if (!this.newPetition.title.trim() || this.newPetition.title.trim().length < 10) {
       this.errorMessage = 'Title must be at least 10 characters'; return;
     }
@@ -314,35 +355,80 @@ export class PetitionComponent implements OnInit, OnDestroy {
     }
 
     this.errorMessage = '';
-    this.createState = 'processing';
+    clearTimeout(this.moderationTimer);
 
     const petition: Petition = {
       ...this.newPetition,
       deadline: this.deadlineDate ? this.deadlineDate + 'T00:00:00' : undefined
     };
 
-    this.petitionService.create(petition).subscribe({
-      next: (created: Petition) => {
-        this.createState = 'idle';
-        this.resetForm();
-        this.myPetitions = [{ ...created, status: 'PENDING' }, ...this.myPetitions];
-        this.myPetitionsLoaded = true;
-        this.successMessage = '🌱 Petition submitted! Awaiting admin validation.';
-        this.activeTab = 'my';
-        setTimeout(() => {
-          this.successMessage = '';
-          this.refreshAll();
-          this.petitionService.getMy().subscribe({
-            next: (data: Petition[]) => { this.myPetitions = [...data]; }
-          });
-        }, 2000);
-      },
-      error: (err: any) => {
-        this.createState = 'idle';
-        const raw = err.message || 'Creation failed';
-        this.errorMessage = raw.includes('RuntimeException')
-          ? raw.split('RuntimeException:').pop()?.trim() || raw : raw;
+    // ── Step 1: Always run AI moderation on submit ─────────────
+    this.createState     = 'processing';
+    this.moderationState = 'checking';
+
+    this.ecoModeration.moderate(
+      this.newPetition.title,
+      this.newPetition.description
+    ).subscribe(result => {
+
+      this.moderationResult = result;
+      this.moderationState  = result ? 'done' : 'error';
+
+      // ── Step 2a: REJECTED → block completely ──────────────
+      if (result?.decision === 'REJECTED') {
+        this.createState  = 'idle';
+        this.errorMessage = `❌ Ecological filter rejected this petition (score: ${result.score}/100). Please write about an environmental topic.`;
+        return;
       }
+
+      // ── Step 2b: AI passed (PENDING / REVIEW / unavailable) ─
+      // Now apply optimistic UI + submit to backend
+      const optimisticPetition: Petition = {
+        ...petition,
+        id:                undefined,
+        status:            'PENDING',
+        currentSignatures: 0
+      };
+
+      const previousMy = [...this.myPetitions];
+
+      // ── ✅ Instant success feedback ──────────────────────────
+      this.myPetitions       = [optimisticPetition, ...this.myPetitions];
+      this.myPetitionsLoaded = true;
+      this.successMessage    = result
+        ? `🌱 Petition submitted! Ecological score: ${result.score}/100.`
+        : '🌱 Petition submitted! Awaiting admin validation.';
+      this.activeTab      = 'my';
+      this.moderationResult = null;
+      this.moderationState  = 'idle';
+      this.resetForm();
+      setTimeout(() => { this.successMessage = ''; }, 4000);
+
+      // ── Step 3: Backend call in background ──────────────────
+      this.petitionService.create(petition).subscribe({
+        next: (created: Petition) => {
+          this.createState = 'idle';
+          this.myPetitions = this.myPetitions.map(p =>
+            p === optimisticPetition ? { ...created, status: 'PENDING' } : p
+          );
+          setTimeout(() => {
+            this.refreshAll();
+            this.petitionService.getMy().subscribe({
+              next: (data: Petition[]) => { this.myPetitions = [...data]; }
+            });
+          }, 1500);
+        },
+        error: (err: any) => {
+          // Roll back on backend failure
+          this.myPetitions    = previousMy;
+          this.activeTab      = 'create';
+          this.createState    = 'idle';
+          this.successMessage = '';
+          const raw = err.message || 'Creation failed';
+          this.errorMessage = raw.includes('RuntimeException')
+            ? raw.split('RuntimeException:').pop()?.trim() || raw : raw;
+        }
+      });
     });
   }
 

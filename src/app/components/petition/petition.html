@@ -217,14 +217,16 @@
           <div class="field-group">
             <label class="field-label">Title</label>
             <input class="field-input" type="text" placeholder="Ex: More bike lanes in Tunis"
-              [(ngModel)]="newPetition.title" maxlength="200">
+              [(ngModel)]="newPetition.title" maxlength="200"
+              (ngModelChange)="triggerLiveModeration()">
             <div class="field-hint">{{ newPetition.title.length }}/200 — minimum 10 characters</div>
           </div>
 
           <div class="field-group">
             <label class="field-label">Description</label>
             <textarea class="field-textarea" rows="5" placeholder="Describe your initiative…"
-              [(ngModel)]="newPetition.description"></textarea>
+              [(ngModel)]="newPetition.description"
+              (ngModelChange)="triggerLiveModeration()"></textarea>
             <div class="field-hint">minimum 30 characters</div>
           </div>
 
@@ -266,10 +268,34 @@
           <div class="msg msg-error" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
           <div class="msg msg-success" *ngIf="successMessage">🌱 {{ successMessage }}</div>
 
-          <div class="eco-banner">
-            <span class="eco-banner-icon">🌿</span>
-            <span>Your petition will be checked by our ecological filter, then reviewed by an admin before
-              publishing.</span>
+          <!-- AI Eco-Filter live result -->
+          <div class="eco-banner" [class.eco-banner-checking]="moderationState === 'checking'"
+               [class.eco-banner-green]="moderationResult?.decision === 'PENDING'"
+               [class.eco-banner-orange]="moderationResult?.decision === 'REVIEW'"
+               [class.eco-banner-red]="moderationResult?.decision === 'REJECTED'">
+            <span class="eco-banner-icon">
+              <ng-container *ngIf="moderationState === 'checking'">⏳</ng-container>
+              <ng-container *ngIf="moderationState !== 'checking' && !moderationResult">🌿</ng-container>
+              <ng-container *ngIf="moderationResult">{{ getModerationIcon() }}</ng-container>
+            </span>
+            <span *ngIf="moderationState === 'idle' && !moderationResult">
+              Your petition will be checked by our ecological filter, then reviewed by an admin.
+            </span>
+            <span *ngIf="moderationState === 'checking'">
+              🧠 Analyzing with our AI ecological filter…
+            </span>
+            <span *ngIf="moderationState === 'done' && moderationResult">
+              <strong>Ecological score: {{ moderationResult.score }}/100</strong>
+              &nbsp;&bull;&nbsp;
+              <span [class]="getModerationScoreClass()">
+                <ng-container *ngIf="moderationResult.decision === 'PENDING'">✅ Ecological — will be sent to admin</ng-container>
+                <ng-container *ngIf="moderationResult.decision === 'REVIEW'">⚠️ Needs review — borderline ecological content</ng-container>
+                <ng-container *ngIf="moderationResult.decision === 'REJECTED'">❌ Not ecological — please revise your petition</ng-container>
+              </span>
+            </span>
+            <span *ngIf="moderationState === 'error'">
+              ⚠️ AI filter unavailable — petition will be reviewed by admin.
+            </span>
           </div>
 
           <button class="btn-publish" (click)="submitPetition()" [disabled]="createState === 'processing'">
