@@ -169,13 +169,14 @@ nav.nav-solid .dot-badge { border-color: rgba(255,255,255,.9); }
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   border: 1px solid var(--dd-border);
   box-shadow: var(--dd-shadow);
-  /* Hide via clip-path — no opacity, no fade */
   clip-path: inset(0 0 100% 0 round 20px);
   transition: clip-path 0.45s cubic-bezier(.16,.84,.44,1);
   pointer-events: none;
   /* padding only on sides, not top/bottom — controlled by items */
   padding: 6px;
   overflow: hidden;
+  will-change: clip-path;
+  transform: translateX(-50%) translateZ(0);
 }
 
 .mega-dropdown.show {
@@ -185,7 +186,7 @@ nav.nav-solid .dot-badge { border-color: rgba(255,255,255,.9); }
 
 /* Right-aligned (icon dropdowns) */
 .icon-dropdown {
-  left: auto; right: -10px; transform: none; min-width: 320px;
+  left: auto; right: -10px; transform: translateZ(0); min-width: 320px;
 }
 
 /* ── Clip wrapper around each item ── */
@@ -197,14 +198,15 @@ nav.nav-solid .dot-badge { border-color: rgba(255,255,255,.9); }
 .mega-item,
 .mega-header-inner,
 .notif-row {
-  transform: translateY(110%);
+  transform: translateY(110%) translateZ(0);
   transition: transform 0.55s cubic-bezier(.16,.84,.44,1), background 0.22s ease;
+  will-change: transform;
 }
 
 .mega-dropdown.show .mega-item,
 .mega-dropdown.show .mega-header-inner,
 .mega-dropdown.show .notif-row {
-  transform: translateY(0);
+  transform: translateY(0) translateZ(0);
 }
 
 /* Stagger each clipped row */
