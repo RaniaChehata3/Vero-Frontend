@@ -130,6 +130,13 @@ export class EventsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.generateLeaves();
     this.generateTurtles();
+    this.roleSub = this.auth.roleStream$.subscribe(() => {
+    this.cdr.markForCheck();
+    // Recharger les réservations jointes si le rôle change
+    if (!this.auth.isAdmin && !this.auth.isPartner) {
+      this.loadMyReservations();
+    }
+  });
     this.load();
 
     // Health-check ML — détecte les 3 modèles
