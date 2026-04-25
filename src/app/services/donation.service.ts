@@ -100,7 +100,7 @@ export class DonationService {
       `${this.apiUrl}/${id}`,
       donation,
       { headers: this.getHeaders() }
-    ).pipe(tap(() => {}));
+    ).pipe(tap(() => { }));
   }
 
   // ── Supprimer un don ───────────────────────────────────────────────────────
@@ -120,8 +120,8 @@ export class DonationService {
     );
   }
 
-  createStripeCheckout(amount: number, donationId: number): Observable<{url: string}> {
-    return this.http.post<{url: string}>(
+  createStripeCheckout(amount: number, donationId: number): Observable<{ url: string }> {
+    return this.http.post<{ url: string }>(
       'http://localhost:8080/api/stripe/checkout',
       { amount, donationId },
       { headers: this.getHeaders() }

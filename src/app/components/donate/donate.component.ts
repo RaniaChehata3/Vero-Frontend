@@ -307,10 +307,10 @@ export class DonateComponent implements OnInit, OnDestroy {
 
   /** Extrait le message d'erreur depuis la réponse Spring Boot */
   private _extractError(err: any): string {
-    if (typeof err?.error === 'string')   return err.error;
-    if (err?.error?.message)              return err.error.message;
-    if (err?.error?.error)                return err.error.error;
-    if (err?.message)                     return err.message;
+    if (typeof err?.error === 'string') return err.error;
+    if (err?.error?.message) return err.error.message;
+    if (err?.error?.error) return err.error.error;
+    if (err?.message) return err.message;
     return 'Donation failed. Please try again.';
   }
 
@@ -483,8 +483,8 @@ export class DonateComponent implements OnInit, OnDestroy {
     return classes[status || ''] || '';
   }
 
-  getMoneyCount(): number    { return this.donations.filter(d => d.type === 'MONEY').length; }
+  getMoneyCount(): number { return this.donations.filter(d => d.type === 'MONEY').length; }
   getMaterialCount(): number { return this.donations.filter(d => d.type === 'MATERIAL').length; }
-  getTimeCount(): number     { return this.donations.filter(d => d.type === 'TIME').length; }
+  getTimeCount(): number { return this.donations.filter(d => d.type === 'TIME').length; }
   getValidatedCount(): number { return this.donations.filter(d => d.status === 'VALIDATED').length; }
 }
