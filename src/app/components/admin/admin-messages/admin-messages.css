@@ -46,7 +46,7 @@
 /* Avatars */
 .msg-conv-avatars { display:flex; flex-shrink:0; align-items:center; }
 .msg-avatar { width:38px; height:38px; border-radius:50%; display:grid; place-items:center; font-weight:700; font-size:12px; flex-shrink:0; }
-.msg-avatar-a { background:linear-gradient(135deg,rgba(67,97,238,.3),rgba(123,47,247,.3)); color:var(--vc-accent); border:1px solid rgba(67,97,238,.3); }
+.msg-avatar-a { background:linear-gradient(135deg,rgba(67,97,238,.3),rgba(0,180,166,.3)); color:var(--vc-accent); border:1px solid rgba(67,97,238,.3); }
 .msg-avatar-b { background:linear-gradient(135deg,rgba(247,127,0,.25),rgba(247,127,0,.1)); color:var(--vc-warning); border:1px solid rgba(247,127,0,.3); margin-left:-10px; }
 .msg-conv-body { min-width:0; flex:1; }
 .msg-conv-top { display:flex; justify-content:space-between; align-items:center; gap:8px; }

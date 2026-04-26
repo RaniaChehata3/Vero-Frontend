@@ -66,18 +66,10 @@ export class Admin implements OnInit {
     });
   }
 
+  // FIXED — tab changes instantly on first click, no blocking
   setTab(tab: 'users' | 'add' | 'settings' | 'edit' | 'messages' | 'products' | 'formations' | string): void {
-    if ((tab as string) === this.activeTab) return;
-    // Animate outgoing content
-    const outgoing = document.querySelectorAll<HTMLElement>(
-      'app-admin-users, app-admin-messages, app-admin-products, app-admin-formations'
-    );
-    outgoing.forEach(el => el.classList.add('tab-leaving'));
-    setTimeout(() => {
-      this.activeTab = tab as any;
-      // Angular renders new content; remove class on next frame
-      requestAnimationFrame(() => outgoing.forEach(el => el.classList.remove('tab-leaving')));
-    }, 120);
+    if (tab === this.activeTab) return;
+    this.activeTab = tab as any;
   }
 
   initials(name?: string): string {
