@@ -82,6 +82,8 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   z-index: 50;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+
 .vc-brand {
   margin-bottom: 20px;
   padding-bottom: 16px;
@@ -89,19 +91,27 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   width: 100%;
   display: flex;
   justify-content: center;
+  overflow: hidden;
 }
 
-.vc-brand-mark {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--vc-accent), var(--vc-accent-2));
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
   color: #fff;
-  font-size: 18px;
-  font-weight: 800;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 4px 14px rgba(67, 97, 238, 0.45);
+  cursor: pointer;
+  transition: opacity .3s;
+  letter-spacing: -.5px;
+  white-space: nowrap;
+}
+
+.nav-logo:hover {
+  opacity: .8;
+}
+
+.logo-accent {
+  color: var(--vc-accent);
+  font-style: italic;
 }
 
 .vc-nav-list {

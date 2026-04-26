@@ -1,11 +1,12 @@
 <!-- ═══ VERO ADMIN — DARK ENTERPRISE CONSOLE ═══ -->
 <div class="vc-app"> <!-- ─── SIDEBAR (icon-only 80px) ─── -->
   <aside class="vc-nav">
-    text
 
     <!-- Logo -->
     <div class="vc-brand">
-      <div class="vc-brand-mark">V</div>
+      <div class="nav-logo" routerLink="/" aria-label="Vero home">
+        Ver<span class="logo-accent">o</span>
+      </div>
     </div>
 
     <!-- Navigation -->
@@ -22,14 +23,7 @@
         </svg>
       </button>
 
-      <button id="nav-btn-messages" class="vc-nav-item" [class.active]="activeTab === 'messages'"
-        (click)="setTab('messages')" title="Conversations">
-        <svg class="vc-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-        </svg>
-        <span class="vc-nav-badge">3</span>
-      </button>
+
 
       <button id="nav-btn-products" class="vc-nav-item" [class.active]="activeTab === 'products'"
         (click)="setTab('products')" title="Products">
@@ -121,7 +115,6 @@
 
         <div class="vc-hero-actions">
           <button class="vc-btn-hero-primary" (click)="setTab('add')">+ New User</button>
-          <button class="vc-btn-hero-ghost" (click)="setTab('messages')">Open Monitor</button>
         </div>
       </div>
 
@@ -175,28 +168,7 @@
         <div class="vc-stat-trend vc-trend-down">↓ growing platform</div>
       </div>
 
-      <!-- Card 2 — Conversations -->
-      <div class="vc-stat-card" id="stat-card-messages">
-        <div class="vc-stat-card-head">
-          <span class="vc-stat-card-label">Conversations</span>
-          <button class="vc-stat-menu-btn" aria-label="more options">⋯</button>
-        </div>
-        <svg class="vc-sparkline" viewBox="0 0 80 40" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="spark2Fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#06d6a0" stop-opacity="0.3" />
-              <stop offset="100%" stop-color="#06d6a0" stop-opacity="0" />
-            </linearGradient>
-          </defs>
-          <path d="M0,34 C10,30 15,26 25,22 C35,18 40,14 50,10 C60,6 70,4 80,2" fill="none" stroke="#06d6a0"
-            stroke-width="2" stroke-linecap="round" />
-          <path d="M0,34 C10,30 15,26 25,22 C35,18 40,14 50,10 C60,6 70,4 80,2 L80,40 L0,40 Z"
-            fill="url(#spark2Fill)" />
-        </svg>
-        <div class="vc-stat-number">—</div>
-        <div class="vc-stat-sublabel">active conversations</div>
-        <div class="vc-stat-trend vc-trend-up">↑ engagement rising</div>
-      </div>
+
 
       <!-- Card 3 — Products -->
       <div class="vc-stat-card" id="stat-card-products">
@@ -292,16 +264,7 @@
             </div>
           </div>
 
-          <div class="vc-plan-item">
-            <div class="vc-plan-header">
-              <span class="vc-plan-label">Conversations</span>
-              <span class="vc-plan-pct" style="color:#f72585">50%</span>
-            </div>
-            <div class="vc-progress-track">
-              <div class="vc-progress-fill"
-                style="--target-width:50%; background: linear-gradient(90deg, #f72585, #f77f00)"></div>
-            </div>
-          </div>
+
 
           <div class="vc-plan-item">
             <div class="vc-plan-header">
@@ -327,9 +290,7 @@
     <app-admin-users [activeTab]="activeTab" (tabChange)="setTab($event)"></app-admin-users>
     }
 
-    @if (activeTab === 'messages') {
-    <app-admin-messages [activeTab]="activeTab" (tabChange)="setTab($event)"></app-admin-messages>
-    }
+
 
     @if (activeTab === 'products') {
     <app-admin-products [activeTab]="activeTab" (tabChange)="setTab($event)"></app-admin-products>

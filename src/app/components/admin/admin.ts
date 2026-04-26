@@ -1,6 +1,10 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core'; import { CommonModule } from '@angular/common'; import { FormsModule } from '@angular/forms'; import { ActivatedRoute, Router } from '@angular/router'; import { AuthService, UserResponse } from '../../services/auth.service'; import { MessagerieService } from '../../services/messagerie.service'; import { NotificationService } from '../../services/notification.service';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core'; 
+import { CommonModule } from '@angular/common'; 
+import { FormsModule } from '@angular/forms'; 
+import { ActivatedRoute, Router } from '@angular/router'; 
+import { AuthService, UserResponse } from '../../services/auth.service'; 
+import { NotificationService } from '../../services/notification.service';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
-import { AdminMessagesComponent } from './admin-messages/admin-messages.component';
 import { AdminProductsComponent } from './admin-products/admin-products.component';
 import { AdminFormationsComponent } from './admin-formations/admin-formations.component';
 
@@ -11,7 +15,6 @@ import { AdminFormationsComponent } from './admin-formations/admin-formations.co
     CommonModule,
     FormsModule,
     AdminUsersComponent,
-    AdminMessagesComponent,
     AdminProductsComponent,
     AdminFormationsComponent
   ],
@@ -20,7 +23,7 @@ import { AdminFormationsComponent } from './admin-formations/admin-formations.co
   encapsulation: ViewEncapsulation.None
 })
 export class Admin implements OnInit {
-  activeTab: 'users' | 'add' | 'settings' | 'edit' | 'messages' | 'products' | 'formations' = 'users';
+  activeTab: 'users' | 'add' | 'settings' | 'edit' | 'products' | 'formations' = 'users';
   adminMe: UserResponse | null = null;
   topicHeatmapTotal = 0;
   suspendedCount = 0;
@@ -33,8 +36,6 @@ export class Admin implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private messagerieService: MessagerieService,
-    private notificationService: NotificationService,
     private route: ActivatedRoute,
     private router: Router
   ) { }
@@ -54,7 +55,6 @@ export class Admin implements OnInit {
     this.authService.getMe().subscribe({
       next: (me) => {
         this.adminMe = me;
-        this.messagerieService.connect(me.id, me.role === 'ADMIN');
         this.ensureNotificationPermission();
       },
       error: () => {
@@ -67,7 +67,7 @@ export class Admin implements OnInit {
   }
 
   // FIXED — tab changes instantly on first click, no blocking
-  setTab(tab: 'users' | 'add' | 'settings' | 'edit' | 'messages' | 'products' | 'formations' | string): void {
+  setTab(tab: 'users' | 'add' | 'settings' | 'edit' | 'products' | 'formations' | string): void {
     if (tab === this.activeTab) return;
     this.activeTab = tab as any;
   }
