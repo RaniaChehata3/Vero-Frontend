@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,7 +14,8 @@ import { NotificationService } from '../../../services/notification.service';
   styleUrls: ['./admin-users.css']
 })
 export class AdminUsersComponent implements OnInit, OnDestroy {
-  activeTab: 'users' | 'add' | 'edit' = 'users';
+  @Input() activeTab: string = 'users';
+  @Output() tabChange = new EventEmitter<string>();
 
   private static readonly USERS_CACHE_KEY = 'vero_admin_users_cache';
 

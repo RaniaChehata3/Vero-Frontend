@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,6 +17,8 @@ import { Formation, FormationResource, FormationStatus, Session, SessionStatus }
   styleUrls: ['./admin-formations.css']
 })
 export class AdminFormationsComponent implements OnInit {
+  @Input() activeTab: string = 'formations';
+  @Output() tabChange = new EventEmitter<string>();
 
   formations: Formation[] = [];
   formationsLoading = false;
@@ -532,7 +534,10 @@ export class AdminFormationsComponent implements OnInit {
   }
 
   generateQuizFromResources(): void {
-    if (!this.selectedFormationForSessions) return;
+    if (!this.selectedFormationForSessions) {
+      this.notificationService.error('Please select a formation first.');
+      return;
+    }
     if (this.formationResources.length === 0) {
       this.notificationService.error('Upload resources for this formation first.');
       return;
@@ -560,7 +565,11 @@ export class AdminFormationsComponent implements OnInit {
     this.showQuizPreviewModal = true;
     this.formationService.getQuizPreview(formationId).subscribe({
       next: (quiz) => { this.quizPreview = quiz; this.quizPreviewLoading = false; },
-      error: () => { this.notificationService.error('Error loading quiz.'); this.showQuizPreviewModal = false; this.quizPreviewLoading = false; }
+      error: () => { 
+        this.notificationService.error('Error loading quiz.'); 
+        this.showQuizPreviewModal = false; 
+        this.quizPreviewLoading = false; 
+      }
     });
   }
 

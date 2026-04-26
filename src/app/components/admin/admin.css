@@ -1,12 +1,13 @@
-/* ═══════════════════════════════════════════════════
-VERO ADMIN — DARK ENTERPRISE CONSOLE
-═══════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+VERO ADMIN â€” DARK ENTERPRISE CONSOLE
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 :host {
   display: block;
 }
 
-/* ── TOKENS ── */
+/* â”€â”€ TOKENS â”€â”€ */
 .vc-app {
   --vc-bg: #0f1117;
   --vc-surface: #1e2235;
@@ -66,7 +67,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   line-height: 1.5;
 }
 
-/* ═══ SIDEBAR ═══ */
+/* â•â•â• SIDEBAR â•â•â• */
 .vc-nav {
   position: sticky;
   top: 0;
@@ -82,7 +83,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   z-index: 50;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+
 
 .vc-brand {
   margin-bottom: 20px;
@@ -205,7 +206,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   background: rgba(247, 37, 133, 0.1);
 }
 
-/* ═══ MAIN ═══ */
+/* â•â•â• MAIN â•â•â• */
 .vc-main {
   min-width: 0;
   padding: 24px;
@@ -214,7 +215,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   gap: 20px;
 }
 
-/* ═══ HEADER BAR ═══ */
+/* â•â•â• HEADER BAR â•â•â• */
 .vc-header {
   display: flex;
   align-items: center;
@@ -304,7 +305,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   box-shadow: 0 4px 14px rgba(67, 97, 238, 0.4);
 }
 
-/* ═══ HERO BANNER CARD ═══ */
+/* â•â•â• HERO BANNER CARD â•â•â• */
 .vc-hero-card {
   min-height: 160px;
   border-radius: var(--vc-radius);
@@ -483,10 +484,10 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   }
 }
 
-/* ═══ STATS CARDS ROW ═══ */
+/* â•â•â• STATS CARDS ROW â•â•â• */
 .vc-stats-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 20px;
 }
 
@@ -575,7 +576,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   color: var(--vc-text-muted);
 }
 
-/* ═══ BOTTOM ROW ═══ */
+/* â•â•â• BOTTOM ROW â•â•â• */
 .vc-bottom-row {
   display: grid;
   grid-template-columns: 45fr 55fr;
@@ -743,7 +744,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   border-color: var(--vc-accent-2)
 }
 
-/* ═══ RIGHT PANEL ═══ */
+/* â•â•â• RIGHT PANEL â•â•â• */
 .vc-right-panel {
   position: sticky;
   top: 0;
@@ -968,7 +969,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   color: var(--vc-text-primary)
 }
 
-/* ═══ BUTTONS ═══ */
+/* â•â•â• BUTTONS â•â•â• */
 .vc-btn {
   padding: 10px 20px;
   border-radius: 10px;
@@ -1086,7 +1087,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   cursor: not-allowed
 }
 
-/* ═══ SECTIONS ═══ */
+/* â•â•â• SECTIONS â•â•â• */
 .vc-section,
 .vc-banner,
 .vc-compose {
@@ -1131,7 +1132,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   flex-wrap: wrap
 }
 
-/* ═══ INPUTS ═══ */
+/* â•â•â• INPUTS â•â•â• */
 .vc-input {
   padding: 8px 12px;
   border: 1px solid var(--vc-border);
@@ -1167,7 +1168,7 @@ select.vc-input {
   cursor: pointer
 }
 
-/* ═══ TABLE ═══ */
+/* â•â•â• TABLE â•â•â• */
 .vc-table {
   width: 100%;
   border-collapse: collapse;
@@ -1213,7 +1214,7 @@ select.vc-input {
   background: rgba(255, 255, 255, .03)
 }
 
-/* ═══ PERSON / AVATAR ═══ */
+/* â•â•â• PERSON / AVATAR â•â•â• */
 .vc-person {
   display: flex;
   align-items: center;
@@ -1225,7 +1226,7 @@ select.vc-input {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(67, 97, 238, .3), rgba(0,180,166, .3));
+  background: linear-gradient(135deg, rgba(67, 97, 238, .3), rgba(0, 180, 166, .3));
   color: var(--vc-accent);
   display: grid;
   place-items: center;
@@ -1268,7 +1269,7 @@ select.vc-input {
   word-break: break-all
 }
 
-/* ═══ TAGS ═══ */
+/* â•â•â• TAGS â•â•â• */
 .vc-tag {
   display: inline-block;
   padding: 2px 9px;
@@ -1318,7 +1319,7 @@ select.vc-input {
   align-items: center
 }
 
-/* ═══ PAGER / EMPTY ═══ */
+/* â•â•â• PAGER / EMPTY â•â•â• */
 .vc-pager {
   display: flex;
   align-items: center;
@@ -1339,7 +1340,7 @@ select.vc-input {
   font-size: 12.5px
 }
 
-/* ═══ BANNERS ═══ */
+/* â•â•â• BANNERS â•â•â• */
 .vc-banner {
   padding: 10px 16px;
   border-radius: 10px;
@@ -1359,7 +1360,7 @@ select.vc-input {
   border-left: 3px solid var(--vc-danger)
 }
 
-/* ═══ MODAL ═══ */
+/* â•â•â• MODAL â•â•â• */
 .vc-modal-overlay {
   position: fixed;
   inset: 0;
@@ -1403,7 +1404,7 @@ select.vc-input {
   justify-content: flex-end
 }
 
-/* ═══ FORMS ═══ */
+/* â•â•â• FORMS â•â•â• */
 .vc-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1484,7 +1485,7 @@ select.vc-input {
   padding-top: 8px
 }
 
-/* ═══ COMPOSE ═══ */
+/* â•â•â• COMPOSE â•â•â• */
 .vc-compose {
   max-width: 960px;
   display: flex;
@@ -1686,7 +1687,7 @@ select.vc-input {
   max-width: 960px
 }
 
-/* ═══ CARDS GRID ═══ */
+/* â•â•â• CARDS GRID â•â•â• */
 .vc-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1694,7 +1695,7 @@ select.vc-input {
   padding: 1rem 0
 }
 
-/* ═══ SKELETON ═══ */
+/* â•â•â• SKELETON â•â•â• */
 @keyframes vc-shimmer {
   0% {
     background-position: -400px 0
@@ -1758,7 +1759,7 @@ select.vc-input {
   border-radius: 999px
 }
 
-/* ═══ HEATMAP (dark) ═══ */
+/* â•â•â• HEATMAP (dark) â•â•â• */
 .vc-heatmap {
   margin: 0 0 24px;
   padding: 20px 24px;
@@ -1934,7 +1935,7 @@ select.vc-input {
   color: var(--vc-danger)
 }
 
-/* ═══ SCROLLBAR ═══ */
+/* â•â•â• SCROLLBAR â•â•â• */
 .vc-main::-webkit-scrollbar {
   width: 6px
 }
@@ -1948,7 +1949,7 @@ select.vc-input {
   border-radius: 4px
 }
 
-/* ═══ ANIMATIONS ═══ */
+/* â•â•â• ANIMATIONS â•â•â• */
 @keyframes fadeIn {
   from {
     opacity: 0
@@ -1996,7 +1997,7 @@ select.vc-input {
   animation: spin .6s linear infinite
 }
 
-/* ═══ RESPONSIVE ═══ */
+/* â•â•â• RESPONSIVE â•â•â• */
 @media(max-width:960px) {
   .vc-app {
     grid-template-columns: 80px 1fr
@@ -2134,14 +2135,14 @@ select.vc-input {
 /* ============================================
 
 /* ============================================
-ADMIN DASHBOARD — PREMIUM ANIMATIONS v2
+ADMIN DASHBOARD â€” PREMIUM ANIMATIONS v2
 Physics-based, GPU-accelerated, natural feel
 ============================================ */
 
-/* ─────────────────────────────────────────────
-KEYFRAMES — Entrance animations
-Small distances (≤20px) = smooth, not jarring
-───────────────────────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+KEYFRAMES â€” Entrance animations
+Small distances (â‰¤20px) = smooth, not jarring
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /* Used by: stats cards, plans card, event list items */
 @keyframes fadeSlideUp {
@@ -2195,7 +2196,7 @@ Small distances (≤20px) = smooth, not jarring
   }
 }
 
-/* Used by: generic cards, modals — subtle scale in */
+/* Used by: generic cards, modals â€” subtle scale in */
 @keyframes scaleFadeIn {
   from {
     opacity: 0;
@@ -2219,9 +2220,9 @@ Small distances (≤20px) = smooth, not jarring
   }
 }
 
-/* ─────────────────────────────────────────────
-KEYFRAMES — Continuous / looping
-───────────────────────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+KEYFRAMES â€” Continuous / looping
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /* Used by: floating emoji icons in hero banner */
 @keyframes float {
@@ -2246,7 +2247,7 @@ KEYFRAMES — Continuous / looping
   }
 }
 
-/* Used by: today date circle, appointment dots — very subtle */
+/* Used by: today date circle, appointment dots â€” very subtle */
 @keyframes subtlePulse {
 
   0%,
@@ -2261,7 +2262,7 @@ KEYFRAMES — Continuous / looping
   }
 }
 
-/* Used by: notification badge — orange pulse */
+/* Used by: notification badge â€” orange pulse */
 @keyframes badgePulse {
 
   0%,
@@ -2378,11 +2379,11 @@ KEYFRAMES — Continuous / looping
   }
 }
 
-/* ─────────────────────────────────────────────
-GPU ACCELERATION — applied to all animated elements
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+GPU ACCELERATION â€” applied to all animated elements
 will-change declared only on elements with
 continuous/looping animations
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .vc-hero-card,
 .vc-stat-card,
 .vc-events-card,
@@ -2405,10 +2406,10 @@ continuous/looping animations
   will-change: transform;
 }
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 SIDEBAR
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .vc-nav {
   background: linear-gradient(180deg, #1a1f35 0%, #141829 100%);
   background-size: 100% 200%;
@@ -2454,15 +2455,15 @@ SIDEBAR
   animation: ripple .45s ease-out;
 }
 
-/* badge — orange pulse */
+/* badge â€” orange pulse */
 .vc-nav-badge {
   animation: badgePulse 2.5s ease infinite;
 }
 
-/* ─────────────────────────────────────────────
-2. PAGE LOAD — staggered entrance
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+2. PAGE LOAD â€” staggered entrance
 Tight delays: everything done within 0.8s
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .vc-app {
   animation: fadeInPage .3s ease forwards;
 }
@@ -2473,7 +2474,7 @@ Tight delays: everything done within 0.8s
   animation: fadeSlideDown .5s cubic-bezier(.22, 1, .36, 1) .05s forwards;
 }
 
-/* Stats cards — stagger 80ms apart */
+/* Stats cards â€” stagger 80ms apart */
 .vc-stats-row .vc-stat-card {
   opacity: 0;
 }
@@ -2523,9 +2524,9 @@ Tight delays: everything done within 0.8s
   animation: bounceIn .4s cubic-bezier(.34, 1.56, .64, 1) .45s forwards;
 }
 
-/* ─────────────────────────────────────────────
-3. FLOATING ICONS — weightless, unsynchronised
-───────────────────────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+3. FLOATING ICONS â€” weightless, unsynchronised
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fi-1 {
   animation: float 4.0s ease-in-out 0.0s infinite;
 }
@@ -2546,9 +2547,9 @@ Tight delays: everything done within 0.8s
   animation: float 5.0s ease-in-out 0.8s infinite;
 }
 
-/* ─────────────────────────────────────────────
-4. STAT CARDS — hover interactions
-───────────────────────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+4. STAT CARDS â€” hover interactions
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .vc-stat-card {
   transition: transform .18s cubic-bezier(.25, .46, .45, .94),
     box-shadow .18s cubic-bezier(.25, .46, .45, .94),
@@ -2566,7 +2567,7 @@ Tight delays: everything done within 0.8s
   transition: filter .18s ease;
 }
 
-/* ⋯ menu rotates on hover */
+/* â‹¯ menu rotates on hover */
 .vc-stat-menu-btn {
   transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
   display: inline-block;
@@ -2576,10 +2577,10 @@ Tight delays: everything done within 0.8s
   transform: rotate(90deg);
 }
 
-/* ─────────────────────────────────────────────
-5. PROGRESS RING — CSS-variable driven
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+5. PROGRESS RING â€” CSS-variable driven
 HTML must have: style="--circumference:314.16; --progress:15.71"
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .vc-ring-progress {
   stroke-dasharray: var(--circumference, 314.16);
   stroke-dashoffset: var(--circumference, 314.16);
@@ -2588,10 +2589,10 @@ HTML must have: style="--circumference:314.16; --progress:15.71"
   transform: rotate(-90deg);
 }
 
-/* ─────────────────────────────────────────────
-6. PROGRESS BARS — CSS-variable driven width
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+6. PROGRESS BARS â€” CSS-variable driven width
 HTML: style="--target-width: 64%"
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .vc-progress-track {
   position: relative;
   overflow: hidden;
@@ -2625,9 +2626,9 @@ HTML: style="--target-width: 64%"
   animation: shimmer 2.2s linear 1.5s infinite;
 }
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 7. CALENDAR
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .vc-cal-date.today {
   animation: subtlePulse 3s ease-in-out infinite;
 }
@@ -2672,9 +2673,9 @@ HTML: style="--target-width: 64%"
   animation-delay: 1.8s;
 }
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 8. SEARCH BAR
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .vc-search {
   transition: box-shadow .18s cubic-bezier(.25, .46, .45, .94),
     transform .18s cubic-bezier(.25, .46, .45, .94),
@@ -2694,9 +2695,9 @@ HTML: style="--target-width: 64%"
   transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), color .18s ease;
 }
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 9. BUTTONS
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .vc-btn,
 .vc-btn-hero-primary,
 .vc-btn-hero-ghost,
@@ -2751,9 +2752,9 @@ HTML: style="--target-width: 64%"
   transform: translateY(-1px);
 }
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 10. TAB TRANSITION
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 app-admin-users,
 app-admin-messages,
 app-admin-products,
@@ -2762,9 +2763,9 @@ app-admin-formations {
   animation: fadeIn .35s ease forwards;
 }
 
-/* ─────────────────────────────────────────────
-11. PROFILE AVATAR — animated conic border
-───────────────────────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+11. PROFILE AVATAR â€” animated conic border
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .vc-profile-avatar {
   background: conic-gradient(from var(--border-angle, 0deg),
       #4361ee 0%, #00b4a6 35%, #f72585 65%, #4361ee 100%);
@@ -2790,21 +2791,21 @@ app-admin-formations {
   background: rgba(247, 37, 133, .1);
 }
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 12. AMBIENT BACKGROUND
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .vc-main {
   background:
     radial-gradient(ellipse at 15% 20%, rgba(67, 97, 238, .04) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 80%, rgba(0,180,166, .04) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 80%, rgba(0, 180, 166, .04) 0%, transparent 50%),
     var(--vc-bg);
   background-size: 200% 200%;
   animation: meshMove 15s ease infinite;
 }
 
-/* ─────────────────────────────────────────────
-PERFORMANCE — prefers-reduced-motion
-───────────────────────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+PERFORMANCE â€” prefers-reduced-motion
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @media (prefers-reduced-motion: reduce) {
 
   *,
@@ -2814,4 +2815,295 @@ PERFORMANCE — prefers-reduced-motion
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
+}
+
+/* ---------------------------------------------------
+   SPARKLINE DRAW-ON ANIMATION
+   Add this to the bottom of admin.css
+--------------------------------------------------- */
+
+/* -- Sparkline paths draw on from left -- */
+.vc-sparkline {
+  overflow: visible;
+}
+
+/* Each sparkline path gets a stroke-dasharray set via JS (or a generous fixed value) */
+.vc-sparkline .spark-line {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: sparkDraw 1.4s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+.vc-sparkline .spark-fill {
+  opacity: 0;
+  animation: sparkFillFade 1.6s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+/* Stagger per card */
+.vc-stats-row .vc-stat-card:nth-child(1) .spark-line {
+  animation-delay: .35s;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(2) .spark-line {
+  animation-delay: .50s;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(3) .spark-line {
+  animation-delay: .65s;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(1) .spark-fill {
+  animation-delay: .35s;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(2) .spark-fill {
+  animation-delay: .50s;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(3) .spark-fill {
+  animation-delay: .65s;
+}
+
+@keyframes sparkDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes sparkFillFade {
+  0% {
+    opacity: 0;
+  }
+
+  40% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* -- Glowing end-dot on the sparkline -- */
+
+
+
+
+
+
+
+
+/* -- Pulse loop on the end dot -- */
+
+
+
+
+/* -- Stat number count-up (uses CSS counter trick via clip) -- */
+.vc-stat-number {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The number span that JS will animate */
+.vc-stat-number-inner {
+  display: inline-block;
+  animation: numberReveal .6s cubic-bezier(.22, 1, .36, 1) forwards;
+  opacity: 0;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(1) .vc-stat-number-inner {
+  animation-delay: .55s;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(2) .vc-stat-number-inner {
+  animation-delay: .70s;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(3) .vc-stat-number-inner {
+  animation-delay: .85s;
+}
+
+@keyframes numberReveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(.85);
+    filter: blur(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* -- Card glow on hover — upgraded -- */
+.vc-stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Radial glow that follows hover */
+.vc-stat-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity .35s ease;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 0%, rgba(67, 97, 238, .12) 0%, transparent 70%);
+}
+
+.vc-stat-card:hover::after {
+  opacity: 1;
+}
+
+/* Card 1 — pink glow */
+.vc-stats-row .vc-stat-card:nth-child(1):hover::after {
+  background: radial-gradient(ellipse at 50% 0%, rgba(247, 37, 133, .12) 0%, transparent 70%);
+}
+
+/* Card 2 — teal glow */
+.vc-stats-row .vc-stat-card:nth-child(2):hover::after {
+  background: radial-gradient(ellipse at 50% 0%, rgba(6, 214, 160, .1) 0%, transparent 70%);
+}
+
+/* Card 3 — blue glow */
+.vc-stats-row .vc-stat-card:nth-child(3):hover::after {
+  background: radial-gradient(ellipse at 50% 0%, rgba(67, 97, 238, .12) 0%, transparent 70%);
+}
+
+
+
+/* -- Sublabel slide in -- */
+.vc-stat-sublabel {
+  opacity: 0;
+  animation: fadeSlideUp .4s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(1) .vc-stat-sublabel {
+  animation-delay: .6s;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(2) .vc-stat-sublabel {
+  animation-delay: .75s;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(3) .vc-stat-sublabel {
+  animation-delay: .9s;
+}
+
+/* -- Trend badge bounce -- */
+.vc-stat-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.vc-trend-down {
+  background: rgba(247, 37, 133, .1);
+  color: #f72585;
+}
+
+.vc-trend-up {
+  background: rgba(6, 214, 160, .1);
+  color: #06d6a0;
+}
+
+.vc-trend-neutral {
+  background: rgba(136, 146, 176, .1);
+  color: #8892b0;
+}/* -- Community card -- */
+.vc-community-card {
+  grid-column: span 2; /* takes full width below events+plans */
+}
+
+.vc-community-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.vc-community-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--vc-border);
+}
+
+.vc-community-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.vc-community-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.vc-community-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vc-community-label {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--vc-text-primary);
+}
+
+.vc-community-sub {
+  font-size: 12px;
+  color: var(--vc-text-muted);
+}
+
+.vc-community-count {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vc-text-muted);
+}
+
+@media (max-width: 960px) {
+  .vc-stats-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .vc-community-card {
+    grid-column: span 1;
+  }
+}
+
+/* bottom row: stack community below events+plans */
+.vc-bottom-row {
+  grid-template-columns: 45fr 55fr;
+  grid-template-rows: auto auto;
+}
+.vc-stats-row .vc-stat-card:nth-child(4) {
+  animation: fadeSlideUp .45s cubic-bezier(.22, 1, .36, 1) .34s forwards;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(4) .spark-line {
+  animation-delay: .80s;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(4) .spark-fill {
+  animation-delay: .80s;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(4) .vc-stat-number-inner {
+  animation-delay: 1.00s;
+}
+
+.vc-stats-row .vc-stat-card:nth-child(4) .vc-stat-sublabel {
+  animation-delay: 1.05s;
 }
