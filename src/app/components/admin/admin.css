@@ -1,13 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-VERO ADMIN â€” DARK ENTERPRISE CONSOLE
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+﻿@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+/* ───────────────────────────────────────────────────────
+VERO ADMIN — DARK ENTERPRISE CONSOLE
+─────────────────────────────────────────────────────── */
 
 :host {
   display: block;
 }
 
-/* â”€â”€ TOKENS â”€â”€ */
+/* ── TOKENS ── */
 .vc-app {
   --vc-bg: #0f1117;
   --vc-surface: #1e2235;
@@ -67,7 +67,7 @@ VERO ADMIN â€” DARK ENTERPRISE CONSOLE
   line-height: 1.5;
 }
 
-/* â•â•â• SIDEBAR â•â•â• */
+/* ••• SIDEBAR ••• */
 .vc-nav {
   position: sticky;
   top: 0;
@@ -206,7 +206,7 @@ VERO ADMIN â€” DARK ENTERPRISE CONSOLE
   background: rgba(247, 37, 133, 0.1);
 }
 
-/* â•â•â• MAIN â•â•â• */
+/* ••• MAIN ••• */
 .vc-main {
   min-width: 0;
   padding: 24px;
@@ -215,7 +215,7 @@ VERO ADMIN â€” DARK ENTERPRISE CONSOLE
   gap: 20px;
 }
 
-/* â•â•â• HEADER BAR â•â•â• */
+/* ••• HEADER BAR ••• */
 .vc-header {
   display: flex;
   align-items: center;
@@ -305,7 +305,7 @@ VERO ADMIN â€” DARK ENTERPRISE CONSOLE
   box-shadow: 0 4px 14px rgba(67, 97, 238, 0.4);
 }
 
-/* â•â•â• HERO BANNER CARD â•â•â• */
+/* ••• HERO BANNER CARD ••• */
 .vc-hero-card {
   min-height: 160px;
   border-radius: var(--vc-radius);
@@ -484,7 +484,7 @@ VERO ADMIN â€” DARK ENTERPRISE CONSOLE
   }
 }
 
-/* â•â•â• STATS CARDS ROW â•â•â• */
+/* ••• STATS CARDS ROW ••• */
 .vc-stats-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -576,7 +576,7 @@ VERO ADMIN â€” DARK ENTERPRISE CONSOLE
   color: var(--vc-text-muted);
 }
 
-/* â•â•â• BOTTOM ROW â•â•â• */
+/* ••• BOTTOM ROW ••• */
 .vc-bottom-row {
   display: grid;
   grid-template-columns: 45fr 55fr;
@@ -744,7 +744,7 @@ VERO ADMIN â€” DARK ENTERPRISE CONSOLE
   border-color: var(--vc-accent-2)
 }
 
-/* â•â•â• RIGHT PANEL â•â•â• */
+/* ••• RIGHT PANEL ••• */
 .vc-right-panel {
   position: sticky;
   top: 0;
@@ -969,7 +969,7 @@ VERO ADMIN â€” DARK ENTERPRISE CONSOLE
   color: var(--vc-text-primary)
 }
 
-/* â•â•â• BUTTONS â•â•â• */
+/* ••• BUTTONS ••• */
 .vc-btn {
   padding: 10px 20px;
   border-radius: 10px;
@@ -1087,7 +1087,7 @@ VERO ADMIN â€” DARK ENTERPRISE CONSOLE
   cursor: not-allowed
 }
 
-/* â•â•â• SECTIONS â•â•â• */
+/* ••• SECTIONS ••• */
 .vc-section,
 .vc-banner,
 .vc-compose {
@@ -1132,7 +1132,7 @@ VERO ADMIN â€” DARK ENTERPRISE CONSOLE
   flex-wrap: wrap
 }
 
-/* â•â•â• INPUTS â•â•â• */
+/* ••• INPUTS ••• */
 .vc-input {
   padding: 8px 12px;
   border: 1px solid var(--vc-border);
@@ -1168,7 +1168,7 @@ select.vc-input {
   cursor: pointer
 }
 
-/* â•â•â• TABLE â•â•â• */
+/* ••• TABLE ••• */
 .vc-table {
   width: 100%;
   border-collapse: collapse;
@@ -1214,7 +1214,7 @@ select.vc-input {
   background: rgba(255, 255, 255, .03)
 }
 
-/* â•â•â• PERSON / AVATAR â•â•â• */
+/* ••• PERSON / AVATAR ••• */
 .vc-person {
   display: flex;
   align-items: center;
@@ -1269,7 +1269,7 @@ select.vc-input {
   word-break: break-all
 }
 
-/* â•â•â• TAGS â•â•â• */
+/* ••• TAGS ••• */
 .vc-tag {
   display: inline-block;
   padding: 2px 9px;
@@ -1319,7 +1319,7 @@ select.vc-input {
   align-items: center
 }
 
-/* â•â•â• PAGER / EMPTY â•â•â• */
+/* ••• PAGER / EMPTY ••• */
 .vc-pager {
   display: flex;
   align-items: center;
@@ -1340,7 +1340,7 @@ select.vc-input {
   font-size: 12.5px
 }
 
-/* â•â•â• BANNERS â•â•â• */
+/* ••• BANNERS ••• */
 .vc-banner {
   padding: 10px 16px;
   border-radius: 10px;
@@ -1360,7 +1360,7 @@ select.vc-input {
   border-left: 3px solid var(--vc-danger)
 }
 
-/* â•â•â• MODAL â•â•â• */
+/* ••• MODAL ••• */
 .vc-modal-overlay {
   position: fixed;
   inset: 0;
@@ -1404,7 +1404,7 @@ select.vc-input {
   justify-content: flex-end
 }
 
-/* â•â•â• FORMS â•â•â• */
+/* ••• FORMS ••• */
 .vc-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1485,7 +1485,7 @@ select.vc-input {
   padding-top: 8px
 }
 
-/* â•â•â• COMPOSE â•â•â• */
+/* ••• COMPOSE ••• */
 .vc-compose {
   max-width: 960px;
   display: flex;
@@ -1687,7 +1687,7 @@ select.vc-input {
   max-width: 960px
 }
 
-/* â•â•â• CARDS GRID â•â•â• */
+/* ••• CARDS GRID ••• */
 .vc-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1695,7 +1695,7 @@ select.vc-input {
   padding: 1rem 0
 }
 
-/* â•â•â• SKELETON â•â•â• */
+/* ••• SKELETON ••• */
 @keyframes vc-shimmer {
   0% {
     background-position: -400px 0
@@ -1759,7 +1759,7 @@ select.vc-input {
   border-radius: 999px
 }
 
-/* â•â•â• HEATMAP (dark) â•â•â• */
+/* ••• HEATMAP (dark) ••• */
 .vc-heatmap {
   margin: 0 0 24px;
   padding: 20px 24px;
@@ -1935,7 +1935,7 @@ select.vc-input {
   color: var(--vc-danger)
 }
 
-/* â•â•â• SCROLLBAR â•â•â• */
+/* ••• SCROLLBAR ••• */
 .vc-main::-webkit-scrollbar {
   width: 6px
 }
@@ -1949,7 +1949,7 @@ select.vc-input {
   border-radius: 4px
 }
 
-/* â•â•â• ANIMATIONS â•â•â• */
+/* ••• ANIMATIONS ••• */
 @keyframes fadeIn {
   from {
     opacity: 0
@@ -1997,7 +1997,7 @@ select.vc-input {
   animation: spin .6s linear infinite
 }
 
-/* â•â•â• RESPONSIVE â•â•â• */
+/* ••• RESPONSIVE ••• */
 @media(max-width:960px) {
   .vc-app {
     grid-template-columns: 80px 1fr
@@ -2135,23 +2135,28 @@ select.vc-input {
 /* ============================================
 
 /* ============================================
-ADMIN DASHBOARD â€” PREMIUM ANIMATIONS v2
-Physics-based, GPU-accelerated, natural feel
+ADMIN DASHBOARD — PREMIUM ANIMATIONS v3
+Physics-based, GPU-accelerated, naturally flowing
 ============================================ */
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-KEYFRAMES â€” Entrance animations
-Small distances (â‰¤20px) = smooth, not jarring
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ────────────────────────────────────────────
+KEYFRAMES — Entrance animations
+Smoother easing curves and natural movement
+────────────────────────────────────────────── */
 
 /* Used by: stats cards, plans card, event list items */
 @keyframes fadeSlideUp {
-  from {
+  0% {
     opacity: 0;
     transform: translateY(20px);
   }
 
-  to {
+  40% {
+    opacity: 0.7;
+    transform: translateY(8px);
+  }
+
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
@@ -2159,12 +2164,17 @@ Small distances (â‰¤20px) = smooth, not jarring
 
 /* Used by: hero banner (falls in from above) */
 @keyframes fadeSlideDown {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(-12px);
+    transform: translateY(-14px);
   }
 
-  to {
+  60% {
+    opacity: 0.8;
+    transform: translateY(-5px);
+  }
+
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
@@ -2172,12 +2182,17 @@ Small distances (â‰¤20px) = smooth, not jarring
 
 /* Used by: right panel cards (slide in from right edge) */
 @keyframes fadeSlideLeft {
-  from {
+  0% {
     opacity: 0;
-    transform: translateX(16px);
+    transform: translateX(18px);
   }
 
-  to {
+  50% {
+    opacity: 0.7;
+    transform: translateX(7px);
+  }
+
+  100% {
     opacity: 1;
     transform: translateX(0);
   }
@@ -2185,25 +2200,35 @@ Small distances (â‰¤20px) = smooth, not jarring
 
 /* Used by: left bottom card */
 @keyframes fadeSlideRight {
-  from {
+  0% {
     opacity: 0;
-    transform: translateX(-16px);
+    transform: translateX(-18px);
   }
 
-  to {
+  50% {
+    opacity: 0.7;
+    transform: translateX(-7px);
+  }
+
+  100% {
     opacity: 1;
     transform: translateX(0);
   }
 }
 
-/* Used by: generic cards, modals â€” subtle scale in */
+/* Used by: generic cards, modals — subtle scale in */
 @keyframes scaleFadeIn {
-  from {
+  0% {
     opacity: 0;
-    transform: scale(0.94);
+    transform: scale(0.92);
   }
 
-  to {
+  60% {
+    opacity: 0.7;
+    transform: scale(0.97);
+  }
+
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -2211,18 +2236,23 @@ Small distances (â‰¤20px) = smooth, not jarring
 
 /* Used by: page wrapper */
 @keyframes fadeInPage {
-  from {
+  0% {
     opacity: 0;
   }
 
-  to {
+  70% {
+    opacity: 0.8;
+  }
+
+  100% {
     opacity: 1;
   }
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-KEYFRAMES â€” Continuous / looping
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ────────────────────────────────────────────
+KEYFRAMES — Continuous / looping
+More natural, physics-inspired movements
+────────────────────────────────────────────── */
 
 /* Used by: floating emoji icons in hero banner */
 @keyframes float {
@@ -2230,16 +2260,20 @@ KEYFRAMES â€” Continuous / looping
     transform: translateY(0px) rotate(0deg);
   }
 
-  25% {
-    transform: translateY(-6px) rotate(2deg);
+  20% {
+    transform: translateY(-5px) rotate(1.5deg);
   }
 
-  50% {
-    transform: translateY(-10px) rotate(-1deg);
+  40% {
+    transform: translateY(-8px) rotate(-0.5deg);
   }
 
-  75% {
-    transform: translateY(-5px) rotate(3deg);
+  60% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+
+  80% {
+    transform: translateY(-6px) rotate(-1deg);
   }
 
   100% {
@@ -2247,68 +2281,119 @@ KEYFRAMES â€” Continuous / looping
   }
 }
 
-/* Used by: today date circle, appointment dots â€” very subtle */
+/* Used by: today date circle, appointment dots — more organic pulse */
 @keyframes subtlePulse {
-
-  0%,
-  100% {
+  0% {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(67, 97, 238, .3);
   }
 
+  30% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 2px rgba(67, 97, 238, .2);
+  }
+
   50% {
     transform: scale(1.04);
-    box-shadow: 0 0 0 6px rgba(67, 97, 238, 0);
+    box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.05);
+  }
+
+  70% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
   }
 }
 
-/* Used by: notification badge â€” orange pulse */
+/* Used by: notification badge — orange pulse */
 @keyframes badgePulse {
-
-  0%,
-  100% {
+  0% {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(247, 127, 0, .7);
+  }
+
+  35% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 3px rgba(247, 127, 0, 0.4);
   }
 
   70% {
     transform: scale(1.1);
     box-shadow: 0 0 0 5px rgba(247, 127, 0, 0);
   }
+
+  85% {
+    transform: scale(1.03);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(247, 127, 0, 0);
+  }
 }
 
 /* Used by: sidebar & main ambient bg */
 @keyframes meshMove {
+  0% {
+    background-position: 0% 0%;
+  }
 
-  0%,
-  100% {
-    background-position: 0% 50%;
+  25% {
+    background-position: 25% 25%;
   }
 
   50% {
     background-position: 100% 50%;
   }
+
+  75% {
+    background-position: 75% 25%;
+  }
+
+  100% {
+    background-position: 0% 0%;
+  }
 }
 
 /* Used by: progress ring SVG */
 @keyframes ringFill {
-  from {
+  0% {
     stroke-dashoffset: var(--circumference, 314.16);
+    opacity: 0.4;
   }
 
-  to {
+  30% {
+    opacity: 0.8;
+  }
+
+  100% {
     stroke-dashoffset: var(--progress, 15.71);
+    opacity: 1;
   }
 }
 
 /* Used by: progress bar widths */
 @keyframes fillBar {
-  from {
+  0% {
     width: 0%;
+    opacity: 0.7;
   }
 
-  to {
+  20% {
+    opacity: 0.8;
+  }
+
+  60% {
+    opacity: 0.9;
+  }
+
+  100% {
     width: var(--target-width, 0%);
+    opacity: 1;
   }
 }
 
@@ -2327,7 +2412,11 @@ KEYFRAMES â€” Continuous / looping
 @keyframes ripple {
   0% {
     transform: scale(0);
-    opacity: .5;
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 0.3;
   }
 
   100% {
@@ -2343,8 +2432,16 @@ KEYFRAMES â€” Continuous / looping
     transform: scale(0.7);
   }
 
+  40% {
+    transform: scale(0.9);
+  }
+
   60% {
     transform: scale(1.08);
+  }
+
+  80% {
+    transform: scale(0.98);
   }
 
   100% {
@@ -2368,22 +2465,26 @@ KEYFRAMES â€” Continuous / looping
 
 /* Used by: tab content transitions */
 @keyframes tabIn {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(15px);
   }
 
-  to {
+  40% {
+    opacity: 0.5;
+    transform: translateY(8px);
+  }
+
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-GPU ACCELERATION â€” applied to all animated elements
-will-change declared only on elements with
-continuous/looping animations
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ────────────────────────────────────────────
+GPU ACCELERATION — applied to all animated elements
+with improved will-change usage
+────────────────────────────────────────────── */
 .vc-hero-card,
 .vc-stat-card,
 .vc-events-card,
@@ -2392,6 +2493,7 @@ continuous/looping animations
 .vc-nav-item {
   backface-visibility: hidden;
   -webkit-font-smoothing: antialiased;
+  transform: translateZ(0);
 }
 
 .fi-1,
@@ -2406,467 +2508,260 @@ continuous/looping animations
   will-change: transform;
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-SIDEBAR
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.vc-nav {
-  background: linear-gradient(180deg, #1a1f35 0%, #141829 100%);
-  background-size: 100% 200%;
-  animation: meshMove 20s ease infinite;
-}
-
-.vc-nav-item {
-  position: relative;
-  overflow: hidden;
-  transition: background .18s cubic-bezier(.25, .46, .45, .94),
-    color .18s cubic-bezier(.25, .46, .45, .94),
-    transform .18s cubic-bezier(.34, 1.56, .64, 1),
-    box-shadow .18s ease;
-}
-
-.vc-nav-item:hover {
-  transform: scale(1.15) translateY(-1px);
-}
-
-.vc-nav-item.active {
-  box-shadow: 0 0 20px rgba(67, 97, 238, .5), 0 4px 16px rgba(67, 97, 238, .45);
-  border-left: 3px solid #4361ee;
-}
-
-.vc-nav-item:active {
-  transform: scale(.93);
-  transition: transform .08s ease;
-}
-
-/* ripple on click */
-.vc-nav-item::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 12px;
-  background: rgba(67, 97, 238, .3);
-  transform: scale(0);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.vc-nav-item:active::after {
-  animation: ripple .45s ease-out;
-}
-
-/* badge â€” orange pulse */
-.vc-nav-badge {
-  animation: badgePulse 2.5s ease infinite;
-}
-
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-2. PAGE LOAD â€” staggered entrance
-Tight delays: everything done within 0.8s
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ────────────────────────────────────────────
+PAGE LOAD — Enhanced staggered entrance
+More fluid overlapping transitions
+────────────────────────────────────────────── */
 .vc-app {
-  animation: fadeInPage .3s ease forwards;
+  animation: fadeInPage .45s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 }
 
-/* Hero: opacity starts 0 in base so no flash */
+/* Hero: smooth slide down with slight bounce */
 .vc-hero-card {
   opacity: 0;
-  animation: fadeSlideDown .5s cubic-bezier(.22, 1, .36, 1) .05s forwards;
+  animation: fadeSlideDown .65s cubic-bezier(.25, .85, .35, 1.2) .08s forwards;
 }
 
-/* Stats cards â€” stagger 80ms apart */
+/* Stats cards — smoother staggering with overlapping */
 .vc-stats-row .vc-stat-card {
   opacity: 0;
 }
 
 .vc-stats-row .vc-stat-card:nth-child(1) {
-  animation: fadeSlideUp .45s cubic-bezier(.22, 1, .36, 1) .10s forwards;
+  animation: fadeSlideUp .6s cubic-bezier(.23, .94, .41, 1.1) .15s forwards;
 }
 
 .vc-stats-row .vc-stat-card:nth-child(2) {
-  animation: fadeSlideUp .45s cubic-bezier(.22, 1, .36, 1) .18s forwards;
+  animation: fadeSlideUp .6s cubic-bezier(.23, .94, .41, 1.1) .22s forwards;
 }
 
 .vc-stats-row .vc-stat-card:nth-child(3) {
-  animation: fadeSlideUp .45s cubic-bezier(.22, 1, .36, 1) .26s forwards;
+  animation: fadeSlideUp .6s cubic-bezier(.23, .94, .41, 1.1) .29s forwards;
 }
 
-/* Bottom row */
+.vc-stats-row .vc-stat-card:nth-child(4) {
+  animation: fadeSlideUp .6s cubic-bezier(.23, .94, .41, 1.1) .36s forwards;
+}
+
+/* Bottom row with slight overlapping */
 .vc-events-card {
   opacity: 0;
-  animation: fadeSlideRight .5s cubic-bezier(.22, 1, .36, 1) .20s forwards;
+  animation: fadeSlideRight .65s cubic-bezier(.25, .85, .35, 1.2) .25s forwards;
 }
 
 .vc-plans-card {
   opacity: 0;
-  animation: fadeSlideLeft .5s cubic-bezier(.22, 1, .36, 1) .28s forwards;
+  animation: fadeSlideLeft .65s cubic-bezier(.25, .85, .35, 1.2) .32s forwards;
 }
 
-/* Right panel */
+.vc-community-card {
+  opacity: 0;
+  animation: fadeSlideUp .65s cubic-bezier(.25, .85, .35, 1.2) .38s forwards;
+}
+
+/* Right panel with cascading effect */
 .vc-right-panel .vc-panel-card:nth-child(1) {
   opacity: 0;
-  animation: fadeSlideLeft .45s cubic-bezier(.22, 1, .36, 1) .22s forwards;
+  animation: fadeSlideLeft .55s cubic-bezier(.25, .85, .35, 1.2) .28s forwards;
 }
 
 .vc-right-panel .vc-panel-card:nth-child(2) {
   opacity: 0;
-  animation: fadeSlideLeft .45s cubic-bezier(.22, 1, .36, 1) .30s forwards;
+  animation: fadeSlideLeft .55s cubic-bezier(.25, .85, .35, 1.2) .35s forwards;
 }
 
 /* Stat number & trend entrance */
 .vc-stat-number {
   opacity: 0;
-  animation: fadeSlideUp .4s cubic-bezier(.22, 1, .36, 1) .35s forwards;
+  animation: fadeSlideUp .5s cubic-bezier(.25, .85, .35, 1.2) .45s forwards;
 }
 
 .vc-stat-trend {
   opacity: 0;
-  animation: bounceIn .4s cubic-bezier(.34, 1.56, .64, 1) .45s forwards;
+  animation: bounceIn .55s cubic-bezier(.34, 1.42, .64, 1) .55s forwards;
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-3. FLOATING ICONS â€” weightless, unsynchronised
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.fi-1 {
-  animation: float 4.0s ease-in-out 0.0s infinite;
+/* Sparkline animations with slower, smoother draw */
+.vc-sparkline .spark-line {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: sparkDraw 1.6s cubic-bezier(.25, .85, .35, 1) forwards;
 }
 
-.fi-2 {
-  animation: float 5.5s ease-in-out 0.5s infinite;
+.vc-sparkline .spark-fill {
+  opacity: 0;
+  animation: sparkFillFade 1.8s cubic-bezier(.25, .85, .35, 1) forwards;
 }
 
-.fi-3 {
-  animation: float 3.8s ease-in-out 1.0s infinite;
+.vc-stats-row .vc-stat-card:nth-child(1) .spark-line {
+  animation-delay: .4s;
 }
 
-.fi-4 {
-  animation: float 4.8s ease-in-out 0.3s infinite;
+.vc-stats-row .vc-stat-card:nth-child(2) .spark-line {
+  animation-delay: .55s;
 }
 
-.fi-5 {
-  animation: float 5.0s ease-in-out 0.8s infinite;
+.vc-stats-row .vc-stat-card:nth-child(3) .spark-line {
+  animation-delay: .7s;
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-4. STAT CARDS â€” hover interactions
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.vc-stat-card {
-  transition: transform .18s cubic-bezier(.25, .46, .45, .94),
-    box-shadow .18s cubic-bezier(.25, .46, .45, .94),
-    border-color .18s ease;
+.vc-stats-row .vc-stat-card:nth-child(4) .spark-line {
+  animation-delay: .85s;
 }
 
-.vc-stat-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(67, 97, 238, .4);
-  box-shadow: 0 16px 32px rgba(0, 0, 0, .35);
+.vc-stats-row .vc-stat-card:nth-child(1) .spark-fill {
+  animation-delay: .45s;
 }
 
-.vc-stat-card:hover .vc-sparkline path[stroke] {
-  filter: drop-shadow(0 0 4px currentColor);
-  transition: filter .18s ease;
+.vc-stats-row .vc-stat-card:nth-child(2) .spark-fill {
+  animation-delay: .6s;
 }
 
-/* â‹¯ menu rotates on hover */
-.vc-stat-menu-btn {
-  transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
-  display: inline-block;
+.vc-stats-row .vc-stat-card:nth-child(3) .spark-fill {
+  animation-delay: .75s;
 }
 
-.vc-stat-menu-btn:hover {
-  transform: rotate(90deg);
+.vc-stats-row .vc-stat-card:nth-child(4) .spark-fill {
+  animation-delay: .9s;
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-5. PROGRESS RING â€” CSS-variable driven
-HTML must have: style="--circumference:314.16; --progress:15.71"
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* Progress animations with smoother fills */
 .vc-ring-progress {
-  stroke-dasharray: var(--circumference, 314.16);
-  stroke-dashoffset: var(--circumference, 314.16);
-  animation: ringFill 1.5s cubic-bezier(.22, 1, .36, 1) .5s forwards;
-  transform-origin: center;
-  transform: rotate(-90deg);
-}
-
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-6. PROGRESS BARS â€” CSS-variable driven width
-HTML: style="--target-width: 64%"
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.vc-progress-track {
-  position: relative;
-  overflow: hidden;
-}
-
-.vc-progress-fill {
-  width: 0%;
-  background-size: 200% auto;
+  animation: ringFill 1.8s cubic-bezier(.25, .85, .35, 1) .55s forwards;
 }
 
 .vc-plans-card .vc-plan-item:nth-child(1) .vc-progress-fill {
-  animation: fillBar 1.2s cubic-bezier(.22, 1, .36, 1) .50s forwards;
+  animation: fillBar 1.4s cubic-bezier(.25, .85, .35, 1) .6s forwards;
 }
 
 .vc-plans-card .vc-plan-item:nth-child(2) .vc-progress-fill {
-  animation: fillBar 1.2s cubic-bezier(.22, 1, .36, 1) .65s forwards;
+  animation: fillBar 1.4s cubic-bezier(.25, .85, .35, 1) .75s forwards;
 }
 
 .vc-plans-card .vc-plan-item:nth-child(3) .vc-progress-fill {
-  animation: fillBar 1.2s cubic-bezier(.22, 1, .36, 1) .80s forwards;
+  animation: fillBar 1.4s cubic-bezier(.25, .85, .35, 1) .9s forwards;
 }
 
-/* shimmer overlay after bar fills */
-.vc-progress-fill::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, .22) 50%, transparent 100%);
-  background-size: 200% auto;
-  animation: shimmer 2.2s linear 1.5s infinite;
-}
-
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-7. CALENDAR
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.vc-cal-date.today {
-  animation: subtlePulse 3s ease-in-out infinite;
-}
-
+/* Calendar appointments with smoother entry */
 .vc-cal-appointments .vc-appt {
   opacity: 0;
 }
 
 .vc-cal-appointments .vc-appt:nth-child(1) {
-  animation: fadeSlideLeft .35s cubic-bezier(.22, 1, .36, 1) .30s forwards;
+  animation: fadeSlideLeft .5s cubic-bezier(.25, .85, .35, 1) .4s forwards;
 }
 
 .vc-cal-appointments .vc-appt:nth-child(2) {
-  animation: fadeSlideLeft .35s cubic-bezier(.22, 1, .36, 1) .36s forwards;
+  animation: fadeSlideLeft .5s cubic-bezier(.25, .85, .35, 1) .46s forwards;
 }
 
 .vc-cal-appointments .vc-appt:nth-child(3) {
-  animation: fadeSlideLeft .35s cubic-bezier(.22, 1, .36, 1) .42s forwards;
+  animation: fadeSlideLeft .5s cubic-bezier(.25, .85, .35, 1) .52s forwards;
 }
 
 .vc-cal-appointments .vc-appt:nth-child(4) {
-  animation: fadeSlideLeft .35s cubic-bezier(.22, 1, .36, 1) .48s forwards;
+  animation: fadeSlideLeft .5s cubic-bezier(.25, .85, .35, 1) .58s forwards;
 }
 
-.vc-appt-dot {
-  animation: subtlePulse 3s ease-in-out infinite;
+/* Floating elements with more varied, natural movement */
+.fi-1 {
+  animation: float 6.0s ease-in-out 0.0s infinite;
 }
 
-.vc-appt:nth-child(1) .vc-appt-dot {
-  animation-delay: .0s;
+.fi-2 {
+  animation: float 7.2s ease-in-out 0.8s infinite;
 }
 
-.vc-appt:nth-child(2) .vc-appt-dot {
-  animation-delay: .6s;
+.fi-3 {
+  animation: float 5.4s ease-in-out 1.3s infinite;
 }
 
-.vc-appt:nth-child(3) .vc-appt-dot {
-  animation-delay: 1.2s;
+.fi-4 {
+  animation: float 8.0s ease-in-out 0.5s infinite;
 }
 
-.vc-appt:nth-child(4) .vc-appt-dot {
-  animation-delay: 1.8s;
+.fi-5 {
+  animation: float 6.6s ease-in-out 1.1s infinite;
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-8. SEARCH BAR
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.vc-search {
-  transition: box-shadow .18s cubic-bezier(.25, .46, .45, .94),
-    transform .18s cubic-bezier(.25, .46, .45, .94),
-    background .18s ease,
-    border-color .18s ease;
+/* Stat number reveal with smoother motion */
+.vc-stat-number-inner {
+  display: inline-block;
+  animation: numberReveal .7s cubic-bezier(.25, .85, .35, 1.2) forwards;
+  opacity: 0;
 }
 
-.vc-search:focus {
-  transform: scaleX(1.02);
-  transform-origin: left center;
-  box-shadow: 0 0 0 3px rgba(67, 97, 238, .25);
+.vc-stats-row .vc-stat-card:nth-child(1) .vc-stat-number-inner {
+  animation-delay: .65s;
 }
 
-.vc-search-wrap:focus-within .vc-search-icon {
-  transform: translateY(-50%) rotate(10deg);
-  color: #4361ee;
-  transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), color .18s ease;
+.vc-stats-row .vc-stat-card:nth-child(2) .vc-stat-number-inner {
+  animation-delay: .8s;
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-9. BUTTONS
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.vc-btn,
-.vc-btn-hero-primary,
-.vc-btn-hero-ghost,
-.vc-pill-btn,
-.vc-header-btn {
-  transition: transform .18s cubic-bezier(.25, .46, .45, .94),
-    box-shadow .18s ease,
-    filter .18s ease,
-    background .18s ease,
-    border-color .18s ease,
-    color .18s ease;
+.vc-stats-row .vc-stat-card:nth-child(3) .vc-stat-number-inner {
+  animation-delay: .95s;
 }
 
-.vc-btn:hover:not(:disabled),
-.vc-btn-hero-primary:hover,
-.vc-btn-hero-ghost:hover {
-  transform: scale(1.03);
-  filter: brightness(1.1);
+.vc-stats-row .vc-stat-card:nth-child(4) .vc-stat-number-inner {
+  animation-delay: 1.1s;
 }
 
-.vc-btn:active:not(:disabled) {
-  transform: scale(.97);
-  transition-duration: .08s;
-}
+@keyframes numberReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(.85);
+    filter: blur(4px);
+  }
 
-.vc-pill-btn:hover {
-  transform: scale(1.06);
-  filter: brightness(1.15);
-}
+  50% {
+    opacity: 0.7;
+    transform: translateY(7px) scale(.92);
+    filter: blur(1px);
+  }
 
-.vc-pill-btn:active {
-  transform: scale(.94);
-  transition-duration: .08s;
-}
-
-.vc-header-btn:hover {
-  transform: scale(1.08);
-}
-
-.vc-header-btn:active {
-  transform: scale(.92);
-  transition-duration: .08s;
-}
-
-.vc-add-plan-btn {
-  transition: all .2s cubic-bezier(.25, .46, .45, .94);
-}
-
-.vc-add-plan-btn:hover {
-  border-style: solid;
-  background: rgba(67, 97, 238, .08);
-  transform: translateY(-1px);
-}
-
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-10. TAB TRANSITION
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-app-admin-users,
-app-admin-messages,
-app-admin-products,
-app-admin-formations {
-  display: block;
-  animation: fadeIn .35s ease forwards;
-}
-
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-11. PROFILE AVATAR â€” animated conic border
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.vc-profile-avatar {
-  background: conic-gradient(from var(--border-angle, 0deg),
-      #4361ee 0%, #00b4a6 35%, #f72585 65%, #4361ee 100%);
-  animation: rotateBorder 4s linear infinite;
-}
-
-/* edit icon spring */
-.vc-panel-icon-btn {
-  transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), color .18s ease;
-}
-
-.vc-panel-icon-btn:hover {
-  transform: rotate(-15deg) scale(1.2);
-}
-
-/* logout hover red tint */
-.vc-nav-logout {
-  transition: color .25s ease, background .18s ease;
-}
-
-.vc-nav-logout:hover {
-  color: #f72585;
-  background: rgba(247, 37, 133, .1);
-}
-
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-12. AMBIENT BACKGROUND
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.vc-main {
-  background:
-    radial-gradient(ellipse at 15% 20%, rgba(67, 97, 238, .04) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 80%, rgba(0, 180, 166, .04) 0%, transparent 50%),
-    var(--vc-bg);
-  background-size: 200% 200%;
-  animation: meshMove 15s ease infinite;
-}
-
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-PERFORMANCE â€” prefers-reduced-motion
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
-/* ---------------------------------------------------
-   SPARKLINE DRAW-ON ANIMATION
-   Add this to the bottom of admin.css
---------------------------------------------------- */
-
-/* -- Sparkline paths draw on from left -- */
-.vc-sparkline {
-  overflow: visible;
-}
-
-/* Each sparkline path gets a stroke-dasharray set via JS (or a generous fixed value) */
-.vc-sparkline .spark-line {
-  stroke-dasharray: 300;
-  stroke-dashoffset: 300;
-  animation: sparkDraw 1.4s cubic-bezier(.22, 1, .36, 1) forwards;
-}
-
-.vc-sparkline .spark-fill {
+/* Sublabel slide in with natural timing */
+.vc-stat-sublabel {
   opacity: 0;
-  animation: sparkFillFade 1.6s cubic-bezier(.22, 1, .36, 1) forwards;
+  animation: fadeSlideUp .5s cubic-bezier(.25, .85, .35, 1) forwards;
 }
 
-/* Stagger per card */
-.vc-stats-row .vc-stat-card:nth-child(1) .spark-line {
-  animation-delay: .35s;
+.vc-stats-row .vc-stat-card:nth-child(1) .vc-stat-sublabel {
+  animation-delay: .7s;
 }
 
-.vc-stats-row .vc-stat-card:nth-child(2) .spark-line {
-  animation-delay: .50s;
+.vc-stats-row .vc-stat-card:nth-child(2) .vc-stat-sublabel {
+  animation-delay: .85s;
 }
 
-.vc-stats-row .vc-stat-card:nth-child(3) .spark-line {
-  animation-delay: .65s;
+.vc-stats-row .vc-stat-card:nth-child(3) .vc-stat-sublabel {
+  animation-delay: 1.0s;
 }
 
-.vc-stats-row .vc-stat-card:nth-child(1) .spark-fill {
-  animation-delay: .35s;
-}
-
-.vc-stats-row .vc-stat-card:nth-child(2) .spark-fill {
-  animation-delay: .50s;
-}
-
-.vc-stats-row .vc-stat-card:nth-child(3) .spark-fill {
-  animation-delay: .65s;
+.vc-stats-row .vc-stat-card:nth-child(4) .vc-stat-sublabel {
+  animation-delay: 1.15s;
 }
 
 @keyframes sparkDraw {
-  to {
+  0% {
+    stroke-dashoffset: 300;
+    opacity: 0.3;
+  }
+
+  40% {
+    opacity: 0.7;
+  }
+
+  100% {
     stroke-dashoffset: 0;
+    opacity: 1;
   }
 }
 
@@ -2875,8 +2770,12 @@ PERFORMANCE â€” prefers-reduced-motion
     opacity: 0;
   }
 
-  40% {
+  30% {
     opacity: 0;
+  }
+
+  70% {
+    opacity: 0.5;
   }
 
   100% {
@@ -2884,142 +2783,35 @@ PERFORMANCE â€” prefers-reduced-motion
   }
 }
 
-/* -- Glowing end-dot on the sparkline -- */
-
-
-
-
-
-
-
-
-/* -- Pulse loop on the end dot -- */
-
-
-
-
-/* -- Stat number count-up (uses CSS counter trick via clip) -- */
-.vc-stat-number {
-  font-variant-numeric: tabular-nums;
+/* Ambient background with more complex movement */
+.vc-main {
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(67, 97, 238, .04) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 80%, rgba(0, 180, 166, .04) 0%, transparent 50%),
+    var(--vc-bg);
+  background-size: 200% 200%;
+  animation: meshMove 25s ease-in-out infinite;
 }
 
-/* The number span that JS will animate */
-.vc-stat-number-inner {
-  display: inline-block;
-  animation: numberReveal .6s cubic-bezier(.22, 1, .36, 1) forwards;
-  opacity: 0;
+/* Main app wrapper with smoother transitions */
+.vc-app {
+  transition: filter 0.4s ease-out;
 }
 
-.vc-stats-row .vc-stat-card:nth-child(1) .vc-stat-number-inner {
-  animation-delay: .55s;
+/* Cross-fade between sections */
+app-admin-users,
+app-admin-messages,
+app-admin-products,
+app-admin-formations,
+app-admin-forum {
+  display: block;
+  animation: fadeIn .5s cubic-bezier(.25, .85, .35, 1) forwards;
 }
 
-.vc-stats-row .vc-stat-card:nth-child(2) .vc-stat-number-inner {
-  animation-delay: .70s;
-}
-
-.vc-stats-row .vc-stat-card:nth-child(3) .vc-stat-number-inner {
-  animation-delay: .85s;
-}
-
-@keyframes numberReveal {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(.85);
-    filter: blur(4px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-
-/* -- Card glow on hover — upgraded -- */
-.vc-stat-card {
-  position: relative;
-  overflow: hidden;
-}
-
-/* Radial glow that follows hover */
-.vc-stat-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity .35s ease;
-  pointer-events: none;
-  background: radial-gradient(ellipse at 50% 0%, rgba(67, 97, 238, .12) 0%, transparent 70%);
-}
-
-.vc-stat-card:hover::after {
-  opacity: 1;
-}
-
-/* Card 1 — pink glow */
-.vc-stats-row .vc-stat-card:nth-child(1):hover::after {
-  background: radial-gradient(ellipse at 50% 0%, rgba(247, 37, 133, .12) 0%, transparent 70%);
-}
-
-/* Card 2 — teal glow */
-.vc-stats-row .vc-stat-card:nth-child(2):hover::after {
-  background: radial-gradient(ellipse at 50% 0%, rgba(6, 214, 160, .1) 0%, transparent 70%);
-}
-
-/* Card 3 — blue glow */
-.vc-stats-row .vc-stat-card:nth-child(3):hover::after {
-  background: radial-gradient(ellipse at 50% 0%, rgba(67, 97, 238, .12) 0%, transparent 70%);
-}
-
-
-
-/* -- Sublabel slide in -- */
-.vc-stat-sublabel {
-  opacity: 0;
-  animation: fadeSlideUp .4s cubic-bezier(.22, 1, .36, 1) forwards;
-}
-
-.vc-stats-row .vc-stat-card:nth-child(1) .vc-stat-sublabel {
-  animation-delay: .6s;
-}
-
-.vc-stats-row .vc-stat-card:nth-child(2) .vc-stat-sublabel {
-  animation-delay: .75s;
-}
-
-.vc-stats-row .vc-stat-card:nth-child(3) .vc-stat-sublabel {
-  animation-delay: .9s;
-}
-
-/* -- Trend badge bounce -- */
-.vc-stat-trend {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 100px;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.vc-trend-down {
-  background: rgba(247, 37, 133, .1);
-  color: #f72585;
-}
-
-.vc-trend-up {
-  background: rgba(6, 214, 160, .1);
-  color: #06d6a0;
-}
-
-.vc-trend-neutral {
-  background: rgba(136, 146, 176, .1);
-  color: #8892b0;
-}/* -- Community card -- */
+/* -- Community card -- */
 .vc-community-card {
-  grid-column: span 2; /* takes full width below events+plans */
+  grid-column: span 2;
+  /* takes full width below events+plans */
 }
 
 .vc-community-list {
@@ -3078,6 +2870,7 @@ PERFORMANCE â€” prefers-reduced-motion
   .vc-stats-row {
     grid-template-columns: 1fr 1fr;
   }
+
   .vc-community-card {
     grid-column: span 1;
   }
@@ -3088,6 +2881,7 @@ PERFORMANCE â€” prefers-reduced-motion
   grid-template-columns: 45fr 55fr;
   grid-template-rows: auto auto;
 }
+
 .vc-stats-row .vc-stat-card:nth-child(4) {
   animation: fadeSlideUp .45s cubic-bezier(.22, 1, .36, 1) .34s forwards;
 }
@@ -3106,4 +2900,122 @@ PERFORMANCE â€” prefers-reduced-motion
 
 .vc-stats-row .vc-stat-card:nth-child(4) .vc-stat-sublabel {
   animation-delay: 1.05s;
+}
+
+/* Trend badge with improved styling */
+.vc-stat-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.vc-trend-down {
+  background: rgba(247, 37, 133, .1);
+  color: #f72585;
+}
+
+.vc-trend-up {
+  background: rgba(6, 214, 160, .1);
+  color: #06d6a0;
+}
+
+.vc-trend-neutral {
+  background: rgba(136, 146, 176, .1);
+  color: #8892b0;
+}
+
+/* Card animations with better transitions */
+.vc-stat-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform .25s cubic-bezier(.25, .85, .35, 1.2),
+    box-shadow .25s cubic-bezier(.25, .85, .35, 1),
+    border-color .25s ease;
+}
+
+/* Radial glow that follows hover */
+.vc-stat-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity .35s ease;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 0%, rgba(67, 97, 238, .12) 0%, transparent 70%);
+}
+
+.vc-stat-card:hover::after {
+  opacity: 1;
+}
+
+/* Card 1 — pink glow */
+.vc-stats-row .vc-stat-card:nth-child(1):hover::after {
+  background: radial-gradient(ellipse at 50% 0%, rgba(247, 37, 133, .12) 0%, transparent 70%);
+}
+
+/* Card 2 — teal glow */
+.vc-stats-row .vc-stat-card:nth-child(2):hover::after {
+  background: radial-gradient(ellipse at 50% 0%, rgba(6, 214, 160, .1) 0%, transparent 70%);
+}
+
+/* Card 3 — blue glow */
+.vc-stats-row .vc-stat-card:nth-child(3):hover::after {
+  background: radial-gradient(ellipse at 50% 0%, rgba(67, 97, 238, .12) 0%, transparent 70%);
+}
+
+/* Card 4 — gold glow */
+.vc-stats-row .vc-stat-card:nth-child(4):hover::after {
+  background: radial-gradient(ellipse at 50% 0%, rgba(20, 199, 165, .12) 0%, transparent 70%);
+}
+
+/* Improved nav item interactions */
+.vc-nav-item {
+  position: relative;
+  overflow: hidden;
+  transition: background .2s cubic-bezier(.25, .85, .35, 1),
+    color .2s cubic-bezier(.25, .85, .35, 1),
+    transform .2s cubic-bezier(.34, 1.56, .64, 1),
+    box-shadow .2s ease;
+}
+
+.vc-nav-item:hover {
+  transform: scale(1.15) translateY(-1px);
+}
+
+.vc-nav-item.active {
+  box-shadow: 0 0 20px rgba(67, 97, 238, .5), 0 4px 16px rgba(67, 97, 238, .45);
+  border-left: 3px solid #4361ee;
+}
+
+.vc-nav-item:active {
+  transform: scale(.93);
+  transition: transform .08s ease;
+}
+
+/* ripple on click */
+.vc-nav-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: rgba(67, 97, 238, .3);
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.vc-nav-item:active::after {
+  animation: ripple .45s ease-out;
+}
+
+/* Profile avatar with animated border */
+.vc-profile-avatar {
+  background: conic-gradient(from var(--border-angle, 0deg),
+      #4361ee 0%, #00b4a6 35%, #f72585 65%, #4361ee 100%);
+  animation: rotateBorder 4s linear infinite;
 }
