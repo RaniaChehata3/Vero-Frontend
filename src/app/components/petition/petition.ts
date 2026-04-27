@@ -275,6 +275,15 @@ export class PetitionComponent implements OnInit, OnDestroy {
 
   goToCreate() {
     this.activeTab = 'create';
+    this.scrollToSection();
+  }
+
+  scrollToBrowse() {
+    this.activeTab = 'browse';
+    this.scrollToSection();
+  }
+
+  private scrollToSection() {
     setTimeout(() => {
       const section = document.querySelector('.petition-section');
       if (section) {
@@ -360,8 +369,10 @@ export class PetitionComponent implements OnInit, OnDestroy {
   }
 
   submitPetition() {
-    if (this.isAdmin) return; // L'admin ne peut pas créer de pétition
+    if (this.isAdmin) return;
     if (this.createState !== 'idle' && this.createState !== 'confirmed') return;
+
+    // -- Pre-validation --
     if (!this.newPetition.title.trim() || this.newPetition.title.trim().length < 10) {
       this.errorMessage = 'Title must be at least 10 characters'; return;
     }
@@ -380,7 +391,13 @@ export class PetitionComponent implements OnInit, OnDestroy {
       deadline: this.deadlineDate ? this.deadlineDate + 'T00:00:00' : undefined
     };
 
-    // ── Step 1: Always run AI moderation on submit ─────────────
+    // -- Optimization: Use cached result if already done (from live typing) --
+    if (this.moderationState === 'done' && this.moderationResult) {
+      this.finalizePetitionSubmission(this.moderationResult, petition);
+      return;
+    }
+
+    // -- Fallback: Run it now if not already done --
     this.createState     = 'processing';
     this.moderationState = 'checking';
 
@@ -388,65 +405,69 @@ export class PetitionComponent implements OnInit, OnDestroy {
       this.newPetition.title,
       this.newPetition.description
     ).subscribe(result => {
+      this.finalizePetitionSubmission(result, petition);
+    });
+  }
 
-      this.moderationResult = result;
-      this.moderationState  = result ? 'done' : 'error';
+  private finalizePetitionSubmission(result: ModerationResult | null, petition: Petition) {
+    this.moderationResult = result;
+    this.moderationState  = result ? 'done' : 'error';
 
-      // ── Step 2a: REJECTED → block completely ──────────────
-      if (result?.decision === 'REJECTED') {
-        this.createState  = 'idle';
-        this.errorMessage = `❌ Ecological filter rejected this petition (score: ${result.score}/100). Please write about an environmental topic.`;
-        return;
+    // -- REJECTED → block --
+    if (result?.decision === 'REJECTED') {
+      this.createState  = 'idle';
+      this.errorMessage = `❌ Ecological filter rejected this petition (score: ${result.score}/100). Please write about an environmental topic.`;
+      return;
+    }
+
+    // -- AI passed (PENDING / REVIEW / unavailable) --
+    this.createState = 'processing';
+    
+    const optimisticPetition: Petition = {
+      ...petition,
+      id:                undefined,
+      status:            'PENDING',
+      currentSignatures: 0
+    };
+
+    const previousMy = [...this.myPetitions];
+
+    // -- ✅ Instant success feedback --
+    this.myPetitions       = [optimisticPetition, ...this.myPetitions];
+    this.myPetitionsLoaded = true;
+    this.successMessage    = result
+      ? `🌱 Petition submitted! Ecological score: ${result.score}/100.`
+      : '🌱 Petition submitted! Awaiting admin validation.';
+    
+    this.activeTab      = 'my';
+    this.moderationResult = null;
+    this.moderationState  = 'idle';
+    this.resetForm();
+    setTimeout(() => { this.successMessage = ''; }, 4000);
+
+    // -- Step 3: Backend call in background --
+    this.petitionService.create(petition).subscribe({
+      next: (created: Petition) => {
+        this.createState = 'idle';
+        this.myPetitions = this.myPetitions.map(p =>
+          p === optimisticPetition ? { ...created, status: 'PENDING' } : p
+        );
+        setTimeout(() => {
+          this.refreshAll();
+          this.petitionService.getMy().subscribe({
+            next: (data: Petition[]) => { this.myPetitions = [...data]; }
+          });
+        }, 1500);
+      },
+      error: (err: any) => {
+        this.myPetitions    = previousMy;
+        this.activeTab      = 'create';
+        this.createState    = 'idle';
+        this.successMessage = '';
+        const raw = err.message || 'Creation failed';
+        this.errorMessage = raw.includes('RuntimeException')
+          ? raw.split('RuntimeException:').pop()?.trim() || raw : raw;
       }
-
-      // ── Step 2b: AI passed (PENDING / REVIEW / unavailable) ─
-      // Now apply optimistic UI + submit to backend
-      const optimisticPetition: Petition = {
-        ...petition,
-        id:                undefined,
-        status:            'PENDING',
-        currentSignatures: 0
-      };
-
-      const previousMy = [...this.myPetitions];
-
-      // ── ✅ Instant success feedback ──────────────────────────
-      this.myPetitions       = [optimisticPetition, ...this.myPetitions];
-      this.myPetitionsLoaded = true;
-      this.successMessage    = result
-        ? `🌱 Petition submitted! Ecological score: ${result.score}/100.`
-        : '🌱 Petition submitted! Awaiting admin validation.';
-      this.activeTab      = 'my';
-      this.moderationResult = null;
-      this.moderationState  = 'idle';
-      this.resetForm();
-      setTimeout(() => { this.successMessage = ''; }, 4000);
-
-      // ── Step 3: Backend call in background ──────────────────
-      this.petitionService.create(petition).subscribe({
-        next: (created: Petition) => {
-          this.createState = 'idle';
-          this.myPetitions = this.myPetitions.map(p =>
-            p === optimisticPetition ? { ...created, status: 'PENDING' } : p
-          );
-          setTimeout(() => {
-            this.refreshAll();
-            this.petitionService.getMy().subscribe({
-              next: (data: Petition[]) => { this.myPetitions = [...data]; }
-            });
-          }, 1500);
-        },
-        error: (err: any) => {
-          // Roll back on backend failure
-          this.myPetitions    = previousMy;
-          this.activeTab      = 'create';
-          this.createState    = 'idle';
-          this.successMessage = '';
-          const raw = err.message || 'Creation failed';
-          this.errorMessage = raw.includes('RuntimeException')
-            ? raw.split('RuntimeException:').pop()?.trim() || raw : raw;
-        }
-      });
     });
   }
 
@@ -551,6 +572,7 @@ export class PetitionComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Please select a category'; return;
     }
 
+    const petitionId = this.editingPetition.id;
     this.errorMessage = '';
     this.createState = 'processing';
 
@@ -559,26 +581,40 @@ export class PetitionComponent implements OnInit, OnDestroy {
       deadline: this.deadlineDate ? this.deadlineDate + 'T00:00:00' : undefined
     };
 
-    this.petitionService.update(this.editingPetition.id, petition).subscribe({
+    // -- ✅ Optimistic UI update --
+    const previousMy = [...this.myPetitions];
+    const idx = this.myPetitions.findIndex(p => p.id === petitionId);
+    if (idx !== -1) {
+      this.myPetitions[idx] = {
+        ...this.myPetitions[idx],
+        ...this.newPetition,
+        deadline: petition.deadline
+      };
+    }
+
+    // Immediate feedback
+    this.successMessage = '🌱 Updating petition...';
+    this.activeTab = 'my';
+    const oldEditing = this.editingPetition;
+    this.editingPetition = null;
+    this.resetForm();
+
+    this.petitionService.update(petitionId, petition).subscribe({
       next: () => {
-        const idx = this.myPetitions.findIndex(p => p.id === this.editingPetition!.id);
-        if (idx !== -1) {
-          this.myPetitions[idx] = {
-            ...this.myPetitions[idx],
-            ...this.newPetition,
-            deadline: this.deadlineDate
-              ? this.deadlineDate + 'T00:00:00'
-              : this.myPetitions[idx].deadline
-          };
-        }
         this.createState = 'idle';
-        this.editingPetition = null;
-        this.resetForm();
-        this.activeTab = 'my';
-        setTimeout(() => this.refreshAll(), 1000);
+        this.successMessage = '✅ Petition updated!';
+        setTimeout(() => { 
+          this.successMessage = ''; 
+          this.refreshAll();
+        }, 3000);
       },
       error: (err: any) => {
+        // Rollback on failure
+        this.myPetitions = previousMy;
+        this.editingPetition = oldEditing;
+        this.activeTab = 'edit';
         this.createState = 'idle';
+        this.successMessage = '';
         const raw = err.message || 'Update failed';
         this.errorMessage = raw.includes('RuntimeException')
           ? raw.split('RuntimeException:').pop()?.trim() || raw : raw;

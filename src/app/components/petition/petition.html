@@ -51,7 +51,7 @@
       <button class="btn-hero-primary" *ngIf="!isAdmin" (click)="goToCreate()">
         Start a petition →
       </button>
-      <button class="btn-hero-ghost" (click)="activeTab = 'browse'">
+      <button class="btn-hero-ghost" (click)="scrollToBrowse()">
         Browse all
       </button>
     </div>
@@ -299,7 +299,8 @@
             </span>
           </div>
 
-          <button class="btn-publish" (click)="submitPetition()" [disabled]="createState === 'processing'">
+          <button class="btn-publish" (click)="submitPetition()" 
+            [disabled]="createState === 'processing' || moderationResult?.decision === 'REJECTED'">
             <ng-container [ngSwitch]="createState">
               <span *ngSwitchCase="'idle'">Publish petition →</span>
               <span *ngSwitchCase="'processing'">Submitting…</span>

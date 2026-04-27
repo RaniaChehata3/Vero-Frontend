@@ -1,5 +1,6 @@
 <!-- ═══════════════════════════════════════════════════════════════
      DONATE PAGE — Vero Organic Biophilic Design
+     With K-Means Donor Profile Badges
      ═══════════════════════════════════════════════════════════════ -->
 
 <!-- ── HERO ──────────────────────────────────────────────────────── -->
@@ -50,7 +51,6 @@
       <button class="btn-hero-ghost" (click)="goToBrowse(); scrollToForm()">Browse Events</button>
     </div>
   </div>
-
   <div class="hero-float-card" *ngIf="events.length > 0">
     <div class="fc-live-dot"></div>
     <div class="fc-badge">🌍 {{ events[0].status }}</div>
@@ -78,7 +78,6 @@
       </div>
     </div>
   </div>
-
   <div class="hero-scroll-hint">
     <div class="hero-scroll-mouse">
       <div class="hero-scroll-wheel"></div>
@@ -129,7 +128,7 @@
         <div class="p-card-badge" [ngClass]="getEventStatusClass(ev.status)">{{ ev.status }}</div>
         <div class="p-card-body">
           <h3 class="p-card-title">{{ ev.title }}</h3>
-          <p class="p-card-desc">{{ ev.description | slice:0:100 }}{{ (ev.description.length || 0) }}
+          <p class="p-card-desc">{{ ev.description | slice:0:100 }}{{ (ev.description?.length || 0) > 100 ? '…' : '' }}
           </p>
         </div>
         <div class="p-card-location" *ngIf="ev.location">📍 {{ ev.location }}</div>
@@ -171,12 +170,41 @@
             </div>
           </div>
 
-          <!-- ── DONOR PROFILE CARD (IA) ─────────────────────── -->
-          <div class="donor-profile-card" *ngIf="isLoggedIn && donorProfile">
-            <span class="profile-emoji">{{ donorEmoji }}</span>
-            <div class="profile-info">
-              <span class="profile-label">Your donor profile</span>
-              <span class="profile-value">{{ donorProfile }}</span>
+          <!-- ═══════════════════════════════════════════════════════
+               DONOR PROFILE BADGE (K-Means Clustering)
+               VISIBLE ET STYLÉ COMME LA CAPTURE D'ÉCRAN
+               ═══════════════════════════════════════════════════════ -->
+          <div class="donor-profile-section" *ngIf="isLoggedIn">
+            <div class="donor-profile-badge" [style.--profile-color]="donorProfileColor"
+              [style.--profile-bg]="donorProfileConfig.bgColor"
+              [style.--profile-border]="donorProfileConfig.borderColor">
+              <div class="profile-badge-glow"></div>
+              <div class="profile-badge-icon">{{ donorEmoji }}</div>
+              <div class="profile-badge-content">
+                <div class="profile-badge-label">Your donor profile</div>
+                <div class="profile-badge-name">{{ donorProfile }}</div>
+                <div class="profile-badge-desc">{{ donorProfileDescription }}</div>
+              </div>
+              <div class="profile-badge-shine"></div>
+            </div>
+
+            <!-- Mini stats sous le badge -->
+            <div class="profile-mini-stats" *ngIf="userDonationHistory.length > 0">
+              <div class="mini-stat">
+                <span class="mini-stat-num">{{ userDonationHistory.length }}</span>
+                <span class="mini-stat-label">donations</span>
+              </div>
+              <div class="mini-stat-divider"></div>
+              <div class="mini-stat">
+                <span class="mini-stat-num">{{ userDonationHistory.filter(d => d.type === 'MONEY').reduce((s,d) => s +
+                  (d.amount||0), 0) }}€</span>
+                <span class="mini-stat-label">given</span>
+              </div>
+              <div class="mini-stat-divider"></div>
+              <div class="mini-stat">
+                <span class="mini-stat-num">{{ currentDonorProfile }}</span>
+                <span class="mini-stat-label">cluster</span>
+              </div>
             </div>
           </div>
 
@@ -265,6 +293,19 @@
             </div>
           </div>
 
+          <!-- Recurring toggle (MONEY only) -->
+          <div class="toggle-row" *ngIf="donationType === 'MONEY'" (click)="isRecurring=!isRecurring"
+            style="display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:20px">
+            <div class="toggle-track" [class.on]="isRecurring">
+              <div class="toggle-thumb" [style.transform]="isRecurring ? 'translateX(16px)' : ''"></div>
+            </div>
+            <div>
+              <div class="toggle-text">Donation mensuelle automatique</div>
+              <div style="font-size:11px;color:var(--eco-muted);margin-top:2px">Soutenez-nous de manière récurrente
+                chaque mois</div>
+            </div>
+          </div>
+
           <div class="msg msg-error" *ngIf="errorMessage && !editingDonation">⚠️ {{ errorMessage }}</div>
 
           <!-- Eco banner -->
@@ -282,7 +323,10 @@
             <ng-container [ngSwitch]="donateState">
               <ng-container *ngSwitchCase="'idle'">
                 <span [ngSwitch]="donationType">
-                  <ng-container *ngSwitchCase="'MONEY'">Donate Securely →</ng-container>
+                  <ng-container *ngSwitchCase="'MONEY'">
+                    <span *ngIf="isRecurring">Activer {{ getFinalAmount() }} DT/mois →</span>
+                    <span *ngIf="!isRecurring">Donate Securely →</span>
+                  </ng-container>
                   <ng-container *ngSwitchCase="'MATERIAL'">Pledge Materials →</ng-container>
                   <ng-container *ngSwitchCase="'TIME'">Volunteer Now →</ng-container>
                 </span>
@@ -381,10 +425,7 @@
 
         <div class="di-footer">
           <div class="di-tags">
-            <!-- Type badge -->
             <span class="di-tag type">{{ getDonationTypeIcon(d.type) }} {{ d.type }}</span>
-
-            <!-- Status badge avec couleurs IA -->
             <span class="di-tag status" [class.validated]="d.status==='VALIDATED'"
               [class.pending]="d.status==='PENDING' || !d.status" [class.pending-review]="d.status==='PENDING_REVIEW'"
               [class.rejected]="d.status==='REJECTED'">
@@ -395,8 +436,6 @@
                 <ng-container *ngSwitchDefault>🕐 PENDING</ng-container>
               </ng-container>
             </span>
-
-            <!-- Score de fraude IA -->
             <span class="di-tag fraud-score" *ngIf="d.fraudScore !== null && d.fraudScore !== undefined"
               [ngClass]="getFraudClass(d.fraudScore)">
               🛡️ Risk {{ (d.fraudScore * 100) | number:'1.0-0' }}%
@@ -414,7 +453,6 @@
       </div>
     </div>
   </div>
-
 </section>
 
 <!-- ── IMPACT SECTION ─────────────────────────────────────────────── -->
@@ -518,13 +556,60 @@
     <div class="success-circle">✓</div>
     <h3 class="modal-title">Thank you! 🌱</h3>
     <p class="modal-desc">Your contribution has been recorded. You're making a real difference!</p>
+    <!-- DONOR PROFILE BADGE (K-Means Clustering) -->
+    <div class="donor-profile-section" *ngIf="isLoggedIn">
+      <div class="donor-profile-badge" [style.background]="donorProfileConfig.bgColor"
+        [style.border-color]="donorProfileConfig.borderColor">
 
-    <!-- Donor profile badge après don -->
-    <div class="reward-badge" *ngIf="donorProfile">
-      <span class="reward-icon">{{ donorEmoji }}</span>
-      <span class="reward-text">{{ donorProfile }}</span>
+        <div class="profile-badge-glow" [style.background]="donorProfileConfig.color"></div>
+
+        <div class="profile-badge-icon" [style.color]="donorProfileConfig.color">
+          {{ donorEmoji }}
+        </div>
+
+        <div class="profile-badge-content">
+          <div class="profile-badge-label" [style.color]="donorProfileConfig.color">
+            Your donor profile
+          </div>
+          <div class="profile-badge-name" [style.color]="donorProfileConfig.color">
+            {{ donorProfile }}
+          </div>
+          <div class="profile-badge-desc">
+            {{ donorProfileDescription }}
+          </div>
+        </div>
+
+        <div class="profile-badge-shine"></div>
+      </div>
+
+      <!-- Mini stats -->
+      <div class="profile-mini-stats" *ngIf="userDonationHistory.length > 0">
+        <div class="mini-stat">
+          <span class="mini-stat-num" [style.color]="donorProfileConfig.color">
+            {{ userDonationHistory.length }}
+          </span>
+          <span class="mini-stat-label">donations</span>
+        </div>
+        <div class="mini-stat-divider"></div>
+        <div class="mini-stat">
+          <span class="mini-stat-num" [style.color]="donorProfileConfig.color">
+            {{ filterMoneyTotal(userDonationHistory) }}€
+          </span>
+          <span class="mini-stat-label">given</span>
+        </div>
+        <div class="mini-stat-divider"></div>
+        <div class="mini-stat">
+          <span class="mini-stat-num" [style.color]="donorProfileConfig.color">
+            {{ currentDonorProfile }}
+          </span>
+          <span class="mini-stat-label">cluster</span>
+        </div>
+      </div>
+
+      <!-- Continue button -->
+      <button class="btn-success-close" (click)="showSuccessModal = false">
+        Continue your impact
+      </button>
     </div>
-
-    <button class="btn-primary-modal full-width" (click)="viewMyDonations()">View my donations</button>
   </div>
 </div>
