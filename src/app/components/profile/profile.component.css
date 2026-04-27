@@ -444,6 +444,17 @@
   font-weight: 700;
   letter-spacing: -0.02em;
 }
+.pf-persona-badge-img {
+  max-width: 150px;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+  filter: drop-shadow(0 4px 12px rgba(0, 229, 255, 0.2));
+  transition: transform 0.2s ease;
+}
+.pf-persona-badge-img:hover {
+  transform: scale(1.05);
+}
 .pf-persona-stats {
   margin-top: 0.75rem;
   padding-top: 0.6rem;

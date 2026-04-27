@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,27 +17,61 @@ import { Formation, FormationResource, FormationStatus, Session, SessionStatus }
   styleUrls: ['./admin-formations.css']
 })
 export class AdminFormationsComponent implements OnInit {
+  @Input() activeTab: string = 'formations';
+  @Output() tabChange = new EventEmitter<string>();
 
   formations: Formation[] = [];
   formationsLoading = false;
   showFormationModal = false;
   editingFormation: Formation | null = null;
-  formationForm = { title: '', description: '', duration: 0, maxCapacity: 0, price: 0, status: 'PLANNED' as FormationStatus };
+  formationToDeleteId: number | null = null;
 
+  // ── Multi-step modal ──────────────────────────────────────────────────────
+  formationStep = 1; // 1 | 2 | 3
+  readonly FORMATION_STEPS = 3;
+
+  formationForm = {
+    title: '',
+    description: '',
+    duration: 0,
+    maxCapacity: 0,
+    price: 0,
+    status: 'PLANNED' as FormationStatus,
+    pinned: false,
+    tags: [] as string[],
+    isPaid: false,
+  };
+
+  readonly availableTags = ['Design', 'Tech', 'Sustainability', 'Leadership', 'HR', 'Safety'];
+
+  generatingDescription = false;
+
+  // ── Sessions ──────────────────────────────────────────────────────────────
   selectedFormationForSessions: Formation | null = null;
   sessions: Session[] = [];
   sessionsLoading = false;
   showSessionModal = false;
   editingSession: Session | null = null;
-  sessionForm = { title: '', startDate: '', endDate: '', status: 'SCHEDULED' as SessionStatus, type: 'ONLINE' as 'ONLINE' | 'IN_PERSON', meetLink: '', trainerId: 0, formationId: 0 };
+  sessionForm = {
+    title: '',
+    startDate: '',
+    endDate: '',
+    status: 'SCHEDULED' as SessionStatus,
+    type: 'ONLINE' as 'ONLINE' | 'IN_PERSON',
+    meetLink: '',
+    trainerId: 0,
+    formationId: 0
+  };
 
   allUsers: any[] = [];
   expandedFormationId: number | null = null;
 
+  // ── Resources ─────────────────────────────────────────────────────────────
   selectedResourceFile: File | null = null;
   resourceUploading = false;
   formationResources: FormationResource[] = [];
 
+  // ── Quiz ──────────────────────────────────────────────────────────────────
   showQuizModal = false;
   generatingQuiz = false;
   showQuizPreviewModal = false;
@@ -52,9 +86,8 @@ export class AdminFormationsComponent implements OnInit {
     questions: Array<{ text: string; options: Array<{ text: string; isCorrect: boolean }> }>;
   } = { title: '', passingScore: 80, questions: [] };
 
-  generatingDescription = false;
-
   readonly formationStatuses = ['PLANNED', 'IN_PROGRESS', 'COMPLETED'];
+  readonly FormationStatus = FormationStatus; // expose enum to template
   readonly sessionStatuses = ['SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
 
   constructor(
@@ -64,17 +97,162 @@ export class AdminFormationsComponent implements OnInit {
     private notificationService: NotificationService,
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadAllUsers();
     this.loadFormations();
   }
 
+  // ── Step helpers ──────────────────────────────────────────────────────────
+
+  get stepTitle(): string {
+    const titles: Record<number, string> = {
+      1: 'About this formation',
+      2: 'Capacity & pricing',
+      3: 'Review & publish',
+    };
+    return titles[this.formationStep];
+  }
+
+  get stepSubtitle(): string {
+    const subs: Record<number, string> = {
+      1: 'Give it a name and describe what learners will achieve.',
+      2: 'Set the logistics — duration, spots, and cost.',
+      3: 'Choose the initial status and visibility options.',
+    };
+    return subs[this.formationStep];
+  }
+
+  nextStep(): void {
+    if (this.formationStep === 1 && !this.formationForm.title.trim()) {
+      this.notificationService.error('Title is required.');
+      return;
+    }
+    if (this.formationStep < this.FORMATION_STEPS) {
+      this.formationStep++;
+    } else {
+      this.saveFormation();
+    }
+  }
+
+  prevStep(): void {
+    if (this.formationStep > 1) this.formationStep--;
+  }
+
+  toggleTag(tag: string): void {
+    const idx = this.formationForm.tags.indexOf(tag);
+    if (idx === -1) this.formationForm.tags.push(tag);
+    else this.formationForm.tags.splice(idx, 1);
+  }
+
+  hasTag(tag: string): boolean {
+    return this.formationForm.tags.includes(tag);
+  }
+
+  setIsPaid(paid: boolean): void {
+    this.formationForm.isPaid = paid;
+    if (!paid) this.formationForm.price = 0;
+  }
+
+  setFormationStatus(status: FormationStatus): void {
+    this.formationForm.status = status;
+  }
+
+  // ── Modal open/close ──────────────────────────────────────────────────────
+
+  openFormationModal(formation?: Formation): void {
+    this.formationStep = 1;
+    if (formation) {
+      this.editingFormation = formation;
+      this.formationForm = {
+        title: formation.title,
+        description: formation.description,
+        duration: formation.duration,
+        maxCapacity: formation.maxCapacity,
+        price: formation.price || 0,
+        status: formation.status,
+        pinned: formation.pinned ?? false,
+        tags: [],
+        isPaid: (formation.price ?? 0) > 0,
+      };
+    } else {
+      this.editingFormation = null;
+      this.formationForm = {
+        title: '',
+        description: '',
+        duration: 0,
+        maxCapacity: 0,
+        price: 0,
+        status: 'PLANNED' as FormationStatus,
+        pinned: false,
+        tags: [],
+        isPaid: false,
+      };
+    }
+    this.showFormationModal = true;
+  }
+
+  closeFormationModal(): void {
+    this.showFormationModal = false;
+    this.editingFormation = null;
+    this.formationStep = 1;
+  }
+
+  // ── Save ──────────────────────────────────────────────────────────────────
+
+  saveFormation(): void {
+    if (!this.formationForm.title.trim()) {
+      this.notificationService.error('Title is required.');
+      return;
+    }
+    const data: any = {
+      ...this.formationForm,
+      price: this.formationForm.isPaid ? this.formationForm.price : 0,
+    };
+    if (this.editingFormation) {
+      data.id = this.editingFormation.id;
+      data.participantIds = this.editingFormation.participantIds || [];
+      this.formationService.update(data).subscribe({
+        next: () => {
+          this.notificationService.success('Formation updated.');
+          this.loadFormations();
+          this.closeFormationModal();
+        },
+        error: () => this.notificationService.error('Failed to update formation.')
+      });
+    } else {
+      this.formationService.create(data).subscribe({
+        next: () => {
+          this.notificationService.success('Formation created.');
+          this.loadFormations();
+          this.closeFormationModal();
+        },
+        error: () => this.notificationService.error('Failed to create formation.')
+      });
+    }
+  }
+
+  // ── AI description ────────────────────────────────────────────────────────
+
+  generateDescription(): void {
+    if (!this.formationForm.title.trim()) {
+      this.notificationService.error('Please enter a title first.');
+      return;
+    }
+    this.generatingDescription = true;
+    this.formationService.generateDescription(this.formationForm.title, this.formationForm.duration).subscribe({
+      next: (res) => { this.formationForm.description = res.description; this.generatingDescription = false; },
+      error: () => { this.notificationService.error('Error generating description.'); this.generatingDescription = false; }
+    });
+  }
+
+  // ── Everything below is unchanged from original ───────────────────────────
+
   loadAllUsers(): void {
     this.userService.getAll().subscribe({
       next: (users) => { this.allUsers = users; },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -160,15 +338,43 @@ export class AdminFormationsComponent implements OnInit {
     });
   }
 
-  deleteFormation(id: number): void {
-    if (!confirm('Delete this formation?')) return;
-    this.formationService.delete(id).subscribe({
-      next: () => { 
-        this.formations = this.formations.filter(f => f.id !== id); 
-        this.notificationService.success('Formation deleted.'); 
+  openDeleteConfirm(id: number): void {
+    this.formationToDeleteId = id;
+  }
+
+  cancelDeleteFormation(): void {
+    this.formationToDeleteId = null;
+  }
+
+  confirmDeleteFormation(): void {
+    if (this.formationToDeleteId === null) return;
+    const id = this.formationToDeleteId;
+    this.formationToDeleteId = null;
+
+    this.formationService.delete(Number(id)).subscribe({
+      next: () => {
+        const numericId = Number(id);
+        this.formations = this.formations.filter(f => Number(f.id) !== numericId);
+        this.notificationService.success('Formation deleted.');
+        this.cdr.detectChanges();
       },
-      error: () => this.notificationService.error('Failed to delete formation.')
+      error: (err) => {
+        // Handle 204 No Content which might be treated as an error if empty response is expected to be JSON
+        if (err.status === 204 || err.status === 200) {
+          const numericId = Number(id);
+          this.formations = this.formations.filter(f => Number(f.id) !== numericId);
+          this.notificationService.success('Formation deleted.');
+          this.cdr.detectChanges();
+        } else {
+          this.notificationService.error('Failed to delete formation.');
+          console.error('Delete error:', err);
+        }
+      }
     });
+  }
+
+  deleteFormation(id: number): void {
+    this.openDeleteConfirm(id);
   }
 
   updateFormationStatus(id: number, status: FormationStatus): void {
@@ -176,46 +382,6 @@ export class AdminFormationsComponent implements OnInit {
       next: () => { this.notificationService.success('Status updated.'); this.loadFormations(); },
       error: () => this.notificationService.error('Failed to update status.')
     });
-  }
-
-  openFormationModal(formation?: Formation): void {
-    if (formation) {
-      this.editingFormation = formation;
-      this.formationForm = { 
-        title: formation.title, description: formation.description, 
-        duration: formation.duration, maxCapacity: formation.maxCapacity, 
-        price: formation.price || 0, status: formation.status 
-      };
-    } else {
-      this.editingFormation = null;
-      this.formationForm = { 
-        title: '', description: '', duration: 0, maxCapacity: 0, price: 0, status: 'PLANNED' as FormationStatus 
-      };
-    }
-    this.showFormationModal = true;
-  }
-
-  closeFormationModal(): void {
-    this.showFormationModal = false;
-    this.editingFormation = null;
-  }
-
-  saveFormation(): void {
-    if (!this.formationForm.title.trim()) { this.notificationService.error('Title is required.'); return; }
-    const data: any = { ...this.formationForm, pinned: false };
-    if (this.editingFormation) {
-      data.id = this.editingFormation.id;
-      data.participantIds = this.editingFormation.participantIds || [];
-      this.formationService.update(data).subscribe({
-        next: () => { this.notificationService.success('Formation updated.'); this.loadFormations(); this.closeFormationModal(); },
-        error: () => this.notificationService.error('Failed to update formation.')
-      });
-    } else {
-      this.formationService.create(data).subscribe({
-        next: () => { this.notificationService.success('Formation created.'); this.loadFormations(); this.closeFormationModal(); },
-        error: () => this.notificationService.error('Failed to create formation.')
-      });
-    }
   }
 
   togglePin(formation: Formation): void {
@@ -227,7 +393,7 @@ export class AdminFormationsComponent implements OnInit {
           return a.pinned ? -1 : 1;
         });
       },
-      error: () => this.notificationService.error("Error toggling pin.")
+      error: () => this.notificationService.error('Error toggling pin.')
     });
   }
 
@@ -251,21 +417,21 @@ export class AdminFormationsComponent implements OnInit {
     if (this.allUsers.length === 0) this.loadAllUsers();
     if (session) {
       this.editingSession = session;
-      this.sessionForm = { 
-        title: session.title, 
-        startDate: session.startDate?.slice(0, 16) || '', 
-        endDate: session.endDate?.slice(0, 16) || '', 
-        status: session.status as SessionStatus, 
-        type: (session as any).type || 'ONLINE', 
-        meetLink: (session as any).meetLink || '', 
-        trainerId: session.trainerId || 0, 
-        formationId: this.selectedFormationForSessions.id! 
+      this.sessionForm = {
+        title: session.title,
+        startDate: session.startDate?.slice(0, 16) || '',
+        endDate: session.endDate?.slice(0, 16) || '',
+        status: session.status as SessionStatus,
+        type: (session as any).type || 'ONLINE',
+        meetLink: (session as any).meetLink || '',
+        trainerId: session.trainerId || 0,
+        formationId: this.selectedFormationForSessions.id!
       };
     } else {
       this.editingSession = null;
-      this.sessionForm = { 
-        title: '', startDate: '', endDate: '', status: 'SCHEDULED' as SessionStatus, 
-        type: 'ONLINE', meetLink: '', trainerId: 0, formationId: this.selectedFormationForSessions.id! 
+      this.sessionForm = {
+        title: '', startDate: '', endDate: '', status: 'SCHEDULED' as SessionStatus,
+        type: 'ONLINE', meetLink: '', trainerId: 0, formationId: this.selectedFormationForSessions.id!
       };
     }
     this.showSessionModal = true;
@@ -349,7 +515,7 @@ export class AdminFormationsComponent implements OnInit {
   loadResources(formationId: number): void {
     this.formationService.getResources(formationId).subscribe({
       next: (resources) => { this.formationResources = resources; },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -367,17 +533,11 @@ export class AdminFormationsComponent implements OnInit {
     });
   }
 
-  generateDescription(): void {
-    if (!this.formationForm.title.trim()) { this.notificationService.error('Please enter a title first.'); return; }
-    this.generatingDescription = true;
-    this.formationService.generateDescription(this.formationForm.title, this.formationForm.duration).subscribe({
-      next: (res) => { this.formationForm.description = res.description; this.generatingDescription = false; },
-      error: () => { this.notificationService.error('Error generating description.'); this.generatingDescription = false; }
-    });
-  }
-
   generateQuizFromResources(): void {
-    if (!this.selectedFormationForSessions) return;
+    if (!this.selectedFormationForSessions) {
+      this.notificationService.error('Please select a formation first.');
+      return;
+    }
     if (this.formationResources.length === 0) {
       this.notificationService.error('Upload resources for this formation first.');
       return;
@@ -405,7 +565,11 @@ export class AdminFormationsComponent implements OnInit {
     this.showQuizPreviewModal = true;
     this.formationService.getQuizPreview(formationId).subscribe({
       next: (quiz) => { this.quizPreview = quiz; this.quizPreviewLoading = false; },
-      error: () => { this.notificationService.error('Error loading quiz.'); this.showQuizPreviewModal = false; this.quizPreviewLoading = false; }
+      error: () => { 
+        this.notificationService.error('Error loading quiz.'); 
+        this.showQuizPreviewModal = false; 
+        this.quizPreviewLoading = false; 
+      }
     });
   }
 
@@ -440,5 +604,4 @@ export class AdminFormationsComponent implements OnInit {
       error: () => { this.notificationService.error('Error submitting quiz.'); this.quizPreviewSubmitting = false; }
     });
   }
-
 }
