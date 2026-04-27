@@ -126,7 +126,11 @@
           <div class="pf-skeleton"></div>
         } @else if (ecoProfile) {
           <div class="pf-persona-label">
-            <h2>{{ ecoProfile.profile }}</h2>
+            @if (badgeImage) {
+              <img [src]="badgeImage" [alt]="ecoProfile.profile" class="pf-persona-badge-img" />
+            } @else {
+              <h2>{{ ecoProfile.profile }}</h2>
+            }
           </div>
           <ul class="pf-eco-breakdown pf-eco-grid">
             <li><span class="pf-eco-dot" style="background:#0D98BA"></span> Transport <em>{{ ecoProfile.transportKg | number:'1.0-1' }}kg</em></li>
