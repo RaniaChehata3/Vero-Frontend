@@ -3,66 +3,22 @@ import { authGuard } from './services/auth.guard';
 import { adminGuard } from './services/admin.guard';
 
 export const routes: Routes = [
-  {
-    path: '',
-    loadComponent: () =>
-      import('./components/landing/landing.component').then(m => m.LandingComponent)
-  },
-  {
-    path: 'track',
-    loadComponent: () =>
-      import('./components/tracker/tracker.component').then(m => m.TrackerComponent)
-  },
-  {
-    path: 'map',
-    loadComponent: () =>
-      import('./components/eco-map/eco-map.component').then(m => m.EcoMapComponent)
-  },
-  {
-    path: 'shop',
-    loadComponent: () =>
-      import('./components/shop/shop.component').then(m => m.ShopComponent)
-  },
-  {
-    path: 'events',
-    loadComponent: () =>
-      import('./components/events/events.component').then(m => m.EventsComponent)
-  },
-  {
-    path: 'donate',
-    loadComponent: () =>
-      import('./components/donate/donate.component').then(m => m.DonateComponent)
-  },
-  {
-    path: 'donate/success',
-    loadComponent: () =>
-      import('./components/donate/donate-success.component').then(m => m.DonateSuccessComponent)
-  },
-  {
-    path: 'donate/cancel',
-    redirectTo: '/donate'
-  },
-  {
-    path: 'login',
-    loadComponent: () =>
-      import('./components/login/login.component').then(m => m.LoginComponent)
-  },
-  {
-    path: 'reset-password',
-    loadComponent: () =>
-      import('./components/reset-password/reset-password').then(m => m.ResetPassword)
-  },
-  {
-    path: 'profile',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./components/profile/profile.component').then(m => m.ProfileComponent)
-  },
+  { path: '', loadComponent: () => import('./components/landing/landing.component').then(m => m.LandingComponent) },
+  { path: 'track', loadComponent: () => import('./components/tracker/tracker.component').then(m => m.TrackerComponent) },
+  { path: 'map', loadComponent: () => import('./components/eco-map/eco-map.component').then(m => m.EcoMapComponent) },
+  { path: 'shop', loadComponent: () => import('./components/shop/shop.component').then(m => m.ShopComponent) },
+  { path: 'events', loadComponent: () => import('./components/events/events.component').then(m => m.EventsComponent) },
+  { path: 'donate', loadComponent: () => import('./components/donate/donate.component').then(m => m.DonateComponent) },
+  { path: 'donate/success', loadComponent: () => import('./components/donate/donate-success.component').then(m => m.DonateSuccessComponent) },
+  { path: 'donate/cancel', redirectTo: 'donate' },
+  { path: 'login', loadComponent: () => import('./components/login/login.component').then(m => m.LoginComponent) },
+  { path: 'reset-password', loadComponent: () => import('./components/reset-password/reset-password').then(m => m.ResetPassword) },
+  { path: 'profile', canActivate: [authGuard], loadComponent: () => import('./components/profile/profile.component').then(m => m.ProfileComponent) },
+
   {
     path: 'admin',
     canActivate: [adminGuard],
-    loadComponent: () =>
-      import('./components/admin/admin').then(m => m.Admin),
+    loadComponent: () => import('./components/admin/admin').then(m => m.Admin),
     children: [
       {
         path: '',
@@ -110,6 +66,16 @@ export const routes: Routes = [
           import('./components/admin/admin-formations/admin-formations.component').then(m => m.AdminFormationsComponent)
       },
       {
+        path: 'petitions',
+        loadComponent: () =>
+          import('./components/admin/admin-petitions/admin-petitions.component').then(m => m.AdminPetitionsComponent)
+      },
+      {
+        path: 'donations',
+        loadComponent: () =>
+          import('./components/admin/admin-donation/admin-donations.component').then(m => m.AdminDonationsComponent)
+      },
+      {
         path: 'eco-map/moderation',
         loadComponent: () =>
           import('./components/admin/eco-map-moderation/eco-map-moderation.component')
@@ -130,7 +96,7 @@ export const routes: Routes = [
       {
         path: 'anomaly',
         loadComponent: () =>
-          import('./components/events/Anomaly detector.component')
+          import('./components/events/anomaly-detector.component')
             .then(m => m.AnomalyDetectorComponent)
       },
       { path: '**', redirectTo: 'dashboard' }
