@@ -63,6 +63,31 @@
           <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.38 8.38 0 0 1 3.8.9L21 3z" />
         </svg>
       </button>
+      <button id="nav-btn-events" class="vc-nav-item"
+  [class.active]="activeTab === 'events'"
+  (click)="setTab('events')" title="Events">
+  <svg class="vc-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+    stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="3" y1="10" x2="21" y2="10" />
+    <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
+  </svg>
+</button>
+
+<button id="nav-btn-bookings" class="vc-nav-item"
+  [class.active]="activeTab === 'reservations'"
+  (click)="setTab('reservations')" title="Bookings">
+  <svg class="vc-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 2h12a2 2 0 0 1 2 2v18l-3-2-3 2-3-2-3 2-3-2-3 2V4a2 2 0 0 1 2-2z" />
+    <path d="M8 7h8" />
+    <path d="M8 11h8" />
+    <path d="M8 15h5" />
+    <path d="M16 15l1.5 1.5L21 13" />
+  </svg>
+</button>
 
     </nav>
 
@@ -96,7 +121,7 @@
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
         <input id="admin-search" class="vc-search" type="text"
-          placeholder="Search for users, products, trainings…" />
+          placeholder="Search for users, products, trainings, events…" />
       </div>
       <div class="vc-header-actions">
         <button id="header-btn-notify" class="vc-header-btn" title="Notifications">
@@ -530,6 +555,14 @@
 
     @if (activeTab === 'products') {
       <app-admin-products [activeTab]="activeTab" (tabChange)="setTab($event)"></app-admin-products>
+    }
+
+    @if (activeTab === 'events') {
+      <app-admin-events></app-admin-events>
+    }
+
+    @if (activeTab === 'reservations') {
+      <app-admin-reservations></app-admin-reservations>
     }
 
     @if (activeTab === 'formations') {

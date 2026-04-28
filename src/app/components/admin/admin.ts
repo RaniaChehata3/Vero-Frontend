@@ -14,6 +14,8 @@ import { AdminUsersComponent } from './admin-users/admin-users.component';
 import { AdminProductsComponent } from './admin-products/admin-products.component';
 import { AdminFormationsComponent } from './admin-formations/admin-formations.component';
 import { AdminForumComponent } from './admin-forum/admin-forum.component';
+import { AdminEventsComponent } from '../admin-events/Admin events.component';
+import { AdminReservationsComponent } from '../admin-events/Admin reservations.component';
 
 @Component({
   selector: 'app-admin',
@@ -25,7 +27,9 @@ import { AdminForumComponent } from './admin-forum/admin-forum.component';
     AdminUsersComponent,
     AdminProductsComponent,
     AdminFormationsComponent,
-    AdminForumComponent
+    AdminForumComponent,
+    AdminEventsComponent,
+    AdminReservationsComponent
   ],
   templateUrl: './admin.html',
   styleUrls: ['./admin.css'],
@@ -48,7 +52,18 @@ export class Admin implements OnInit, OnDestroy, AfterViewInit {
   selectedRole = '';
 
   // ── Tab & UI state ────────────────────────────────────────────────────────
-  activeTab: 'users' | 'add' | 'settings' | 'edit' | 'messages' | 'products' | 'formations' | 'forum' = 'users';
+activeTab:
+    | 'users'
+    | 'add'
+    | 'settings'
+    | 'edit'
+    | 'messages'
+    | 'products'
+    | 'events'
+    | 'reservations'
+    | 'formations'
+    | 'forum' = 'users';
+
   successMessage = '';
   errorMessage = '';
   confirmDeleteId: number | null = null;
@@ -145,6 +160,10 @@ export class Admin implements OnInit, OnDestroy, AfterViewInit {
         this.setTab('products');
       } else if (params['tab'] === 'formations') {
         this.setTab('formations');
+      } else if (params['tab'] === 'events') {
+        this.setTab('events');
+      } else if (params['tab'] === 'reservations' || params['tab'] === 'bookings') {
+        this.setTab('reservations');
       }
     });
 

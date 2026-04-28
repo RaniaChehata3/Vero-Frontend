@@ -1,15 +1,17 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
+
 import { EventApiService, Event } from '../../services/Event api.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-admin-events',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, DatePipe],
   templateUrl: './Admin events.component.html',
   styleUrls: ['./Admin events.component.css'],
 })
@@ -25,7 +27,10 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
   successMessage = '';
   errorMessage = '';
 
-  eventsMenuOpen = true;
+  pageSize = 5;
+  currentPage = 0;
+
+  readonly statuses = ['UPCOMING', 'ONGOING', 'COMPLETED', 'CANCELLED'];
 
   private destroy$ = new Subject<void>();
   private refreshInterval: ReturnType<typeof setInterval> | null = null;
@@ -50,16 +55,8 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleEventsMenu(): void {
-    this.eventsMenuOpen = !this.eventsMenuOpen;
-  }
-
   goTo(path: string): void {
     this.router.navigateByUrl(path);
-  }
-
-  goToAdminTab(tab: 'messages' | 'add'): void {
-    this.router.navigate(['/admin'], { queryParams: { tab } });
   }
 
   loadEvents(): void {
@@ -95,7 +92,7 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data) => {
           this.events = data ?? [];
-          this.applyFilters();
+          this.applyFilters(false);
           this.cdr.detectChanges();
         },
         error: () => {}
@@ -103,23 +100,24 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
   }
 
   onSearchChange(): void {
-    this.applyFilters();
+    this.applyFilters(true);
   }
 
   onStatusFilterChange(): void {
-    this.applyFilters();
+    this.applyFilters(true);
   }
 
-  private applyFilters(): void {
+  private applyFilters(resetPage = false): void {
     let list = [...this.events];
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase();
 
       list = list.filter(e =>
-        e.title.toLowerCase().includes(q) ||
-        e.location.toLowerCase().includes(q) ||
-        e.description?.toLowerCase().includes(q)
+        (e.title || '').toLowerCase().includes(q) ||
+        (e.location || '').toLowerCase().includes(q) ||
+        (e.description || '').toLowerCase().includes(q) ||
+        this.creatorName(e).toLowerCase().includes(q)
       );
     }
 
@@ -128,6 +126,43 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
     }
 
     this.filteredEvents = list;
+
+    if (resetPage) {
+      this.currentPage = 0;
+    }
+
+    if (this.currentPage > this.totalPages - 1) {
+      this.currentPage = Math.max(this.totalPages - 1, 0);
+    }
+  }
+
+  get pagedEvents(): Event[] {
+    const start = this.currentPage * this.pageSize;
+    return this.filteredEvents.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.max(Math.ceil(this.filteredEvents.length / this.pageSize), 1);
+  }
+
+  get canGoPrev(): boolean {
+    return this.currentPage > 0;
+  }
+
+  get canGoNext(): boolean {
+    return this.currentPage < this.totalPages - 1;
+  }
+
+  prevPage(): void {
+    if (!this.canGoPrev) return;
+    this.currentPage--;
+    this.cdr.detectChanges();
+  }
+
+  nextPage(): void {
+    if (!this.canGoNext) return;
+    this.currentPage++;
+    this.cdr.detectChanges();
   }
 
   get totalEvents(): number {
@@ -146,41 +181,78 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
     return this.events.filter(e => e.status === 'COMPLETED').length;
   }
 
-  editEvent(event: Event): void {
-    this.router.navigate(['/admin/events/edit', event.id]);
-  }
+  updateStatus(event: Event, newStatus: string, domEvent?: Event | any): void {
+    domEvent?.stopPropagation?.();
 
-  cancelEvent(event: Event): void {
-    if (!event.id) return;
+    if (!event.id || !newStatus || event.status === newStatus) return;
 
-    this.eventApi.cancel(event.id)
+    const previousStatus = event.status;
+    const previousEvents = [...this.events];
+
+    event.status = newStatus as any;
+    this.applyFilters(false);
+    this.cdr.detectChanges();
+
+    const payload = {
+      ...event,
+      status: newStatus
+    } as any;
+
+    this.eventApi.update(event.id, payload)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (updated) => {
-          const idx = this.events.findIndex(e => e.id === updated.id);
+          const idx = this.events.findIndex(e => e.id === event.id);
 
           if (idx !== -1) {
             this.events[idx] = updated;
-            this.applyFilters();
           }
 
-          this.showSuccess('Event cancelled.');
+          this.applyFilters(false);
+          this.showSuccess('Event status updated.');
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.showError(err?.error?.message || 'Failed to cancel event.');
+          this.events = previousEvents;
+
+          const current = this.events.find(e => e.id === event.id);
+          if (current) {
+            current.status = previousStatus;
+          }
+
+          this.applyFilters(false);
+
+          const msg =
+            err?.error?.message ||
+            (typeof err?.error === 'string' ? err.error : '') ||
+            'Failed to update event status.';
+
+          this.showError(msg);
           this.cdr.detectChanges();
         }
       });
   }
 
-  deleteEvent(id: number | undefined): void {
+  cancelEvent(event: Event, domEvent?: MouseEvent): void {
+    domEvent?.stopPropagation();
+
+    if (!event.id) return;
+
+    this.updateStatus(event, 'CANCELLED', domEvent);
+  }
+
+  deleteEvent(id: number | undefined, domEvent?: MouseEvent): void {
+    domEvent?.stopPropagation();
+
     if (!id) return;
+
+    const confirmed = window.confirm('Delete this event permanently?');
+    if (!confirmed) return;
 
     const backup = [...this.events];
 
     this.events = this.events.filter(e => e.id !== id);
-    this.applyFilters();
+    this.applyFilters(false);
     this.cdr.detectChanges();
 
     this.eventApi.delete(id)
@@ -192,8 +264,14 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           this.events = backup;
-          this.applyFilters();
-          this.showError(err?.error?.message || 'Failed to delete event.');
+          this.applyFilters(false);
+
+          const msg =
+            err?.error?.message ||
+            (typeof err?.error === 'string' ? err.error : '') ||
+            'Failed to delete event. This event may already have reservations.';
+
+          this.showError(msg);
           this.cdr.detectChanges();
         }
       });
@@ -203,15 +281,42 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
     const map: Record<string, string> = {
       UPCOMING: 'ok',
       ONGOING: 'warn',
-      COMPLETED: '',
+      COMPLETED: 'done',
       CANCELLED: 'bad'
     };
 
     return map[status ?? ''] ?? '';
   }
 
-  initials(name?: string): string {
-    return (name || '?').trim().charAt(0).toUpperCase();
+  creatorName(event: Event): string {
+    const e = event as any;
+
+    return (
+      e.createdBy?.fullName ||
+      e.creator?.fullName ||
+      e.user?.fullName ||
+      e.organizer?.fullName ||
+      e.organizerName ||
+      e.createdByName ||
+      'Admin'
+    );
+  }
+
+  getEventImage(event: Event, index = 0): string {
+    const e = event as any;
+
+    const imageUrl =
+      e.imageUrl ||
+      e.image ||
+      e.photoUrl ||
+      e.pictureUrl ||
+      e.coverImageUrl;
+
+    if (imageUrl) {
+      return imageUrl.startsWith('http') ? imageUrl : `${environment.apiUrl}${imageUrl}`;
+    }
+
+    return `assets/images/events/${(index % 13) + 1}.png`;
   }
 
   showSuccess(msg: string): void {
@@ -232,9 +337,5 @@ export class AdminEventsComponent implements OnInit, OnDestroy {
       this.errorMessage = '';
       this.cdr.detectChanges();
     }, 6000);
-  }
-
-  goBack(): void {
-    this.router.navigate(['/admin']);
   }
 }
