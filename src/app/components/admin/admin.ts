@@ -1,43 +1,63 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
 import { AdminService, AdminCreateUserRequest, AdminUpdateUserRequest, AdminUserListItem } from '../../services/admin.service';
 import { AuthService, UserResponse } from '../../services/auth.service';
+import { ProductService } from '../../services/product.service';
+import { FormationService } from '../../services/formation.service';
+import { ForumService } from '../../services/forum.service';
 import { MessagerieService, ConversationSummary, DirectMessage, TopicCounts } from '../../services/messagerie.service';
+import { NotificationService } from '../../services/notification.service';
+import { AdminUsersComponent } from './admin-users/admin-users.component';
+import { AdminProductsComponent } from './admin-products/admin-products.component';
+import { AdminFormationsComponent } from './admin-formations/admin-formations.component';
+import { AdminForumComponent } from './admin-forum/admin-forum.component';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    AdminUsersComponent,
+    AdminProductsComponent,
+    AdminFormationsComponent,
+    AdminForumComponent
+  ],
   templateUrl: './admin.html',
   styleUrls: ['./admin.css'],
+  encapsulation: ViewEncapsulation.None
 })
-export class Admin implements OnInit, OnDestroy {
+export class Admin implements OnInit, OnDestroy, AfterViewInit {
+
   private static readonly USERS_CACHE_KEY = 'vero_admin_users_cache';
   private static readonly CONVS_CACHE_KEY = 'vero_admin_convs_cache';
 
+  // ── Users state ───────────────────────────────────────────────────────────
   users: AdminUserListItem[] = Admin.readCache<{ users: AdminUserListItem[]; total: number; pages: number }>(Admin.USERS_CACHE_KEY)?.users ?? [];
   loading = this.users.length === 0;
   error = '';
   totalUsers = Admin.readCache<{ users: AdminUserListItem[]; total: number; pages: number }>(Admin.USERS_CACHE_KEY)?.total ?? 0;
-
   currentPage = 1;
   usersPerPage = 10;
   totalPages = Admin.readCache<{ users: AdminUserListItem[]; total: number; pages: number }>(Admin.USERS_CACHE_KEY)?.pages ?? 0;
-
   searchQuery = '';
   selectedRole = '';
 
-  activeTab: 'users' | 'add' | 'settings' | 'edit' | 'messages' = 'users';
+  // ── Tab & UI state ────────────────────────────────────────────────────────
+  activeTab: 'users' | 'add' | 'settings' | 'edit' | 'messages' | 'products' | 'formations' | 'forum' = 'users';
   successMessage = '';
   errorMessage = '';
-
   confirmDeleteId: number | null = null;
   editingUserId: number | null = null;
   editUserForm: AdminUpdateUserRequest = {};
+  eventsMenuOpen = true;
+  pendingReservationCount = 0;
 
+  // ── New user form ─────────────────────────────────────────────────────────
   newUser: AdminCreateUserRequest = {
     fullName: '',
     email: '',
@@ -49,7 +69,19 @@ export class Admin implements OnInit, OnDestroy {
   addLoading = false;
   addMessage = '';
 
+  // ── Profile & stats ───────────────────────────────────────────────────────
   adminMe: UserResponse | null = null;
+  userCount = 0;
+  productCount = 0;
+  formationCount = 0;
+  forumStats = { totalPosts: 0, flaggedCount: 0 };
+
+  // ── Dashboard helpers ─────────────────────────────────────────────────────
+  currentDate: string = '';
+  currentMonth: string = '';
+  calendarDates: { num: number; isToday: boolean }[] = [];
+
+  // ── Conversations & heatmap ───────────────────────────────────────────────
   conversationSearch = '';
   adminConversations: ConversationSummary[] = Admin.readCache<ConversationSummary[]>(Admin.CONVS_CACHE_KEY) ?? [];
   topicHeatmap: TopicCounts = { eco: 0, lifestyle: 0, product: 0, other: 0 };
@@ -58,26 +90,29 @@ export class Admin implements OnInit, OnDestroy {
   messagesLoading = this.adminConversations.length === 0;
   threadLoading = false;
 
-  eventsMenuOpen = true;
-  pendingReservationCount = 0;
-
+  // ── Private internals ─────────────────────────────────────────────────────
   private selectedConversationRequestKey = '';
   private selectedConversationRequestId = 0;
   private usersLoadRequestId = 0;
   private conversationsLoadRequestId = 0;
   private adminLiveSyncInterval: ReturnType<typeof setInterval> | null = null;
   private usersLiveSyncInterval: ReturnType<typeof setInterval> | null = null;
-
   private search$ = new Subject<string>();
   private adminMessageSub?: Subscription;
 
   constructor(
-    private adminService: AdminService,
     private authService: AuthService,
+    private adminService: AdminService,
+    private productService: ProductService,
+    private formationService: FormationService,
+    private forumService: ForumService,
     private messagerieService: MessagerieService,
-    private router: Router
+    private route: ActivatedRoute,
+    private router: Router,
+    private el: ElementRef
   ) {}
 
+  // ── Cache helpers ─────────────────────────────────────────────────────────
   private static readCache<T>(key: string): T | null {
     try {
       const raw = localStorage.getItem(key);
@@ -90,12 +125,13 @@ export class Admin implements OnInit, OnDestroy {
   private static writeCache(key: string, value: unknown): void {
     try {
       localStorage.setItem(key, JSON.stringify(value));
-    } catch {
-      /* quota or private mode — ignore */
-    }
+    } catch { /* quota or private mode — ignore */ }
   }
 
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
   ngOnInit(): void {
+    this._initDateHelpers();
+
     this.search$.pipe(
       debounceTime(300),
       distinctUntilChanged()
@@ -104,7 +140,14 @@ export class Admin implements OnInit, OnDestroy {
       this.loadUsers();
     });
 
-    // ── Garder le menu Events ouvert si on navigue depuis une sous-route ──
+    this.route.queryParams.subscribe(params => {
+      if (params['tab'] === 'products') {
+        this.setTab('products');
+      } else if (params['tab'] === 'formations') {
+        this.setTab('formations');
+      }
+    });
+
     const url = this.router.url;
     if (url.includes('/admin/events') || url.includes('/admin/reservations') || url.includes('/admin/anomaly')) {
       this.eventsMenuOpen = true;
@@ -118,15 +161,18 @@ export class Admin implements OnInit, OnDestroy {
     this.authService.getMe().subscribe({
       next: (me) => {
         this.adminMe = me;
-        this.messagerieService.connect(me.id, me.role === 'ADMIN');
         this.ensureNotificationPermission();
+      },
+      error: () => {
+        const cached = this.authService.currentUser;
+        if (cached) this.adminMe = cached;
       }
     });
 
+    this._loadDashboardStats();
+
     this.adminMessageSub = this.messagerieService.adminIncoming$.subscribe((message) => {
-      if (!message) {
-        return;
-      }
+      if (!message) return;
       this.upsertConversationFromMessage(message);
       this.showDesktopMessageNotification(message.sender.fullName, message.content);
       const label = (message.topic ?? null) as keyof TopicCounts | null;
@@ -145,6 +191,15 @@ export class Admin implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this._animateCounter('stat-card-users', this.userCount);
+      this._animateCounter('stat-card-formations', this.formationCount);
+      this._animateCounter('stat-card-products', this.productCount);
+      this._animateCounter('stat-card-community', this.forumStats.totalPosts);
+    }, 1000);
+  }
+
   ngOnDestroy(): void {
     this.search$.complete();
     this.adminMessageSub?.unsubscribe();
@@ -155,11 +210,75 @@ export class Admin implements OnInit, OnDestroy {
     this.stopUsersLiveSync();
   }
 
-  // ── FIX : plus de stopPropagation, plus de preventDefault ─────────────────
-  toggleEventsMenu(): void {
-    this.eventsMenuOpen = !this.eventsMenuOpen;
+  // ── Dashboard stats ───────────────────────────────────────────────────────
+  private _loadDashboardStats(): void {
+    this.adminService.getUsers(0, 1).subscribe(data => {
+      this.userCount = data.totalElements;
+      this._animateCounter('stat-card-users', this.userCount);
+    });
+
+    this.productService.getAll().subscribe(products => {
+      this.productCount = products.length;
+      this._animateCounter('stat-card-products', this.productCount);
+    });
+
+    this.formationService.getAll().subscribe(formations => {
+      this.formationCount = formations.length;
+      this._animateCounter('stat-card-formations', this.formationCount);
+    });
+
+    this.forumService.getAllPosts().subscribe(posts => {
+      this.forumStats.totalPosts = posts.length;
+      this.forumStats.flaggedCount = posts.filter((p: any) => p.isFlagged).length;
+      this._animateCounter('stat-card-community', this.forumStats.totalPosts);
+    });
   }
 
+  private _animateCounter(cardId: string, target: number): void {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    const span = card.querySelector<HTMLElement>('.vc-stat-number-inner');
+    if (!span) return;
+    if (target === 0) { span.textContent = '0'; return; }
+
+    const duration = 1200;
+    const startTime = performance.now();
+    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+
+    const tick = (now: number) => {
+      const elapsed = Math.min(now - startTime, duration);
+      const progress = easeOut(elapsed / duration);
+      span.textContent = Math.round(progress * target).toLocaleString();
+      if (elapsed < duration) requestAnimationFrame(tick);
+      else span.textContent = target.toLocaleString();
+    };
+
+    requestAnimationFrame(tick);
+  }
+
+  // ── Live sync ─────────────────────────────────────────────────────────────
+  private startUsersLiveSync(): void {
+    this.stopUsersLiveSync();
+    this.usersLiveSyncInterval = setInterval(() => {
+      this.loadUsers();
+    }, 30000);
+  }
+
+  private stopUsersLiveSync(): void {
+    if (this.usersLiveSyncInterval != null) {
+      clearInterval(this.usersLiveSyncInterval);
+      this.usersLiveSyncInterval = null;
+    }
+  }
+
+  private startAdminLiveSync(): void {
+    if (this.adminLiveSyncInterval != null) return;
+    this.adminLiveSyncInterval = setInterval(() => {
+      this.loadAdminConversations();
+    }, 15000);
+  }
+
+  // ── Users ─────────────────────────────────────────────────────────────────
   loadUsers(): void {
     const requestId = ++this.usersLoadRequestId;
     this.loading = this.users.length === 0;
@@ -172,9 +291,7 @@ export class Admin implements OnInit, OnDestroy {
       this.selectedRole
     ).subscribe({
       next: (data) => {
-        if (this.usersLoadRequestId !== requestId) {
-          return;
-        }
+        if (this.usersLoadRequestId !== requestId) return;
         this.users = data.content ?? [];
         this.totalUsers = data.totalElements ?? this.users.length;
         this.totalPages = Math.max(data.totalPages ?? 0, 1);
@@ -189,28 +306,16 @@ export class Admin implements OnInit, OnDestroy {
         }
       },
       error: () => {
-        if (this.usersLoadRequestId !== requestId) {
-          return;
-        }
+        if (this.usersLoadRequestId !== requestId) return;
         this.error = 'Failed to load users. Are you an admin?';
         this.loading = false;
       }
     });
   }
 
-  onSearchChange(): void {
-    this.search$.next(this.searchQuery.trim());
-  }
-
-  onRoleFilterChange(): void {
-    this.currentPage = 1;
-    this.loadUsers();
-  }
-
-  onPageSizeChange(): void {
-    this.currentPage = 1;
-    this.loadUsers();
-  }
+  onSearchChange(): void { this.search$.next(this.searchQuery.trim()); }
+  onRoleFilterChange(): void { this.currentPage = 1; this.loadUsers(); }
+  onPageSizeChange(): void { this.currentPage = 1; this.loadUsers(); }
 
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
@@ -247,10 +352,7 @@ export class Admin implements OnInit, OnDestroy {
     this.setTab('users');
     this.adminService.updateUser(id, payload).subscribe({
       next: () => this.showSuccess('User profile updated.'),
-      error: () => {
-        this.showError('Error updating user profile.');
-        this.loadUsers();
-      }
+      error: () => { this.showError('Error updating user profile.'); this.loadUsers(); }
     });
   }
 
@@ -259,7 +361,6 @@ export class Admin implements OnInit, OnDestroy {
     const req = isBanned
       ? this.adminService.unbanUser(user.id)
       : this.adminService.banUser(user.id);
-
     req.subscribe({
       next: () => {
         user.banned = !isBanned;
@@ -269,13 +370,8 @@ export class Admin implements OnInit, OnDestroy {
     });
   }
 
-  requestDelete(id: number): void {
-    this.confirmDeleteId = id;
-  }
-
-  cancelDelete(): void {
-    this.confirmDeleteId = null;
-  }
+  requestDelete(id: number): void { this.confirmDeleteId = id; }
+  cancelDelete(): void { this.confirmDeleteId = null; }
 
   confirmDelete(): void {
     if (!this.confirmDeleteId) return;
@@ -310,17 +406,17 @@ export class Admin implements OnInit, OnDestroy {
     this.newUser = { fullName: '', email: '', password: '', role: 'USER', verified: true, banned: false };
     this.setTab('users');
     this.adminService.createUser(payload).subscribe({
-      next: () => {
-        this.loadUsers();
-        this.showSuccess('New user account provisioned.');
-      },
+      next: () => { this.loadUsers(); this.showSuccess('New user account provisioned.'); },
       error: (err) => this.showError(err?.error?.message || 'Failed to create user account.')
     });
   }
 
-  setTab(tab: 'users' | 'add' | 'settings' | 'edit' | 'messages'): void {
-    this.activeTab = tab;
+  // ── Tab navigation ────────────────────────────────────────────────────────
+  setTab(tab: string): void {
+    if (tab === this.activeTab) return;
+    this.activeTab = tab as any;
     this.addMessage = '';
+
     if (tab === 'users') {
       this.loadUsers();
       this.startUsersLiveSync();
@@ -332,22 +428,27 @@ export class Admin implements OnInit, OnDestroy {
       this.stopUsersLiveSync();
       this.loadAdminConversations();
       this.startAdminLiveSync();
-    } else if (this.adminLiveSyncInterval != null) {
-      clearInterval(this.adminLiveSyncInterval);
-      this.adminLiveSyncInterval = null;
+    } else {
+      if (this.adminLiveSyncInterval != null) {
+        clearInterval(this.adminLiveSyncInterval);
+        this.adminLiveSyncInterval = null;
+      }
       this.stopUsersLiveSync();
     }
   }
 
+  toggleEventsMenu(): void {
+    this.eventsMenuOpen = !this.eventsMenuOpen;
+  }
+
+  // ── Conversations ─────────────────────────────────────────────────────────
   loadAdminConversations(): void {
     const requestId = ++this.conversationsLoadRequestId;
     this.messagesLoading = this.adminConversations.length === 0;
 
     this.messagerieService.loadAdminConversations(this.conversationSearch).subscribe({
       next: (conversations) => {
-        if (this.conversationsLoadRequestId !== requestId) {
-          return;
-        }
+        if (this.conversationsLoadRequestId !== requestId) return;
         this.adminConversations = conversations;
         this.messagesLoading = false;
         if (!this.conversationSearch) {
@@ -359,9 +460,7 @@ export class Admin implements OnInit, OnDestroy {
         }
       },
       error: () => {
-        if (this.conversationsLoadRequestId !== requestId) {
-          return;
-        }
+        if (this.conversationsLoadRequestId !== requestId) return;
         this.messagesLoading = false;
         this.showError('Failed to load conversations.');
       }
@@ -396,18 +495,15 @@ export class Admin implements OnInit, OnDestroy {
     this.selectedConversationRequestKey = requestKey;
     const requestId = ++this.selectedConversationRequestId;
     this.threadLoading = true;
+
     this.messagerieService.loadAdminHistoryCached(conversation.userA.id, conversation.userB.id).subscribe({
       next: (messages) => {
-        if (this.selectedConversationRequestKey !== requestKey || this.selectedConversationRequestId !== requestId) {
-          return;
-        }
+        if (this.selectedConversationRequestKey !== requestKey || this.selectedConversationRequestId !== requestId) return;
         this.selectedConversationMessages = messages;
         this.threadLoading = false;
       },
       error: () => {
-        if (this.selectedConversationRequestKey !== requestKey || this.selectedConversationRequestId !== requestId) {
-          return;
-        }
+        if (this.selectedConversationRequestKey !== requestKey || this.selectedConversationRequestId !== requestId) return;
         this.threadLoading = false;
         this.showError('Failed to load this conversation.');
       }
@@ -418,141 +514,74 @@ export class Admin implements OnInit, OnDestroy {
     this.openAdminConversation(conversation);
   }
 
+  private preloadAdminVisibleHistories(conversations: ConversationSummary[]): void {
+    conversations.slice(0, 5).forEach(conv => {
+      this.messagerieService.loadAdminHistoryCached(conv.userA.id, conv.userB.id).subscribe();
+    });
+  }
+
+  private upsertConversationFromMessage(message: DirectMessage): void {
+    const key = (message as any).conversationKey
+      ?? [(message.sender.id), (message as any).receiver?.id].sort().join('-');
+    const existing = this.adminConversations.find(c => c.conversationKey === key);
+    if (existing) {
+      existing.lastMessagePreview = message.content;
+      existing.lastMessageTime = message.timestamp;
+      this.adminConversations = [
+        existing,
+        ...this.adminConversations.filter(c => c.conversationKey !== key)
+      ];
+    } else {
+      this.loadAdminConversations();
+    }
+  }
+
+  private belongsToSelectedConversation(message: DirectMessage, conv: ConversationSummary): boolean {
+    const ids = new Set([conv.userA.id, conv.userB.id]);
+    return ids.has(message.sender.id) && ((message as any).receiver == null || ids.has((message as any).receiver.id));
+  }
+
+  // ── Computed getters ──────────────────────────────────────────────────────
   get suspendedOnPage(): number {
-    return this.users.filter((user) => user.banned).length;
+    return this.users.filter(user => user.banned).length;
   }
 
   get monitoredConversationCount(): number {
     return this.adminConversations.length;
   }
 
-  initials(name: string | undefined): string {
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  initials(name?: string): string {
     return (name || '?').trim().charAt(0).toUpperCase();
   }
 
-  private belongsToSelectedConversation(message: DirectMessage, conversation: ConversationSummary): boolean {
-    const ids = [message.sender.id, message.receiver.id].sort((a, b) => a - b);
-    const selectedIds = [conversation.userA.id, conversation.userB.id].sort((a, b) => a - b);
-    return ids[0] === selectedIds[0] && ids[1] === selectedIds[1];
-  }
-
-  private upsertConversationFromMessage(message: DirectMessage): void {
-    const idA = Math.min(message.sender.id, message.receiver.id);
-    const idB = Math.max(message.sender.id, message.receiver.id);
-    const key = `${idA}_${idB}`;
-
-    const summary: ConversationSummary = {
-      conversationKey: key,
-      userA: idA === message.sender.id ? message.sender : message.receiver,
-      userB: idB === message.sender.id ? message.sender : message.receiver,
-      lastMessagePreview: message.content.length > 80 ? `${message.content.slice(0, 77)}...` : message.content,
-      lastMessageTime: message.timestamp,
-      lastMessageSenderId: message.sender.id,
-      messageCount: 1
-    };
-
-    const existingIndex = this.adminConversations.findIndex(item => item.conversationKey === key);
-    if (existingIndex >= 0) {
-      this.adminConversations.splice(existingIndex, 1);
-    }
-    this.adminConversations = [summary, ...this.adminConversations];
-    this.messagesLoading = false;
-  }
-
-  private preloadAdminVisibleHistories(conversations: ConversationSummary[]): void {
-    const top = conversations.slice(0, 8);
-    for (const conv of top) {
-      this.messagerieService.preloadAdminHistory(conv.userA.id, conv.userB.id);
-    }
-  }
-
-  private startAdminLiveSync(): void {
-    if (this.adminLiveSyncInterval != null) {
-      return;
-    }
-    this.adminLiveSyncInterval = setInterval(() => {
-      if (this.activeTab !== 'messages') {
-        return;
-      }
-      if (this.selectedConversation) {
-        this.refreshSelectedConversationSilently(this.selectedConversation);
-      }
-    }, 1000);
-  }
-
-  private startUsersLiveSync(): void {
-    if (this.usersLiveSyncInterval != null) {
-      return;
-    }
-    this.usersLiveSyncInterval = setInterval(() => {
-      if (this.activeTab !== 'users') {
-        return;
-      }
-      this.refreshUsersSilently();
-    }, 1000);
-  }
-
-  private stopUsersLiveSync(): void {
-    if (this.usersLiveSyncInterval != null) {
-      clearInterval(this.usersLiveSyncInterval);
-      this.usersLiveSyncInterval = null;
-    }
-  }
-
-  private refreshUsersSilently(): void {
-    this.adminService.getUsers(
-      this.currentPage - 1,
-      this.usersPerPage,
-      this.searchQuery,
-      this.selectedRole
-    ).subscribe({
-      next: (data) => {
-        if (this.activeTab !== 'users') {
-          return;
-        }
-        this.users = data.content ?? [];
-        this.totalUsers = data.totalElements ?? this.users.length;
-        this.totalPages = Math.max(data.totalPages ?? 0, 1);
-        this.currentPage = (data.number ?? 0) + 1;
-        this.error = '';
-        this.loading = false;
-      }
+  private _initDateHelpers(): void {
+    const now = new Date();
+    this.currentDate = now.toLocaleDateString('en-US', {
+      weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
     });
-  }
-
-  private refreshSelectedConversationSilently(conversation: ConversationSummary): void {
-    if (this.threadLoading) {
-      return;
-    }
-    const requestKey = conversation.conversationKey;
-    this.messagerieService.loadAdminHistoryCached(conversation.userA.id, conversation.userB.id).subscribe({
-      next: (messages) => {
-        if (this.selectedConversationRequestKey !== requestKey) {
-          return;
-        }
-        this.selectedConversationMessages = messages;
-      }
+    this.currentMonth = now.toLocaleDateString('en-US', {
+      month: 'long', year: 'numeric'
     });
+    const today = now.getDate();
+    this.calendarDates = [-3, -2, -1, 0, 1, 2, 3].map(offset => ({
+      num: today + offset,
+      isToday: offset === 0
+    }));
   }
 
   private ensureNotificationPermission(): void {
-    if (typeof window === 'undefined' || !('Notification' in window)) {
-      return;
-    }
+    if (typeof window === 'undefined' || !('Notification' in window)) return;
     if (Notification.permission === 'default') {
       Notification.requestPermission().catch(() => undefined);
     }
   }
 
   private showDesktopMessageNotification(senderName: string, content: string): void {
-    if (typeof window === 'undefined' || !('Notification' in window)) {
-      return;
-    }
-    if (Notification.permission !== 'granted') {
-      return;
-    }
+    if (typeof window === 'undefined' || !('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
     const body = content.length > 90 ? `${content.slice(0, 87)}...` : content;
-    const notification = new Notification(`Nouveau message (Admin)`, {
+    const notification = new Notification('Nouveau message (Admin)', {
       body: `${senderName}: ${body}`
     });
     notification.onclick = () => {
