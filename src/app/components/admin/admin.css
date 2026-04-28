@@ -78,7 +78,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 0;
+  padding: 12px 0;
   gap: 8px;
   z-index: 50;
 }
@@ -86,8 +86,8 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
 
 
 .vc-brand {
-  margin-bottom: 20px;
-  padding-bottom: 16px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--vc-border);
   width: 100%;
   display: flex;
@@ -97,7 +97,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
 
 .nav-logo {
   font-family: 'Playfair Display', serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
@@ -119,14 +119,14 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   flex: 1;
 }
 
 .vc-nav-item {
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
   border: none;
   background: transparent;
@@ -150,8 +150,8 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
 }
 
 .vc-nav-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
 }
 
@@ -177,19 +177,19 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding-top: 16px;
+  gap: 6px;
+  padding-top: 12px;
   border-top: 1px solid var(--vc-border);
   width: 100%;
 }
 
 .vc-nav-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--vc-accent), var(--vc-accent-2));
   color: #fff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   display: grid;
   place-items: center;
@@ -197,8 +197,8 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
 }
 
 .vc-nav-logout {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
 }
 
 .vc-nav-logout:hover {
