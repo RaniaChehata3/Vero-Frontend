@@ -78,7 +78,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 0;
+  padding: 12px 0;
   gap: 8px;
   z-index: 50;
 }
@@ -86,8 +86,8 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
 
 
 .vc-brand {
-  margin-bottom: 20px;
-  padding-bottom: 16px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--vc-border);
   width: 100%;
   display: flex;
@@ -97,7 +97,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
 
 .nav-logo {
   font-family: 'Playfair Display', serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
@@ -119,14 +119,14 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   flex: 1;
 }
 
 .vc-nav-item {
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
   border: none;
   background: transparent;
@@ -150,8 +150,8 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
 }
 
 .vc-nav-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
 }
 
@@ -177,19 +177,19 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding-top: 16px;
+  gap: 6px;
+  padding-top: 12px;
   border-top: 1px solid var(--vc-border);
   width: 100%;
 }
 
 .vc-nav-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--vc-accent), var(--vc-accent-2));
   color: #fff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   display: grid;
   place-items: center;
@@ -197,8 +197,8 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
 }
 
 .vc-nav-logout {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
 }
 
 .vc-nav-logout:hover {
@@ -317,6 +317,7 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
   padding: 28px 32px;
   position: relative;
   overflow: hidden;
+  margin-bottom: 24px;
 }
 
 .vc-hero-card::before {
@@ -487,8 +488,9 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
 /* ••• STATS CARDS ROW ••• */
 .vc-stats-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 20px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px;
+  align-items: start;
 }
 
 .vc-stat-card {
@@ -580,7 +582,38 @@ VERO ADMIN — DARK ENTERPRISE CONSOLE
 .vc-bottom-row {
   display: grid;
   grid-template-columns: 45fr 55fr;
-  gap: 20px
+  gap: 20px;
+  margin-top: 24px !important;
+  align-items: start;
+}
+
+/* Add spacing between stats row and bottom row */
+.vc-stats-row + .vc-bottom-row,
+.vc-stats-row + * + .vc-bottom-row {
+  margin-top: 24px !important;
+}
+
+/* Force all cards to be visible and collapse empty space */
+.vc-bottom-row > .vc-card {
+  min-height: auto !important;
+  height: auto !important;
+}
+
+/* Remove any collapsed or hidden cards */
+.vc-bottom-row > .vc-card:is(:empty, :has(> *:only-child:empty)) {
+  display: none !important;
+}
+
+/* Remove any zero-height elements that might take up space */
+.vc-bottom-row > * {
+  min-height: 0 !important;
+}
+
+/* Remove blank space caused by Angular structural directives */
+.vc-bottom-row > ng-container:empty,
+.vc-bottom-row > [ng-reflect-ng-if="false"],
+.vc-bottom-row > .ng-hidden {
+  display: none !important;
 }
 
 .vc-card {
@@ -1813,6 +1846,19 @@ select.vc-input {
   background: var(--vc-surface);
   border-radius: var(--vc-radius);
   border: 1px solid var(--vc-border)
+}
+
+/* Remove blank/empty cards and hidden elements */
+.vc-card:empty,
+.vc-bottom-row > div:empty {
+  display: none !important;
+}
+
+/* Hide invisible elements that might take up space */
+.vc-card[style*="opacity: 0"],
+.vc-card[style*="visibility: hidden"],
+.vc-card.hidden {
+  display: none !important;
 }
 
 .vc-heatmap-card {

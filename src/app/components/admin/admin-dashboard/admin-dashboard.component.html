@@ -327,4 +327,52 @@
     </div>
   </div>
 
+  <!-- AI TOPIC HEATMAP -->
+  <div class="vc-card vc-heatmap-card">
+    <div class="vc-card-head">
+      <span class="vc-card-title">AI Topic Classification</span>
+      <span class="vc-heatmap-total">{{ topicHeatmapTotal }} messages</span>
+    </div>
+    <div class="vc-heatmap-bar">
+      @if (topicHeatmapTotal > 0) {
+        <div class="vc-heatmap-seg eco" [style.width.%]="topicPercent('eco')"></div>
+        <div class="vc-heatmap-seg lifestyle" [style.width.%]="topicPercent('lifestyle')"></div>
+        <div class="vc-heatmap-seg product" [style.width.%]="topicPercent('product')"></div>
+        <div class="vc-heatmap-seg other" [style.width.%]="topicPercent('other')"></div>
+      } @else {
+        <div class="vc-heatmap-seg other" style="width: 100%; opacity: 0.3;"></div>
+      }
+    </div>
+    <div class="vc-heatmap-legend">
+      <div class="vc-heatmap-item">
+        <span class="vc-heatmap-dot eco"></span>
+        <div class="vc-heatmap-info">
+          <span class="vc-heatmap-label">Eco</span>
+          <span class="vc-heatmap-val">{{ topicHeatmap.eco }} <small>({{ topicPercent('eco') }}%)</small></span>
+        </div>
+      </div>
+      <div class="vc-heatmap-item">
+        <span class="vc-heatmap-dot lifestyle"></span>
+        <div class="vc-heatmap-info">
+          <span class="vc-heatmap-label">Lifestyle</span>
+          <span class="vc-heatmap-val">{{ topicHeatmap.lifestyle }} <small>({{ topicPercent('lifestyle') }}%)</small></span>
+        </div>
+      </div>
+      <div class="vc-heatmap-item">
+        <span class="vc-heatmap-dot product"></span>
+        <div class="vc-heatmap-info">
+          <span class="vc-heatmap-label">Product</span>
+          <span class="vc-heatmap-val">{{ topicHeatmap.product }} <small>({{ topicPercent('product') }}%)</small></span>
+        </div>
+      </div>
+      <div class="vc-heatmap-item">
+        <span class="vc-heatmap-dot other"></span>
+        <div class="vc-heatmap-info">
+          <span class="vc-heatmap-label">Other</span>
+          <span class="vc-heatmap-val">{{ topicHeatmap.other }} <small>({{ topicPercent('other') }}%)</small></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /bottom row -->
