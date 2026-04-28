@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ForumService } from '../../../services/forum.service';
@@ -29,7 +29,8 @@ export class AdminForumComponent implements OnInit {
 
   constructor(
     private forumService: ForumService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -38,15 +39,18 @@ export class AdminForumComponent implements OnInit {
 
   loadData(): void {
     this.loading = true;
+    this.cdr.detectChanges();
     this.forumService.getAllPosts().subscribe({
       next: (data) => {
         this.posts = data;
         this.computeStats();
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.notificationService.error('Failed to load forum data.');
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -104,7 +108,10 @@ export class AdminForumComponent implements OnInit {
         this.notificationService.success(post.isFlagged ? 'Post unflagged.' : 'Post flagged.');
         this.loadData();
       },
-      error: () => this.notificationService.error('Failed to update post status.')
+      error: () => {
+        this.notificationService.error('Failed to update post status.');
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -115,7 +122,10 @@ export class AdminForumComponent implements OnInit {
         this.notificationService.success('Post deleted.');
         this.loadData();
       },
-      error: () => this.notificationService.error('Failed to delete post.')
+      error: () => {
+        this.notificationService.error('Failed to delete post.');
+        this.cdr.detectChanges();
+      }
     });
   }
 }
