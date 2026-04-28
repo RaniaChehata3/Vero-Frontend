@@ -1,0 +1,16 @@
+footer{background:var(--forest);color:rgba(255,255,255,.5);padding:60px 80px 40px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--white);margin-bottom:16px}
+.footer-logo span{color:var(--fern);font-style:italic}
+.footer-desc{font-size:14px;line-height:1.7;max-width:280px}
+.footer-col-h{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--white);margin-bottom:16px}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-links a{font-size:14px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--mist)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-copy{font-size:13px}
+.footer-pledge{font-size:13px;display:flex;align-items:center;gap:6px}
+.footer-pledge span{color:var(--fern)}
+@media(max-width:900px){
+  .footer-grid{grid-template-columns:1fr 1fr}footer{padding:40px 24px}
+}
