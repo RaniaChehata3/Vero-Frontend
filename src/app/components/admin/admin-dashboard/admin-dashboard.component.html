@@ -1,0 +1,321 @@
+<div class="vc-hero-card">
+  <div class="vc-hero-left">
+    <div class="vc-hero-date-chip">
+      <span>{{ currentDate }}</span>
+    </div>
+
+    <h2 class="vc-hero-title">
+      Good Day,
+      @if (adminMe) {
+        {{ adminMe.fullName.split(' ')[0] }}
+      } @else {
+        Admin
+      }!
+    </h2>
+
+    <p class="vc-hero-sub">Have a great day managing Vero!</p>
+
+    <div class="vc-hero-actions">
+      <button class="vc-btn-hero-primary" (click)="setTab('add')">
+        + New User
+      </button>
+
+   <button class="vc-btn-hero-ghost" [routerLink]="['/admin/petitions']">
+  📋 Petitions
+</button>
+
+<button class="vc-btn-hero-ghost" [routerLink]="['/admin/donations']">
+  💰 Donations
+</button>
+
+      <button class="vc-btn-hero-ghost" [routerLink]="['/admin/messages']">
+        Open Monitor
+      </button>
+    </div>
+  </div>
+
+  <div class="vc-hero-right" aria-hidden="true">
+    <span class="vc-float-icon fi-1">🌿</span>
+    <span class="vc-float-icon fi-2">📊</span>
+    <span class="vc-float-icon fi-3">✨</span>
+    <span class="vc-float-icon fi-4">🛍️</span>
+    <span class="vc-float-icon fi-5">💬</span>
+  </div>
+</div>
+
+<div class="vc-stats-row">
+
+  <div class="vc-stat-card" id="stat-card-users" (click)="setTab('users')" style="cursor:pointer">
+    <div class="vc-stat-card-head">
+      <span class="vc-stat-card-label">Total Users</span>
+      <button class="vc-stat-menu-btn">⋯</button>
+    </div>
+    <div class="vc-stat-number">
+      <span class="vc-stat-number-inner">—</span>
+    </div>
+    <div class="vc-stat-sublabel">registered accounts</div>
+    <div class="vc-stat-trend vc-trend-up">↑ growing platform</div>
+  </div>
+
+  <div class="vc-stat-card" id="stat-card-formations" (click)="setTab('formations')" style="cursor:pointer">
+    <div class="vc-stat-card-head">
+      <span class="vc-stat-card-label">Formations</span>
+      <button class="vc-stat-menu-btn">⋯</button>
+    </div>
+    <div class="vc-stat-number">
+      <span class="vc-stat-number-inner">—</span>
+    </div>
+    <div class="vc-stat-sublabel">active programmes</div>
+    <div class="vc-stat-trend vc-trend-up">↑ teams learning</div>
+  </div>
+
+  <div class="vc-stat-card" id="stat-card-products" (click)="setTab('products')" style="cursor:pointer">
+    <div class="vc-stat-card-head">
+      <span class="vc-stat-card-label">Products</span>
+      <button class="vc-stat-menu-btn">⋯</button>
+    </div>
+    <div class="vc-stat-number">
+      <span class="vc-stat-number-inner">—</span>
+    </div>
+    <div class="vc-stat-sublabel">eco-store items</div>
+    <div class="vc-stat-trend vc-trend-neutral">→ catalogue stable</div>
+  </div>
+
+  <div class="vc-stat-card" id="stat-card-community" (click)="setTab('forum')" style="cursor:pointer">
+    <div class="vc-stat-card-head">
+      <span class="vc-stat-card-label">Community</span>
+      <button class="vc-stat-menu-btn">⋯</button>
+    </div>
+    <div class="vc-stat-number">
+      <span class="vc-stat-number-inner">—</span>
+    </div>
+    <div class="vc-stat-sublabel">community dispatches</div>
+    <div class="vc-stat-trend vc-trend-up">↑ active discussions</div>
+  </div>
+
+  <div class="vc-stat-card" id="stat-card-messages">
+    <div class="vc-stat-card-head">
+      <span class="vc-stat-card-label">Conversations</span>
+      <button class="vc-stat-menu-btn">⋯</button>
+    </div>
+    <div class="vc-stat-number">
+      <span class="vc-stat-number-inner" [routerLink]="['/admin/messages']" style="cursor:pointer">
+        {{ messageCount || '—' }}
+      </span>
+    </div>
+    <div class="vc-stat-sublabel">active conversations</div>
+    <div class="vc-stat-trend vc-trend-up">↑ engagement rising</div>
+  </div>
+
+<div class="vc-stat-card" id="stat-card-petitions" [routerLink]="['/admin/petitions']" style="cursor:pointer">    <div class="vc-stat-card-head">
+      <span class="vc-stat-card-label">Petitions</span>
+      <button class="vc-stat-menu-btn">⋯</button>
+    </div>
+    <div class="vc-stat-number">
+      <span class="vc-stat-number-inner">📋</span>
+    </div>
+    <div class="vc-stat-sublabel">moderation & reports</div>
+    <div class="vc-stat-trend vc-trend-up">→ open petition review</div>
+  </div>
+
+<div class="vc-stat-card" id="stat-card-donations" [routerLink]="['/admin/donations']" style="cursor:pointer">    <div class="vc-stat-card-head">
+      <span class="vc-stat-card-label">Donations</span>
+      <button class="vc-stat-menu-btn">⋯</button>
+    </div>
+    <div class="vc-stat-number">
+      <span class="vc-stat-number-inner">💰</span>
+    </div>
+    <div class="vc-stat-sublabel">fraud review & validation</div>
+    <div class="vc-stat-trend vc-trend-up">→ open donation review</div>
+  </div>
+
+</div>
+
+<div class="vc-bottom-row">
+
+  <div class="vc-card vc-heatmap-card">
+    <div class="vc-card-head">
+      <span class="vc-card-title">AI Topic Classification</span>
+      <span class="vc-heatmap-total">{{ topicHeatmapTotal }} messages</span>
+    </div>
+
+    <div class="vc-heatmap-bar">
+      @if (topicHeatmapTotal > 0) {
+        <div class="vc-heatmap-seg eco" [style.width.%]="topicPercent('eco')"></div>
+        <div class="vc-heatmap-seg lifestyle" [style.width.%]="topicPercent('lifestyle')"></div>
+        <div class="vc-heatmap-seg product" [style.width.%]="topicPercent('product')"></div>
+        <div class="vc-heatmap-seg other" [style.width.%]="topicPercent('other')"></div>
+      } @else {
+        <div class="vc-heatmap-seg other" style="width:100%; opacity:.3;"></div>
+      }
+    </div>
+
+    <div class="vc-heatmap-legend">
+      <div class="vc-heatmap-item">
+        <span class="vc-heatmap-dot eco"></span>
+        <div class="vc-heatmap-info">
+          <span class="vc-heatmap-label">Eco</span>
+          <span class="vc-heatmap-val">{{ topicHeatmap.eco }} <small>({{ topicPercent('eco') }}%)</small></span>
+        </div>
+      </div>
+
+      <div class="vc-heatmap-item">
+        <span class="vc-heatmap-dot lifestyle"></span>
+        <div class="vc-heatmap-info">
+          <span class="vc-heatmap-label">Lifestyle</span>
+          <span class="vc-heatmap-val">{{ topicHeatmap.lifestyle }} <small>({{ topicPercent('lifestyle') }}%)</small></span>
+        </div>
+      </div>
+
+      <div class="vc-heatmap-item">
+        <span class="vc-heatmap-dot product"></span>
+        <div class="vc-heatmap-info">
+          <span class="vc-heatmap-label">Product</span>
+          <span class="vc-heatmap-val">{{ topicHeatmap.product }} <small>({{ topicPercent('product') }}%)</small></span>
+        </div>
+      </div>
+
+      <div class="vc-heatmap-item">
+        <span class="vc-heatmap-dot other"></span>
+        <div class="vc-heatmap-info">
+          <span class="vc-heatmap-label">Other</span>
+          <span class="vc-heatmap-val">{{ topicHeatmap.other }} <small>({{ topicPercent('other') }}%)</small></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vc-card vc-events-card">
+    <div class="vc-card-head">
+      <span class="vc-card-title">My Scheduled Events</span>
+      <button class="vc-pill-btn">Today ▾</button>
+    </div>
+
+    <div class="vc-events-body">
+      <div class="vc-ring-wrap">
+        <svg class="vc-ring-svg" viewBox="0 0 120 120" width="120" height="120">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#4361ee" />
+              <stop offset="50%" stop-color="#f72585" />
+              <stop offset="100%" stop-color="#f77f00" />
+            </linearGradient>
+          </defs>
+
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#0f1117" stroke-width="10" />
+          <circle
+            cx="60"
+            cy="60"
+            r="50"
+            fill="none"
+            stroke="url(#ringGrad)"
+            stroke-width="10"
+            stroke-linecap="round"
+            class="vc-ring-progress"
+            style="--circumference:314.16; --progress:15.71" />
+
+          <text x="60" y="56" text-anchor="middle" font-size="22" font-weight="700" fill="white">95%</text>
+          <text x="60" y="72" text-anchor="middle" font-size="8" fill="#8892b0" letter-spacing="1.5">BUSYNESS</text>
+        </svg>
+      </div>
+
+      <div class="vc-event-list">
+        <div class="vc-event-item">
+          <div class="vc-event-num">2</div>
+          <div class="vc-event-lbl">Consultations</div>
+        </div>
+
+        <div class="vc-event-item">
+          <div class="vc-event-num">10</div>
+          <div class="vc-event-lbl">Listings</div>
+        </div>
+
+        <div class="vc-event-item">
+          <div class="vc-event-num">3</div>
+          <div class="vc-event-lbl">Meetings</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vc-card vc-plans-card">
+    <div class="vc-card-head">
+      <span class="vc-card-title">My Plans Done</span>
+      <button class="vc-pill-btn">Today ▾</button>
+    </div>
+
+    <div class="vc-plans-list">
+      <div class="vc-plan-item">
+        <div class="vc-plan-header">
+          <span class="vc-plan-label">Products Listed</span>
+          <span class="vc-plan-pct" style="color:#4361ee">64%</span>
+        </div>
+        <div class="vc-progress-track">
+          <div class="vc-progress-fill" style="--target-width:64%; background: linear-gradient(90deg, #4361ee, #7b2ff7)"></div>
+        </div>
+      </div>
+
+      <div class="vc-plan-item">
+        <div class="vc-plan-header">
+          <span class="vc-plan-label">Conversations</span>
+          <span class="vc-plan-pct" style="color:#f72585">50%</span>
+        </div>
+        <div class="vc-progress-track">
+          <div class="vc-progress-fill" style="--target-width:50%; background: linear-gradient(90deg, #f72585, #f77f00)"></div>
+        </div>
+      </div>
+
+      <div class="vc-plan-item">
+        <div class="vc-plan-header">
+          <span class="vc-plan-label">Petitions Review</span>
+          <span class="vc-plan-pct" style="color:#f77f00">70%</span>
+        </div>
+        <div class="vc-progress-track">
+          <div class="vc-progress-fill" style="--target-width:70%; background: linear-gradient(90deg, #f77f00, #ffb703)"></div>
+        </div>
+      </div>
+
+      <div class="vc-plan-item">
+        <div class="vc-plan-header">
+          <span class="vc-plan-label">Donations Review</span>
+          <span class="vc-plan-pct" style="color:#06d6a0">80%</span>
+        </div>
+        <div class="vc-progress-track">
+          <div class="vc-progress-fill" style="--target-width:80%; background: linear-gradient(90deg, #06d6a0, #14C7A5)"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="vc-add-plan-btn" (click)="setTab('add')">
+      + Add plan
+    </button>
+  </div>
+
+  <div class="vc-card vc-community-card">
+    <div class="vc-card-head">
+      <span class="vc-card-title">Community Oversight</span>
+      <button class="vc-pill-btn" (click)="setTab('forum')">Manage ▾</button>
+    </div>
+
+    <div class="vc-community-list">
+      <div class="vc-community-item">
+        <div class="vc-community-dot" style="background:#f72585"></div>
+        <div class="vc-community-body">
+          <span class="vc-community-label">Flagged Content</span>
+          <span class="vc-community-sub">Awaiting manual moderation</span>
+        </div>
+        <div class="vc-community-count">{{ forumStats.flaggedCount }} items</div>
+      </div>
+
+      <div class="vc-community-item">
+        <div class="vc-community-dot" style="background:#14C7A5"></div>
+        <div class="vc-community-body">
+          <span class="vc-community-label">Total Dispatches</span>
+          <span class="vc-community-sub">Engagement across all topics</span>
+        </div>
+        <div class="vc-community-count">{{ forumStats.totalPosts }} posts</div>
+      </div>
+    </div>
+  </div>
+
+</div>
