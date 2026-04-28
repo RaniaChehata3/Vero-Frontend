@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+
 import { EventApiService, Reservation } from '../../services/Event api.service';
 import { EventRatingComponent } from '../my-reservations/Event rating.component';
 
@@ -18,26 +20,25 @@ export class MyReservationsComponent implements OnInit {
   loading = true;
   successMsg = '';
   errorMsg = '';
-userLat: number | null = null;
-userLng: number | null = null;
-distanceKm: number | null = null;
+
   expandedId: number | null = null;
 
-  // History pagination
   histPage = 0;
   histPageSize = 3;
 
-  // Cancel modal
   showConfirmModal = false;
   cancelTargetId: number | null = null;
   cancelLoading = false;
 
-  // Map modal
   showMapModal = false;
   mapLocation = '';
-  mapEmbedUrl = '';
+  mapEmbedUrl: SafeResourceUrl | string = '';
+  mapDistanceLabel = '';
 
-  constructor(private api: EventApiService) {}
+  constructor(
+    private api: EventApiService,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit(): void {
     this.loadReservations();
@@ -56,6 +57,99 @@ distanceKm: number | null = null;
         this.loading = false;
       }
     });
+    
+  }
+
+  private norm(v: any): string {
+    return String(v ?? '').trim().toUpperCase();
+  }
+
+  getEventStatus(r: any): string {
+    return this.norm(
+      r?.event?.status ??
+      r?.eventStatus ??
+      r?.statusEvent ??
+      r?.event?.eventStatus
+    );
+  }
+  getEventCapacity(r: any): number {
+  return Number(
+    r?.event?.capacity ??
+    r?.eventCapacity ??
+    r?.capacity ??
+    0
+  );
+}
+
+getEventId(r: any): number {
+  return Number(
+    r?.event?.id ??
+    r?.eventId ??
+    r?.idEvent ??
+    0
+  );
+}
+ getEventTitle(r: any): string {
+  return (
+    r?.event?.title ??
+    r?.event?.name ??
+    r?.event?.nom ??
+    r?.event?.eventName ??
+    r?.event?.eventTitle ??
+    r?.event?.titre ??
+    r?.eventTitle ??
+    r?.eventName ??
+    r?.event_name ??
+    r?.title ??
+    r?.name ??
+    r?.nom ??
+    'Untitled Event'
+  );
+}
+
+getEventLocation(r: any): string {
+  return (
+    r?.event?.location ??
+    r?.eventLocation ??
+    r?.location ??
+    'Location not specified'
+  );
+}
+
+getEventStartDate(r: any): any {
+  return (
+    r?.event?.startDate ??
+    r?.event?.start_date ??
+    r?.eventStartDate ??
+    r?.startDate ??
+    null
+  );
+}
+
+  getReservationStatus(r: any): string {
+    return this.norm(r?.status);
+  }
+
+  isEventCompleted(r: any): boolean {
+    return this.getEventStatus(r) === 'COMPLETED';
+  }
+
+  canRateReservation(r: any): boolean {
+    return this.getReservationStatus(r) === 'CONFIRMED' && this.isEventCompleted(r);
+  }
+
+  get activeReservations(): Reservation[] {
+    return this.reservations.filter(r =>
+      ['PENDING', 'CONFIRMED'].includes(this.getReservationStatus(r)) &&
+      !this.isEventCompleted(r)
+    );
+  }
+
+  get pastReservations(): Reservation[] {
+    return this.reservations.filter(r =>
+      ['CANCELLED', 'REJECTED'].includes(this.getReservationStatus(r)) ||
+      this.canRateReservation(r)
+    );
   }
 
   get histTotalPages(): number {
@@ -96,26 +190,11 @@ distanceKm: number | null = null;
   }
 
   get activeCount(): number {
-    return this.reservations.filter(r => r.status === 'PENDING' || r.status === 'CONFIRMED').length;
-  }
-
-  get activeReservations(): Reservation[] {
-    return this.reservations.filter(r =>
-      (r.status === 'PENDING' || r.status === 'CONFIRMED') &&
-      r.event?.status !== 'COMPLETED'
-    );
-  }
-
-  get pastReservations(): Reservation[] {
-    return this.reservations.filter(r =>
-      r.status === 'CANCELLED' ||
-      r.status === 'REJECTED' ||
-      (r.status === 'CONFIRMED' && r.event?.status === 'COMPLETED')
-    );
+    return this.activeReservations.length;
   }
 
   canCancel(r: Reservation): boolean {
-    return r.status === 'PENDING' || r.status === 'CONFIRMED';
+    return ['PENDING', 'CONFIRMED'].includes(this.getReservationStatus(r)) && !this.isEventCompleted(r);
   }
 
   isExpanded(id: number): boolean {
@@ -126,11 +205,8 @@ distanceKm: number | null = null;
     this.expandedId = this.expandedId === id ? null : id;
   }
 
-  // QR Code
   getQrCodeUrl(r: Reservation): string {
-    if (!r || !r.id) {
-      return '';
-    }
+    if (!r || !r.id) return '';
 
     const currentHost = window.location.hostname;
 
@@ -144,20 +220,43 @@ distanceKm: number | null = null;
     return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(ticketUrl)}&color=06bde8&bgcolor=eafaff&margin=8`;
   }
 
-  // Google Maps
   openMaps(location: string, e: MouseEvent): void {
     e.stopPropagation();
+
     this.mapLocation = location;
-    this.mapEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(location)}&output=embed&z=15`;
-    this.showMapModal = true;
+    this.mapDistanceLabel = 'Calculating route...';
+
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        const url =
+          `https://maps.google.com/maps?saddr=${lat},${lng}&daddr=${encodeURIComponent(location)}&output=embed`;
+
+        this.mapEmbedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        this.mapDistanceLabel = 'Route from your current position to the event';
+        this.showMapModal = true;
+      },
+      () => {
+        const url =
+          `https://maps.google.com/maps?q=${encodeURIComponent(location)}&output=embed&z=15`;
+
+        this.mapEmbedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        this.mapDistanceLabel = 'Enable location to see route distance';
+        this.showMapModal = true;
+      }
+    );
   }
 
   openDirectMaps(location: string, e: MouseEvent): void {
     e.stopPropagation();
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location)}`, '_blank');
+    window.open(
+      `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location)}`,
+      '_blank'
+    );
   }
 
-  // Cancel confirmation modal
   openCancelModal(id: number, e: MouseEvent): void {
     e.stopPropagation();
     this.cancelTargetId = id;
@@ -165,18 +264,14 @@ distanceKm: number | null = null;
   }
 
   closeConfirm(): void {
-    if (this.cancelLoading) {
-      return;
-    }
+    if (this.cancelLoading) return;
 
     this.showConfirmModal = false;
     this.cancelTargetId = null;
   }
 
   confirmCancel(): void {
-    if (!this.cancelTargetId || this.cancelLoading) {
-      return;
-    }
+    if (!this.cancelTargetId || this.cancelLoading) return;
 
     const id = this.cancelTargetId;
     this.cancelLoading = true;
@@ -202,7 +297,7 @@ distanceKm: number | null = null;
   }
 
   statusLabel(status: string): string {
-    const m: any = {
+    const labels: Record<string, string> = {
       PENDING: 'Pending',
       CONFIRMED: 'Confirmed',
       CANCELLED: 'Cancelled',
@@ -210,11 +305,11 @@ distanceKm: number | null = null;
       COMPLETED: 'Completed'
     };
 
-    return m[status] || status;
+    return labels[this.norm(status)] || status;
   }
 
   statusClass(status: string): string {
-    return 'rs-' + status.toLowerCase();
+    return 'rs-' + this.norm(status).toLowerCase();
   }
 
   showSuccess(msg: string): void {

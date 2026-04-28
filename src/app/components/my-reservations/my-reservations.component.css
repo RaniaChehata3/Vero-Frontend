@@ -1011,3 +1011,38 @@
     min-width: 640px;
   }
 }
+.map-modal {
+  max-width: 960px !important;
+}
+
+.map-preview-card {
+  height: 470px;
+  position: relative;
+  margin: 24px 30px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 229, 255, 0.28);
+  background: rgba(0, 229, 255, 0.06);
+}
+
+.map-preview-card .map-embed {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.map-distance-pill {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  max-width: calc(100% - 40px);
+  background: rgba(4, 22, 27, 0.86);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  color: #d9fbff;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 900;
+  z-index: 3;
+}
