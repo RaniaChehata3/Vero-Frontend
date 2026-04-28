@@ -44,7 +44,15 @@ export interface RecurringDonationResponse {
 })
 export class DonationService {
 
-  private apiUrl = 'http://localhost:8080/api/donations';
+  private get host(): string {
+    if (typeof window === 'undefined') return 'localhost';
+    const h = window.location.hostname;
+    return h === 'localhost' || h === '127.0.0.1' ? 'localhost' : h;
+  }
+
+  private get apiUrl(): string {
+    return `http://${this.host}:8080/api/donations`;
+  }
 
   constructor(private http: HttpClient) { }
 
@@ -129,7 +137,7 @@ export class DonationService {
 
   createStripeCheckout(amount: number, donationId: number): Observable<{ url: string }> {
     return this.http.post<{ url: string }>(
-      'http://localhost:8080/api/stripe/checkout',
+      `http://${this.host}:8080/api/stripe/checkout`,
       { amount, donationId },
       { headers: this.getHeaders() }
     );
@@ -137,7 +145,7 @@ export class DonationService {
 
   verifyStripePayment(sessionId: string, donationId: number): Observable<any> {
     return this.http.get(
-      `http://localhost:8080/api/stripe/verify?sessionId=${sessionId}&donationId=${donationId}`,
+      `http://${this.host}:8080/api/stripe/verify?sessionId=${sessionId}&donationId=${donationId}`,
       { headers: this.getHeaders() }
     );
   }
