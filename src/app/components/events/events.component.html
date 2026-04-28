@@ -1,16 +1,32 @@
 <div class="vero-events">
 
-  <!-- Falling Leaves -->
-  <div class="leaves-canvas" aria-hidden="true">
-    <div class="leaf" *ngFor="let l of leaves" [style]="l.style">
-      <svg viewBox="0 0 24 32" fill="none">
-        <path d="M12 0C12 0 0 8 0 18C0 25.7 5.4 32 12 32C18.6 32 24 25.7 24 18C24 8 12 0 12 0Z"
-              [attr.fill]="l.color" opacity=".7"/>
-        <line x1="12" y1="4" x2="12" y2="30" stroke="rgba(30,107,69,.3)" stroke-width="1"/>
-        <line x1="12" y1="12" x2="6" y2="20" stroke="rgba(30,107,69,.25)" stroke-width=".8"/>
-        <line x1="12" y1="16" x2="18" y2="22" stroke="rgba(30,107,69,.25)" stroke-width=".8"/>
+  <!-- Ocean ambient glows -->
+  <div class="ocean-glow g1" aria-hidden="true"></div>
+  <div class="ocean-glow g2" aria-hidden="true"></div>
+  <div class="ocean-glow g3" aria-hidden="true"></div>
+
+  <!-- Octopus layer replaces falling leaves -->
+  <div class="octopus-layer" aria-hidden="true">
+    <div class="octopus" *ngFor="let o of octopuses" [style]="o.style">
+      <svg viewBox="0 0 100 110" fill="none">
+        <ellipse cx="50" cy="36" rx="26" ry="28" [attr.fill]="o.color" opacity=".9"/>
+        <circle cx="41" cy="34" r="3" fill="#04161B"/>
+        <circle cx="59" cy="34" r="3" fill="#04161B"/>
+        <circle cx="42" cy="33" r="1" fill="#fff"/>
+        <circle cx="60" cy="33" r="1" fill="#fff"/>
+        <path d="M42 47 Q50 54 58 47" stroke="#04161B" stroke-width="2" stroke-linecap="round" opacity=".45"/>
+        <path class="octo-tentacle" style="--tw:10deg;animation-duration:2.2s" d="M32 58 C22 72 18 86 10 98" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+        <path class="octo-tentacle" style="--tw:-13deg;animation-duration:2.6s" d="M42 62 C36 78 34 88 28 104" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+        <path class="octo-tentacle" style="--tw:14deg;animation-duration:2.4s" d="M50 64 C48 78 50 92 50 106" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+        <path class="octo-tentacle" style="--tw:-10deg;animation-duration:2.1s" d="M58 62 C64 78 66 88 72 104" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+        <path class="octo-tentacle" style="--tw:12deg;animation-duration:2.8s" d="M68 58 C78 72 82 86 90 98" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
       </svg>
     </div>
+  </div>
+
+  <!-- Floating bubbles -->
+  <div class="bubbles-layer" aria-hidden="true">
+    <span class="bubble" *ngFor="let b of bubbles" [style]="b.style"></span>
   </div>
 
   <!-- Toast -->
@@ -29,55 +45,55 @@
   <div class="turtle-stage" aria-hidden="true">
     <div class="turtle-track">
       <svg class="turtle-svg" style="top:18px;width:68px;height:50px;animation-duration:22s;animation-delay:0s" viewBox="0 0 100 75" fill="none">
-        <ellipse cx="50" cy="44" rx="28" ry="20" fill="#2d8f5c" opacity=".85"/>
-        <ellipse cx="50" cy="40" rx="22" ry="17" fill="#1e6b45"/>
-        <ellipse cx="50" cy="40" rx="18" ry="13" fill="#40916c"/>
-        <path d="M50 28 L42 40 L50 52 L58 40 Z" fill="#2d8f5c" opacity=".5"/>
-        <path d="M38 33 L50 40 L62 33" stroke="#1e6b45" stroke-width="1.5" fill="none" opacity=".6"/>
-        <path d="M38 47 L50 40 L62 47" stroke="#1e6b45" stroke-width="1.5" fill="none" opacity=".6"/>
-        <ellipse cx="74" cy="42" rx="10" ry="8" fill="#2d8f5c"/>
-        <ellipse cx="74" cy="42" rx="8" ry="6.5" fill="#40916c"/>
-        <circle cx="78" cy="39" r="2" fill="#1a2e22"/>
+        <ellipse cx="50" cy="44" rx="28" ry="20" fill="#0096c7" opacity=".85"/>
+        <ellipse cx="50" cy="40" rx="22" ry="17" fill="#0077b6"/>
+        <ellipse cx="50" cy="40" rx="18" ry="13" fill="#00b4d8"/>
+        <path d="M50 28 L42 40 L50 52 L58 40 Z" fill="#0096c7" opacity=".5"/>
+        <path d="M38 33 L50 40 L62 33" stroke="#0077b6" stroke-width="1.5" fill="none" opacity=".6"/>
+        <path d="M38 47 L50 40 L62 47" stroke="#0077b6" stroke-width="1.5" fill="none" opacity=".6"/>
+        <ellipse cx="74" cy="42" rx="10" ry="8" fill="#0096c7"/>
+        <ellipse cx="74" cy="42" rx="8" ry="6.5" fill="#00b4d8"/>
+        <circle cx="78" cy="39" r="2" fill="#03045e"/>
         <circle cx="79" cy="38.5" r=".7" fill="white"/>
-        <path d="M71 44 Q74 46 77 44" stroke="#1e6b45" stroke-width="1" fill="none"/>
-        <path d="M22 45 Q14 42 12 46 Q14 50 22 48" fill="#2d8f5c"/>
-        <ellipse cx="36" cy="60" rx="8" ry="4" fill="#2d8f5c" transform="rotate(-20 36 60)"/>
-        <ellipse cx="64" cy="60" rx="8" ry="4" fill="#2d8f5c" transform="rotate(20 64 60)"/>
-        <ellipse cx="30" cy="58" rx="7" ry="3.5" fill="#40916c" transform="rotate(25 30 58)"/>
-        <ellipse cx="70" cy="58" rx="7" ry="3.5" fill="#40916c" transform="rotate(-25 70 58)"/>
+        <path d="M71 44 Q74 46 77 44" stroke="#0077b6" stroke-width="1" fill="none"/>
+        <path d="M22 45 Q14 42 12 46 Q14 50 22 48" fill="#0096c7"/>
+        <ellipse cx="36" cy="60" rx="8" ry="4" fill="#0096c7" transform="rotate(-20 36 60)"/>
+        <ellipse cx="64" cy="60" rx="8" ry="4" fill="#0096c7" transform="rotate(20 64 60)"/>
+        <ellipse cx="30" cy="58" rx="7" ry="3.5" fill="#00b4d8" transform="rotate(25 30 58)"/>
+        <ellipse cx="70" cy="58" rx="7" ry="3.5" fill="#00b4d8" transform="rotate(-25 70 58)"/>
       </svg>
       <svg class="turtle-svg" style="top:30px;width:48px;height:36px;animation-duration:28s;animation-delay:-8s" viewBox="0 0 100 75" fill="none">
-        <ellipse cx="50" cy="44" rx="28" ry="20" fill="#52b788" opacity=".8"/>
-        <ellipse cx="50" cy="40" rx="22" ry="17" fill="#2d8f5c"/>
-        <ellipse cx="50" cy="40" rx="18" ry="13" fill="#52b788"/>
-        <ellipse cx="74" cy="42" rx="10" ry="8" fill="#52b788"/>
-        <circle cx="78" cy="39" r="2" fill="#1a2e22"/>
+        <ellipse cx="50" cy="44" rx="28" ry="20" fill="#48cae4" opacity=".8"/>
+        <ellipse cx="50" cy="40" rx="22" ry="17" fill="#0096c7"/>
+        <ellipse cx="50" cy="40" rx="18" ry="13" fill="#48cae4"/>
+        <ellipse cx="74" cy="42" rx="10" ry="8" fill="#48cae4"/>
+        <circle cx="78" cy="39" r="2" fill="#03045e"/>
         <circle cx="79" cy="38.5" r=".7" fill="white"/>
-        <path d="M22 45 Q14 42 12 46 Q14 50 22 48" fill="#52b788"/>
-        <ellipse cx="36" cy="60" rx="8" ry="4" fill="#52b788" transform="rotate(-20 36 60)"/>
-        <ellipse cx="64" cy="60" rx="8" ry="4" fill="#52b788" transform="rotate(20 64 60)"/>
+        <path d="M22 45 Q14 42 12 46 Q14 50 22 48" fill="#48cae4"/>
+        <ellipse cx="36" cy="60" rx="8" ry="4" fill="#48cae4" transform="rotate(-20 36 60)"/>
+        <ellipse cx="64" cy="60" rx="8" ry="4" fill="#48cae4" transform="rotate(20 64 60)"/>
       </svg>
       <svg class="turtle-svg" style="top:8px;width:80px;height:60px;animation-duration:18s;animation-delay:-14s" viewBox="0 0 100 75" fill="none">
-        <ellipse cx="50" cy="44" rx="28" ry="20" fill="#1e6b45" opacity=".9"/>
-        <ellipse cx="50" cy="40" rx="22" ry="17" fill="#145232"/>
-        <ellipse cx="50" cy="40" rx="18" ry="13" fill="#1e6b45"/>
-        <ellipse cx="74" cy="42" rx="10" ry="8" fill="#1e6b45"/>
-        <circle cx="78" cy="39" r="2" fill="#0a1410"/>
+        <ellipse cx="50" cy="44" rx="28" ry="20" fill="#0077b6" opacity=".9"/>
+        <ellipse cx="50" cy="40" rx="22" ry="17" fill="#023e8a"/>
+        <ellipse cx="50" cy="40" rx="18" ry="13" fill="#0077b6"/>
+        <ellipse cx="74" cy="42" rx="10" ry="8" fill="#0077b6"/>
+        <circle cx="78" cy="39" r="2" fill="#03045e"/>
         <circle cx="79" cy="38.5" r=".7" fill="white"/>
-        <path d="M22 45 Q14 42 12 46 Q14 50 22 48" fill="#1e6b45"/>
-        <ellipse cx="36" cy="60" rx="8" ry="4" fill="#1e6b45" transform="rotate(-20 36 60)"/>
-        <ellipse cx="64" cy="60" rx="8" ry="4" fill="#1e6b45" transform="rotate(20 64 60)"/>
+        <path d="M22 45 Q14 42 12 46 Q14 50 22 48" fill="#0077b6"/>
+        <ellipse cx="36" cy="60" rx="8" ry="4" fill="#0077b6" transform="rotate(-20 36 60)"/>
+        <ellipse cx="64" cy="60" rx="8" ry="4" fill="#0077b6" transform="rotate(20 64 60)"/>
       </svg>
       <svg class="turtle-svg" style="top:38px;width:36px;height:27px;animation-duration:34s;animation-delay:-22s" viewBox="0 0 100 75" fill="none">
-        <ellipse cx="50" cy="44" rx="28" ry="20" fill="#74c69d" opacity=".75"/>
-        <ellipse cx="50" cy="40" rx="22" ry="17" fill="#52b788"/>
-        <ellipse cx="50" cy="40" rx="18" ry="13" fill="#74c69d"/>
-        <ellipse cx="74" cy="42" rx="10" ry="8" fill="#74c69d"/>
-        <circle cx="78" cy="39" r="2" fill="#1a2e22"/>
+        <ellipse cx="50" cy="44" rx="28" ry="20" fill="#90e0ef" opacity=".75"/>
+        <ellipse cx="50" cy="40" rx="22" ry="17" fill="#48cae4"/>
+        <ellipse cx="50" cy="40" rx="18" ry="13" fill="#90e0ef"/>
+        <ellipse cx="74" cy="42" rx="10" ry="8" fill="#90e0ef"/>
+        <circle cx="78" cy="39" r="2" fill="#03045e"/>
         <circle cx="79" cy="38.5" r=".7" fill="white"/>
-        <path d="M22 45 Q14 42 12 46 Q14 50 22 48" fill="#74c69d"/>
-        <ellipse cx="36" cy="60" rx="8" ry="4" fill="#74c69d" transform="rotate(-20 36 60)"/>
-        <ellipse cx="64" cy="60" rx="8" ry="4" fill="#74c69d" transform="rotate(20 64 60)"/>
+        <path d="M22 45 Q14 42 12 46 Q14 50 22 48" fill="#90e0ef"/>
+        <ellipse cx="36" cy="60" rx="8" ry="4" fill="#90e0ef" transform="rotate(-20 36 60)"/>
+        <ellipse cx="64" cy="60" rx="8" ry="4" fill="#90e0ef" transform="rotate(20 64 60)"/>
       </svg>
     </div>
   </div>
@@ -92,7 +108,7 @@
         Eco Events Platform
       </div>
       <h1 class="page-title">Discover Eco <span>Events</span></h1>
-      <p class="page-sub">Join environmental events. Make an impact. Leave the world greener.</p>
+      <p class="page-sub">Join environmental events. Make an impact. Leave the world bluer.</p>
     </div>
 
     <!-- Toolbar -->
@@ -283,58 +299,98 @@
   </div>
 
   <!-- FAB -->
-  <button class="fab" *ngIf="canManage()" (click)="openCreate()" title="New Event">+</button>
+  <button class="fab fab-create-event" *ngIf="canManage()" (click)="openCreate()" title="Create new event"><span class="fab-icon">✦</span><span class="fab-text">Create Event</span></button>
 
   <!-- DETAIL MODAL -->
-  <div class="modal-backdrop" *ngIf="showDetail" (click)="showDetail=false">
-    <div class="modal-detail" *ngIf="detailEvent" (click)="$event.stopPropagation()">
-      <div class="detail-img">
-        <img [src]="getEventImage(detailEvent)" [alt]="detailEvent.title">
-        <div class="detail-img-overlay"></div>
-        <div class="detail-cat-badge">{{ getCategoryLabel(detailEvent) }}</div>
-        <button class="detail-close" (click)="showDetail=false">✕</button>
+ <!-- DETAIL MODAL -->
+<div class="modal-backdrop" *ngIf="showDetail" (click)="showDetail=false">
+  <div class="modal-detail event-detail-pro" *ngIf="detailEvent" (click)="$event.stopPropagation()">
+
+    <div class="detail-pro-hero">
+      <img [src]="getEventImage(detailEvent)" [alt]="detailEvent.title" />
+
+      <div class="detail-pro-overlay"></div>
+
+      <div class="detail-pro-top">
+        <span class="detail-pro-category">{{ getCategoryLabel(detailEvent) }}</span>
+        <button class="detail-pro-close" (click)="showDetail=false">✕</button>
       </div>
-      <div class="detail-body">
-        <h2 class="detail-title">{{ detailEvent.title }}</h2>
-        <p class="detail-desc">{{ detailEvent.description }}</p>
-        <div class="detail-grid">
-          <div class="detail-cell">
-            <div class="detail-cell-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Date</div>
-            <div class="detail-cell-value">{{ detailEvent.startDate | date:'dd/MM/yyyy' }}</div>
+
+      <div class="detail-pro-heading">
+        <h2>{{ detailEvent.title }}</h2>
+        <p>{{ detailEvent.description }}</p>
+      </div>
+    </div>
+
+    <div class="detail-pro-content">
+      <section class="detail-pro-about">
+        <h3>About the Event</h3>
+
+        <p class="detail-pro-desc">
+          {{ detailEvent.description }}
+        </p>
+
+        <div class="detail-pro-grid">
+          <div class="detail-pro-item">
+            <span class="detail-pro-icon">▣</span>
+            <div>
+              <small>DATE</small>
+              <strong>{{ detailEvent.startDate | date:'MMMM d, yyyy' }}</strong>
+            </div>
           </div>
-          <div class="detail-cell">
-            <div class="detail-cell-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Time</div>
-            <div class="detail-cell-value">{{ detailEvent.startDate | date:'HH:mm' }}</div>
+
+          <div class="detail-pro-item">
+            <span class="detail-pro-icon">◷</span>
+            <div>
+              <small>TIME</small>
+              <strong>{{ detailEvent.startDate | date:'HH:mm' }}</strong>
+            </div>
           </div>
-          <div class="detail-cell">
-            <div class="detail-cell-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Location</div>
-            <div class="detail-cell-value">{{ detailEvent.location }}</div>
+
+          <div class="detail-pro-item">
+            <span class="detail-pro-icon">⌖</span>
+            <div>
+              <small>LOCATION</small>
+              <strong>{{ detailEvent.location }}</strong>
+            </div>
           </div>
-          <div class="detail-cell">
-            <div class="detail-cell-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Participants</div>
-            <div class="detail-cell-value">{{ getFilledSpots(detailEvent) }}/{{ detailEvent.capacity }} reserved</div>
+
+          <div class="detail-pro-item">
+            <span class="detail-pro-icon">♙</span>
+            <div>
+              <small>PARTICIPANTS</small>
+              <strong>{{ getFilledSpots(detailEvent) }}/{{ detailEvent.capacity }} reserved</strong>
+            </div>
           </div>
-          
-          <div class="detail-cell">
-            <div class="detail-cell-label">Organizer</div>
-            <div class="detail-cell-value">{{ detailEvent.createdBy?.fullName || 'Vero Community' }}</div>
+
+          <div class="detail-pro-item detail-pro-full">
+            <span class="detail-pro-icon">✦</span>
+            <div>
+              <small>ORGANIZER</small>
+              <strong>{{ detailEvent.createdBy?.fullName || 'Vero Community' }}</strong>
+            </div>
           </div>
         </div>
+
         <ng-container *ngIf="isUser()">
-          <span class="btn-joined" style="width:100%;justify-content:center" *ngIf="hasJoined(detailEvent.id!)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-            Already Registered
+          <span class="btn-joined detail-pro-action" *ngIf="hasJoined(detailEvent.id!)">
+            ✓ Already Registered
           </span>
-          <button class="btn-reserve-lg" *ngIf="!hasJoined(detailEvent.id!)"
+
+          <button
+            class="btn-reserve-lg detail-pro-action"
+            *ngIf="!hasJoined(detailEvent.id!)"
             [disabled]="detailEvent.status==='CANCELLED'||detailEvent.status==='COMPLETED'||joinLoading"
             (click)="confirmJoin()">
-            <span *ngIf="!joinLoading">🌿 Reserve Your Spot</span>
+            <span *ngIf="!joinLoading">Reserve Your Spot</span>
             <span *ngIf="joinLoading" class="spinner"></span>
           </button>
         </ng-container>
-      </div>
+      </section>
     </div>
+
   </div>
+</div>
 
   <!-- FORM MODAL -->
   <div class="modal-backdrop" *ngIf="showFormModal" (click)="showFormModal=false">
@@ -617,4 +673,17 @@
     </div>
   </div>
 
+
+
+  <!-- Ocean floor seaweed -->
+  <div class="seaweed-bar" aria-hidden="true">
+    <svg viewBox="0 0 1200 140" preserveAspectRatio="none">
+      <path class="seaweed-stem s1" d="M50 140 C38 105 62 80 45 42" stroke="#00b4d8" stroke-width="16" fill="none" stroke-linecap="round"/>
+      <path class="seaweed-stem s2" d="M95 140 C80 95 120 72 102 28" stroke="#48cae4" stroke-width="13" fill="none" stroke-linecap="round"/>
+      <path class="seaweed-stem s3" d="M190 140 C175 95 210 70 198 18" stroke="#0096c7" stroke-width="18" fill="none" stroke-linecap="round"/>
+      <path class="seaweed-stem s4" d="M820 140 C800 92 846 66 826 26" stroke="#48cae4" stroke-width="15" fill="none" stroke-linecap="round"/>
+      <path class="seaweed-stem s5" d="M930 140 C910 100 955 78 940 36" stroke="#00b4d8" stroke-width="18" fill="none" stroke-linecap="round"/>
+      <path class="seaweed-stem s6" d="M1085 140 C1068 98 1110 75 1095 30" stroke="#0096c7" stroke-width="14" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
 </div>

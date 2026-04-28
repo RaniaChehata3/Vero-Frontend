@@ -9,6 +9,8 @@ import { EventRatingService, RatingResponse } from '../../services/Event rating.
 import { environment } from '../../../environments/environment';
 
 interface Leaf   { style: string; color: string; }
+interface Octopus { style: string; color: string; }
+interface Bubble  { style: string; }
 interface Turtle { x: number; y: number; speed: number; size: number; delay: number; flipped: boolean; }
 
 @Component({
@@ -67,6 +69,8 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   // ── Animations ────────────────────────────────────────────────────────────
   leaves:  Leaf[]   = [];
+  octopuses: Octopus[] = [];
+  bubbles: Bubble[] = [];
   turtles: Turtle[] = [];
 
   // ── Flip Card ─────────────────────────────────────────────────────────────
@@ -200,6 +204,8 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.generateLeaves();
+    this.generateOctopuses();
+    this.generateBubbles();
     this.generateTurtles();
 
     this.roleSub = this.auth.roleStream$.subscribe(() => {
@@ -236,6 +242,31 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   generateTurtles(): void {
     this.turtles = Array.from({ length: 4 }, (_, i) => ({ x: -120 - i * 220, y: 18 + Math.random() * 24, speed: 0.3 + Math.random() * 0.3, size: 52 + Math.random() * 28, delay: i * 4, flipped: false }));
+  }
+
+  generateOctopuses(): void {
+    const colors = ['#00b4d8', '#48cae4', '#0096c7', '#90e0ef'];
+    this.octopuses = Array.from({ length: 7 }, () => {
+      const left = Math.random() * 100;
+      const duration = 16 + Math.random() * 16;
+      const delay = Math.random() * 18;
+      const size = 38 + Math.random() * 34;
+      const sway = -55 + Math.random() * 110;
+      const opacity = 0.22 + Math.random() * 0.28;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      return { color, style: `left:${left}%;width:${size}px;height:${size * 1.1}px;color:${color};--sway:${sway}px;--op:${opacity};animation-duration:${duration}s;animation-delay:${delay}s` };
+    });
+  }
+
+  generateBubbles(): void {
+    this.bubbles = Array.from({ length: 22 }, () => {
+      const left = Math.random() * 100;
+      const size = 5 + Math.random() * 14;
+      const duration = 9 + Math.random() * 16;
+      const delay = Math.random() * 12;
+      const sway = -30 + Math.random() * 60;
+      return { style: `left:${left}%;width:${size}px;height:${size}px;--bsway:${sway}px;animation-duration:${duration}s;animation-delay:${delay}s` };
+    });
   }
 
   load(): void {

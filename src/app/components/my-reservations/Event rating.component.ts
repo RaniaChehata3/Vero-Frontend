@@ -290,6 +290,95 @@ import { environment } from '../../../environments/environment';
     }
     .lightbox-close:hover { background: #f2efe8; }
     .empty-reviews { text-align: center; padding: 20px; color: #8aaa96; font-size: 13px; }
+
+    /* OCEAN PATCH — same design as Events page */
+    .rating-wrapper { color: #052f3a; }
+    .rating-summary, .rating-form-card, .review-card {
+      background: rgba(255,255,255,.68) !important;
+      border: 1.5px solid rgba(6,189,232,.28) !important;
+      box-shadow: 0 12px 35px rgba(0,120,155,.10), inset 0 1px 0 rgba(255,255,255,.72) !important;
+      backdrop-filter: blur(16px) saturate(135%);
+    }
+    .avg-score, .star-label, .reviews-title { color: #078caf !important; }
+    .avg-count, .form-sub, .moment-label, .review-comment, .review-date, .review-moment-caption, .empty-reviews { color: #155b6c !important; font-weight: 700; }
+    .form-title, .reviewer-name { color: #052f3a !important; }
+    .comment-input, .moment-upload-zone { background: rgba(235,252,255,.90) !important; color: #052f3a !important; border-color: rgba(6,189,232,.30) !important; }
+    .comment-input:focus, .moment-upload-zone:hover { border-color: #1ed8ff !important; box-shadow: 0 0 0 4px rgba(30,216,255,.13); }
+    .btn-submit, .check-icon, .reviewer-avatar { background: linear-gradient(135deg, #1ed8ff, #079cc6) !important; color: #002633 !important; font-weight: 950 !important; }
+    .already-rated { background: rgba(126,232,247,.25) !important; color: #052f3a !important; border-color: rgba(6,189,232,.35) !important; }
+    .star-display.filled, .star-btn.filled, .star-btn:hover, .star-sm.filled { color: #ffb703 !important; }
+    .live-badge { color: #06bde8 !important; }
+    .lightbox-close { background: #1ed8ff !important; color: #002633 !important; }
+
+    /* ===== OCEAN BLUE OVERRIDE - no white/beige cards ===== */
+    :host {
+      --cyan:#00E5FF;
+      --cyan-mid:#00b4d8;
+      --cyan-lt:#48cae4;
+      --gold:#ffd166;
+      --text:rgba(255,255,255,.94);
+      --text-mid:rgba(189,245,255,.78);
+      --border:rgba(0,229,255,.20);
+    }
+    .rating-wrapper { color: var(--text) !important; }
+    .rating-summary,
+    .rating-form-card,
+    .review-card,
+    .already-rated,
+    .empty-reviews {
+      background: rgba(0,229,255,.08) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 14px 34px rgba(0,0,0,.14) !important;
+      backdrop-filter: blur(14px) saturate(140%);
+    }
+    .rating-summary *,
+    .rating-form-card *,
+    .review-card *,
+    .already-rated *,
+    .empty-reviews * { color: var(--text) !important; }
+    .avg-score,
+    .form-title,
+    .reviews-title,
+    .star-label { color: var(--cyan-lt) !important; }
+    .avg-count,
+    .form-sub,
+    .review-comment,
+    .review-date,
+    .moment-label,
+    .moment-label em,
+    .upload-ph-sub,
+    .char-count { color: var(--text-mid) !important; }
+    .reviewer-avatar,
+    .check-icon {
+      background: linear-gradient(135deg,var(--cyan),var(--cyan-mid)) !important;
+      color: #021214 !important;
+      box-shadow: 0 8px 22px rgba(0,229,255,.18);
+    }
+    .star-display,
+    .star-btn,
+    .star-sm { color: rgba(255,255,255,.18) !important; }
+    .star-display.filled,
+    .star-btn.filled,
+    .star-btn:hover,
+    .star-sm.filled { color: var(--gold) !important; }
+    .comment-input,
+    .moment-upload-zone {
+      background: rgba(4,22,27,.35) !important;
+      border: 1px solid rgba(0,229,255,.22) !important;
+      color: var(--text) !important;
+    }
+    .comment-input::placeholder { color: rgba(189,245,255,.48) !important; }
+    .moment-upload-zone:hover { background: rgba(0,229,255,.12) !important; border-color: var(--cyan-lt) !important; }
+    .upload-ph-text { color: var(--text) !important; }
+    .btn-submit {
+      background: linear-gradient(135deg,var(--cyan),var(--cyan-mid)) !important;
+      color: #021214 !important;
+      font-weight: 900 !important;
+    }
+    .btn-submit:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
+    .live-badge { color: var(--cyan) !important; }
+    .review-moment-caption { color: var(--text-mid) !important; }
   `]
 })
 export class EventRatingComponent implements OnInit, OnDestroy {

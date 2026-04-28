@@ -18,7 +18,9 @@ export class MyReservationsComponent implements OnInit {
   loading = true;
   successMsg = '';
   errorMsg = '';
-
+userLat: number | null = null;
+userLng: number | null = null;
+distanceKm: number | null = null;
   expandedId: number | null = null;
 
   // History pagination
@@ -139,7 +141,7 @@ export class MyReservationsComponent implements OnInit {
 
     const ticketUrl = `http://${apiHost}:8080/api/tickets/${r.id}/pdf`;
 
-    return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(ticketUrl)}&color=1e6b45&bgcolor=f2efe8&margin=8`;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(ticketUrl)}&color=06bde8&bgcolor=eafaff&margin=8`;
   }
 
   // Google Maps

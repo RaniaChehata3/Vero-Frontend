@@ -1,5 +1,18 @@
 <div class="res-page">
 
+  <!-- Ocean background like Events page -->
+  <div class="ocean-glow g1" aria-hidden="true"></div>
+  <div class="ocean-glow g2" aria-hidden="true"></div>
+  <div class="ocean-glow g3" aria-hidden="true"></div>
+  <div class="bubbles-layer" aria-hidden="true">
+    <span class="bubble b1"></span><span class="bubble b2"></span><span class="bubble b3"></span>
+    <span class="bubble b4"></span><span class="bubble b5"></span><span class="bubble b6"></span>
+  </div>
+  <div class="seaweed-bar" aria-hidden="true">
+    <span class="seaweed sw1"></span><span class="seaweed sw2"></span><span class="seaweed sw3"></span>
+    <span class="seaweed sw4"></span><span class="seaweed sw5"></span>
+  </div>
+
   <div class="deco-leaf deco-leaf-1" aria-hidden="true">🍃</div>
   <div class="deco-leaf deco-leaf-2" aria-hidden="true">🌿</div>
   <div class="deco-leaf deco-leaf-3" aria-hidden="true">🍀</div>
@@ -102,7 +115,34 @@
               </div>
             </div>
           </div>
+<!-- STATUS PROGRESS BAR -->
+<div class="ticket-progress" *ngIf="isExpanded(r.id)">
+  <div class="ticket-step done">
+    <div class="ticket-step-circle">✓</div>
+    <span>SUBMITTED</span>
+  </div>
 
+  <div class="ticket-line done"></div>
+
+  <div class="ticket-step done">
+    <div class="ticket-step-circle">✓</div>
+    <span>UNDER REVIEW</span>
+  </div>
+
+  <div class="ticket-line" [class.done]="r.status === 'CONFIRMED'"></div>
+
+  <div class="ticket-step" [class.active]="r.status === 'CONFIRMED'" [class.done]="r.status === 'CONFIRMED'">
+    <div class="ticket-step-circle">3</div>
+    <span>CONFIRMED</span>
+  </div>
+
+  <div class="ticket-line"></div>
+
+  <div class="ticket-step">
+    <div class="ticket-step-circle">4</div>
+    <span>READY</span>
+  </div>
+</div>
           <div class="perforation" *ngIf="isExpanded(r.id)"></div>
 
           <div class="rcard-body" [class.open]="isExpanded(r.id)">
