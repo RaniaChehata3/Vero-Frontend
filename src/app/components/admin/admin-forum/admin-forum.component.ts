@@ -114,17 +114,26 @@ export class AdminForumComponent implements OnInit {
       }
     });
   }
-
   deletePost(id: number): void {
-    if (!confirm('Delete this post? This cannot be undone.')) return;
-    this.forumService.deletePost(id).subscribe({
+    if (!confirm('Are you sure you want to delete this post?')) return;
+
+    const targetId = Number(id);
+    
+    // Optimistic UI update
+    this.posts = this.posts.filter(p => p.id != targetId);
+    this.computeStats();
+    this.notificationService.success('Post deleted.');
+    this.cdr.detectChanges();
+
+    this.forumService.deletePost(targetId).subscribe({
       next: () => {
-        this.notificationService.success('Post deleted.');
-        this.loadData();
+        // Success - UI already updated
       },
-      error: () => {
-        this.notificationService.error('Failed to delete post.');
-        this.cdr.detectChanges();
+      error: (err) => {
+        if (err.status !== 204 && err.status !== 200) {
+          this.notificationService.error('Failed to delete post on server.');
+          this.loadData();
+        }
       }
     });
   }
