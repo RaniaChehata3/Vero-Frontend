@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, EventEmitter, Output, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -56,6 +56,7 @@ export class AdminDonationsComponent implements OnInit {
   donations: AdminDonation[] = [];
   loading = false;
   filter: DonationFilter = 'ALL';
+  processingIds = new Set<number>();
 
   stats: DonationStats = {
     total: 0,
@@ -66,7 +67,7 @@ export class AdminDonationsComponent implements OnInit {
     totalValidatedAmount: 0
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.load();
@@ -96,17 +97,16 @@ export class AdminDonationsComponent implements OnInit {
       timeout(8000),
       catchError((e) => {
         this.donations = [];
-
         this.error.emit(
           e?.name === 'TimeoutError'
             ? 'Le chargement des donations prend trop de temps. Vérifiez /api/donations.'
             : e?.error?.message || 'Erreur chargement donations'
         );
-
         return of([]);
       }),
       finalize(() => {
         this.loading = false;
+        this.cdr.markForCheck();
       })
     ).subscribe({
       next: (res) => {
@@ -119,6 +119,7 @@ export class AdminDonationsComponent implements OnInit {
         } else {
           this.donations = [];
         }
+        this.cdr.markForCheck();
       }
     });
   }
@@ -139,12 +140,17 @@ export class AdminDonationsComponent implements OnInit {
           rejected: s?.rejected ?? 0,
           totalValidatedAmount: s?.totalValidatedAmount ?? 0
         };
+        this.cdr.markForCheck();
       }
     });
   }
 
   setFilter(value: DonationFilter): void {
     this.filter = value;
+  }
+
+  isProcessing(id: number): boolean {
+    return this.processingIds.has(id);
   }
 
   get filtered(): AdminDonation[] {
@@ -158,6 +164,9 @@ export class AdminDonationsComponent implements OnInit {
   }
 
   validate(id: number): void {
+    if (this.processingIds.has(id)) return;
+    this.processingIds.add(id);
+
     this.http.put<any>(
       `${this.API}/api/donations/${id}/validate`,
       {},
@@ -165,21 +174,24 @@ export class AdminDonationsComponent implements OnInit {
     ).subscribe({
       next: () => {
         const d = this.donations.find(item => item.id === id);
-
-        if (d) {
-          d.status = 'VALIDATED';
-        }
-
+        if (d) d.status = 'VALIDATED';
+        this.processingIds.delete(id);
+        this.cdr.markForCheck();
         this.loadStats();
         this.success.emit('✅ Don validé');
       },
       error: (e) => {
+        this.processingIds.delete(id);
+        this.cdr.markForCheck();
         this.error.emit(e?.error?.message || 'Erreur validation');
       }
     });
   }
 
   reject(id: number): void {
+    if (this.processingIds.has(id)) return;
+    this.processingIds.add(id);
+
     this.http.put<any>(
       `${this.API}/api/donations/${id}/reject`,
       { reason: 'Rejeté par admin' },
@@ -187,15 +199,15 @@ export class AdminDonationsComponent implements OnInit {
     ).subscribe({
       next: () => {
         const d = this.donations.find(item => item.id === id);
-
-        if (d) {
-          d.status = 'REJECTED';
-        }
-
+        if (d) d.status = 'REJECTED';
+        this.processingIds.delete(id);
+        this.cdr.markForCheck();
         this.loadStats();
         this.success.emit('❌ Don rejeté');
       },
       error: (e) => {
+        this.processingIds.delete(id);
+        this.cdr.markForCheck();
         this.error.emit(e?.error?.message || 'Erreur rejet');
       }
     });
