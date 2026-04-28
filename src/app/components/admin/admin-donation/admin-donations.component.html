@@ -13,8 +13,7 @@
       </div>
     </div>
 
-    <button class="don-btn-refresh" (click)="load()">⟳ Actualiser</button>
-  </div>
+<button class="don-btn-refresh" (click)="load(); loadStats()">⟳ Actualiser</button>  </div>
 
   <div class="don-kpi-strip">
     <div class="don-kpi"><span class="don-kpi-num">{{ stats.total }}</span><span class="don-kpi-lbl">Total</span></div>
@@ -148,8 +147,12 @@
             </div>
 
             <div class="don-actions">
-              <button class="don-act don-act-ok" *ngIf="don.status !== 'VALIDATED'" (click)="validate(don.id)">✓ Valider</button>
-              <button class="don-act don-act-no" *ngIf="don.status !== 'REJECTED'" (click)="reject(don.id)">✕ Rejeter</button>
+              <button class="don-act don-act-ok" *ngIf="don.status !== 'VALIDATED'" [disabled]="isProcessing(don.id)" (click)="validate(don.id)">
+                {{ isProcessing(don.id) ? '…' : '✓ Valider' }}
+              </button>
+              <button class="don-act don-act-no" *ngIf="don.status !== 'REJECTED'" [disabled]="isProcessing(don.id)" (click)="reject(don.id)">
+                {{ isProcessing(don.id) ? '…' : '✕ Rejeter' }}
+              </button>
               <span class="don-nil" *ngIf="don.status === 'VALIDATED' || don.status === 'REJECTED'">Décision prise</span>
             </div>
           </div>

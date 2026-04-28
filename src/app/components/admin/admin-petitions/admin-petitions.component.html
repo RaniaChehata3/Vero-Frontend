@@ -225,22 +225,25 @@
               <button
                 class="pet-act pet-act-ok"
                 *ngIf="pet.status === 'PENDING'"
+                [disabled]="isProcessing(pet.id)"
                 (click)="validate(pet.id)">
-                ✓ Valider
+                {{ isProcessing(pet.id) ? '…' : '✓ Valider' }}
               </button>
 
               <button
                 class="pet-act pet-act-no"
                 *ngIf="pet.status === 'PENDING'"
+                [disabled]="isProcessing(pet.id)"
                 (click)="reject(pet.id)">
-                ✕ Rejeter
+                {{ isProcessing(pet.id) ? '…' : '✕ Rejeter' }}
               </button>
 
               <button
                 class="pet-act pet-act-close"
                 *ngIf="pet.status === 'ACTIVE'"
+                [disabled]="isProcessing(pet.id)"
                 (click)="close(pet.id)">
-                🔒 Fermer
+                {{ isProcessing(pet.id) ? '…' : '🔒 Fermer' }}
               </button>
 
               <span

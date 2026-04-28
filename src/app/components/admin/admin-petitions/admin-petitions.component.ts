@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, EventEmitter, Output, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -56,11 +56,12 @@ export class AdminPetitionsComponent implements OnInit {
 
   petitions: AdminPetition[] = [];
   loading = false;
+  processingIds = new Set<number>();
 
   filter: PetitionFilter = 'ALL';
   sortBy: PetitionSort = 'NEWEST';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.load();
@@ -89,17 +90,16 @@ export class AdminPetitionsComponent implements OnInit {
       timeout(8000),
       catchError((e) => {
         this.petitions = [];
-
         this.error.emit(
           e?.name === 'TimeoutError'
             ? 'Le chargement des pétitions prend trop de temps. Vérifiez /api/petitions/admin/all.'
             : e?.error?.message || 'Erreur chargement pétitions'
         );
-
         return of([]);
       }),
       finalize(() => {
         this.loading = false;
+        this.cdr.markForCheck();
       })
     ).subscribe({
       next: (data) => {
@@ -121,12 +121,17 @@ export class AdminPetitionsComponent implements OnInit {
           targetSignatures: p.targetSignatures ?? p.signatureGoal ?? 100,
           createdBy: p.createdBy ?? null
         }));
+        this.cdr.markForCheck();
       }
     });
   }
 
   setFilter(value: PetitionFilter): void {
     this.filter = value;
+  }
+
+  isProcessing(id: number): boolean {
+    return this.processingIds.has(id);
   }
 
   get filteredView(): AdminPetition[] {
@@ -176,6 +181,9 @@ export class AdminPetitionsComponent implements OnInit {
   }
 
   validate(id: number): void {
+    if (this.processingIds.has(id)) return;
+    this.processingIds.add(id);
+
     this.http.put<any>(
       `${this.API}/api/petitions/${id}/validate`,
       {},
@@ -184,14 +192,22 @@ export class AdminPetitionsComponent implements OnInit {
       next: () => {
         const p = this.petitions.find(item => item.id === id);
         if (p) p.status = 'ACTIVE';
+        this.processingIds.delete(id);
+        this.cdr.markForCheck();
         this.success.emit('✅ Pétition validée — elle est maintenant ACTIVE');
       },
-      error: (e) => this.error.emit(e?.error?.message || 'Erreur validation pétition')
+      error: (e) => {
+        this.processingIds.delete(id);
+        this.cdr.markForCheck();
+        this.error.emit(e?.error?.message || 'Erreur validation pétition');
+      }
     });
   }
 
   reject(id: number): void {
     const reason = prompt('Raison du rejet :') || 'Rejeté par admin';
+    if (this.processingIds.has(id)) return;
+    this.processingIds.add(id);
 
     this.http.put<any>(
       `${this.API}/api/petitions/${id}/reject?reason=${encodeURIComponent(reason)}`,
@@ -201,14 +217,22 @@ export class AdminPetitionsComponent implements OnInit {
       next: () => {
         const p = this.petitions.find(item => item.id === id);
         if (p) p.status = 'REJECTED';
+        this.processingIds.delete(id);
+        this.cdr.markForCheck();
         this.success.emit('❌ Pétition rejetée');
       },
-      error: (e) => this.error.emit(e?.error?.message || 'Erreur rejet pétition')
+      error: (e) => {
+        this.processingIds.delete(id);
+        this.cdr.markForCheck();
+        this.error.emit(e?.error?.message || 'Erreur rejet pétition');
+      }
     });
   }
 
   close(id: number): void {
     if (!confirm('Fermer cette pétition ? Elle ne pourra plus recevoir de signatures.')) return;
+    if (this.processingIds.has(id)) return;
+    this.processingIds.add(id);
 
     this.http.put<any>(
       `${this.API}/api/petitions/${id}/close`,
@@ -218,9 +242,15 @@ export class AdminPetitionsComponent implements OnInit {
       next: () => {
         const p = this.petitions.find(item => item.id === id);
         if (p) p.status = 'CLOSED';
+        this.processingIds.delete(id);
+        this.cdr.markForCheck();
         this.success.emit('🔒 Pétition fermée');
       },
-      error: (e) => this.error.emit(e?.error?.message || 'Erreur fermeture pétition')
+      error: (e) => {
+        this.processingIds.delete(id);
+        this.cdr.markForCheck();
+        this.error.emit(e?.error?.message || 'Erreur fermeture pétition');
+      }
     });
   }
 
